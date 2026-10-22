@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gofrs/flock"
 	_ "github.com/mattn/go-sqlite3"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -42,7 +44,7 @@ func Open(dir string) (*Store, error) {
 		return nil, e
 	}
 	file.Close()
-	dsn := (&url.URL{Scheme: "file", Path: filepath.ToSlash(path)}).String()
+	dsn := sqliteFileURI(path)
 	db, e := sql.Open("sqlite3", dsn+"?_busy_timeout=5000&_journal_mode=WAL&_synchronous=FULL&_foreign_keys=on")
 	if e != nil {
 		lock.Unlock()
@@ -50,10 +52,15 @@ func Open(dir string) (*Store, error) {
 	}
 	db.SetMaxOpenConns(1)
 	var schema int
-	if e = db.QueryRow("PRAGMA user_version").Scan(&schema); e != nil || schema > 1 {
+	if e = db.QueryRow("PRAGMA user_version").Scan(&schema); e != nil {
 		db.Close()
 		lock.Unlock()
-		return nil, errors.New("unsupported or unreadable database schema")
+		return nil, fmt.Errorf("read database schema: %w", e)
+	}
+	if schema > 1 {
+		db.Close()
+		lock.Unlock()
+		return nil, fmt.Errorf("unsupported database schema version: %d", schema)
 	}
 	_, e = db.Exec(`CREATE TABLE IF NOT EXISTS config(id INTEGER PRIMARY KEY CHECK(id=1), body BLOB NOT NULL);
  CREATE TABLE IF NOT EXISTS executions(id TEXT PRIMARY KEY, dedup TEXT NOT NULL UNIQUE, body BLOB NOT NULL);
@@ -106,6 +113,16 @@ func Open(dir string) (*Store, error) {
 	}
 	return s, nil
 }
+
+func sqliteFileURI(path string) string {
+	uriPath := filepath.ToSlash(path)
+	// A drive letter belongs in the path of file:///C:/..., never its authority.
+	if !strings.HasPrefix(uriPath, "/") {
+		uriPath = "/" + uriPath
+	}
+	return (&url.URL{Scheme: "file", Path: uriPath}).String()
+}
+
 func (s *Store) Close() error { e := s.db.Close(); _ = s.lock.Unlock(); return e }
 func (s *Store) Config() (Config, error) {
 	var raw []byte
