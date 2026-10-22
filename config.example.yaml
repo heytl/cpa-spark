@@ -1,0 +1,8 @@
+plugins:
+  enabled: true
+  dir: "./plugins"
+  configs:
+    cpa-spark:
+      enabled: true
+      priority: 10
+      state_dir: "./plugins/state/cpa-spark"
