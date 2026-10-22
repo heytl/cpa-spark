@@ -1,0 +1,25 @@
+/data/
+/dist/
+*.db
+*.db-wal
+*.db-shm
+*.log
+.DS_Store
+
+/release/
+/.build/
+/plugins/
+__pycache__/
+/node_modules/
+/coverage/
+*.so
+*.dll
+*.dylib
+*.zip
+*.tar.gz
+.env
+.env.*
+!.env.example
+
+# Reproducible offline preview; production embedded assets stay tracked.
+/design/readable-preview/CPA-Spark-Static-Preview.html

@@ -1,0 +1,4752 @@
+{
+  "message.17101b8ca4ca": {
+    "source": "+ 添加时间",
+    "en": "+ Add time"
+  },
+  "message.83402a9d0efc": {
+    "source": "+账号",
+    "en": "+ account"
+  },
+  "message.85dceec9170e": {
+    "source": "/ {v8} 次",
+    "en": "/ {v8} requests"
+  },
+  "message.49a64a97cdbb": {
+    "source": "1 分钟",
+    "en": "1 minute"
+  },
+  "message.29a4f19bb657": {
+    "source": "2 分钟",
+    "en": "2 minutes"
+  },
+  "message.a536317bad5f": {
+    "source": "429 · 账号额度不足或上游限流",
+    "en": "429 · quota exhausted or rate limited",
+    "zh-TW": "429：額度不足或上游限流",
+    "ru": "429: квота или ограничение частоты",
+    "vi": "429: hết hạn mức hoặc giới hạn tốc độ",
+    "ko": "429 · 한도 부족 또는 공급자 속도 제한"
+  },
+  "message.66f942bb456e": {
+    "source": "429 · 账号额度不足或上游限流，未自动重试",
+    "en": "429 · quota exhausted or rate limited; no automatic retry",
+    "zh-TW": "429：額度不足或限流，未自動重試",
+    "ru": "429: квота или ограничение частоты, без повтора",
+    "vi": "429: hết hạn mức hoặc giới hạn tốc độ, không tự thử lại",
+    "ko": "429 · 한도 부족 또는 속도 제한, 자동 재시도 없음"
+  },
+  "message.9d9a5e5793d1": {
+    "source": "5 分钟",
+    "en": "5 minutes"
+  },
+  "message.029d3509ade9": {
+    "source": "5 小时窗口时间轴",
+    "en": "5-hour window timeline",
+    "zh-TW": "5 小時視窗時間軸",
+    "ru": "Шкала 5-часовых окон",
+    "vi": "Dòng thời gian cửa sổ 5 giờ",
+    "ko": "5시간 창 타임라인"
+  },
+  "message.706f23e4f5b9": {
+    "source": "5h · 预计窗口",
+    "en": "5h · estimated window"
+  },
+  "message.c58f25c5293e": {
+    "source": "5h 刷新机制不代表从每次请求重新计时。这是当前计划的假设推演；失败、跳过、手动或外部请求可能改变实际窗口。真实重置时间需要账号级上游依据。",
+    "en": "A 5h refresh does not establish a new timer for every request. This projection can differ from actual usage. Confirm resets using account-level upstream data.",
+    "zh-TW": "5h 更新不代表每次請求重新計時。此為計畫推演，可能與實際使用不同；重置需帳號級上游依據。",
+    "ru": "Обновление раз в 5 ч не означает новый таймер после каждого запроса. Оценка может отличаться от факта; нужны данные провайдера по аккаунту.",
+    "vi": "Làm mới 5 giờ không nghĩa là mỗi yêu cầu bắt đầu lại bộ đếm. Ước tính có thể khác thực tế; cần dữ liệu nguồn theo tài khoản.",
+    "ko": "5시간 초기화가 요청마다 새 타이머를 뜻하지는 않습니다. 추정과 실제 사용은 다를 수 있으며 계정별 공급자 근거가 필요합니다."
+  },
+  "message.15dfa95dc549": {
+    "source": "5h 计划估算",
+    "en": "5h plan estimate"
+  },
+  "message.f312714f9051": {
+    "source": "5h 预计窗口",
+    "en": "5h estimated window"
+  },
+  "message.3e24072720c2": {
+    "source": ">保存设置",
+    "en": ">Save settings"
+  },
+  "message.2c292d6c01f4": {
+    "source": "Antigravity 官方：Pro/Ultra 每 5 小时刷新，并有周额度限制；非 Pro/Ultra 按周刷新。",
+    "en": "Antigravity: Pro/Ultra refresh every 5h with weekly limits; other plans refresh weekly.",
+    "zh-TW": "Antigravity 官方：Pro／Ultra 每 5 小時更新，並有週額度；其餘方案每週更新。",
+    "ru": "Antigravity: Pro/Ultra обновляются раз в 5 ч с недельным лимитом; остальные — раз в неделю.",
+    "vi": "Antigravity: Pro/Ultra làm mới mỗi 5 giờ, có hạn mức tuần; các gói khác làm mới hằng tuần.",
+    "ko": "Antigravity 공식: Pro/Ultra는 5시간마다 초기화되고 주간 한도가 있으며, 나머지는 주간 초기화됩니다."
+  },
+  "message.e112281549ef": {
+    "source": "CPA Spark · 账号预热工作台",
+    "en": "CPA Spark · Account scheduler",
+    "zh-TW": "CPA Spark · 帳號預熱工作台",
+    "ru": "CPA Spark · Планировщик аккаунтов",
+    "vi": "CPA Spark · Lịch làm nóng tài khoản",
+    "ko": "CPA Spark · 계정 워밍업 작업 공간"
+  },
+  "message.1d0d7fd0d062": {
+    "source": "CPA Spark（星火）为 CLIProxyAPI 提供单账号与自定义分组的独立预热调度、计划预览和执行追踪。",
+    "en": "CPA Spark provides independent account and group warmup schedules, schedule previews and run tracking for CLIProxyAPI."
+  },
+  "message.f49a45eb72e2": {
+    "source": "CPA 已禁用",
+    "en": "Disabled in CPA"
+  },
+  "message.46d7473aa13f": {
+    "source": "CPA 未提供推理能力时，保留模型默认，不猜测支持的参数。",
+    "en": "Use model defaults when CPA provides no reasoning capabilities."
+  },
+  "message.f211b0dc89e5": {
+    "source": "CPA 登录已失效",
+    "en": "CPA session expired"
+  },
+  "message.0425e8535174": {
+    "source": "CPA 登录已失效，请返回 CPA 重新登录",
+    "en": "CPA session expired. Return to CPA to sign in."
+  },
+  "message.6851d57b554f": {
+    "source": "CPA 登录状态已变化，请重新连接",
+    "en": "CPA sign-in state changed. Reconnect to continue."
+  },
+  "message.b911a3604500": {
+    "source": "Pro / Ultra · 5h + 周额度",
+    "en": "Pro / Ultra · 5h + weekly cap",
+    "zh-TW": "Pro／Ultra · 5h＋週額度",
+    "ru": "Pro / Ultra · 5 ч + недельный лимит",
+    "vi": "Pro / Ultra · 5 giờ + hạn mức tuần",
+    "ko": "Pro / Ultra · 5시간 + 주간 한도"
+  },
+  "message.d4ef7c1b62e4": {
+    "source": "disabled title=\"账号已禁用\"",
+    "en": "disabled title=\"AccountDisabled\""
+  },
+  "message.9112e66babf2": {
+    "source": "{v0} {v1} 预热 · {v2}",
+    "en": "{v0} {v1} Warmup · {v2}"
+  },
+  "message.a99b1f3c78cc": {
+    "source": "{v0} · {v1} 个账号 · {v2}",
+    "en": "{v0} · {v1} accounts · {v2}",
+    "plural": {
+      "parameter": "v1",
+      "en": {
+        "one": "{v0} · {v1} account · {v2}"
+      }
+    }
+  },
+  "message.dd7f838f18da": {
+    "source": "{v0} · {v1} 次预计请求",
+    "en": "{v0} · {v1} estimated requests"
+  },
+  "message.70acabd2e221": {
+    "source": "{v0} · {v1} 预热 → {v2} {v3} 预计到期（5h 估算）",
+    "en": "{v0} · {v1} warmup → {v2} {v3} estimated expiry (5h estimate)"
+  },
+  "message.ce7a72709353": {
+    "source": "{v0} · {v1} 预热，{v2} 预计到期",
+    "en": "{v0} · {v1} warmup, {v2} estimated expiry"
+  },
+  "message.051472a1611f": {
+    "source": "{v0} 分钟前",
+    "en": "{v0} minutes ago",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "{v0} minute ago"
+      }
+    }
+  },
+  "message.fc4238663c38": {
+    "source": "{v0} 天前",
+    "en": "{v0} days ago",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "{v0} day ago"
+      }
+    }
+  },
+  "message.299b7073e1f4": {
+    "source": "{v0} 失败",
+    "en": "{v0} Failed"
+  },
+  "message.4206a6675c1f": {
+    "source": "{v0} 小时前",
+    "en": "{v0} hours ago",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "{v0} hour ago"
+      }
+    }
+  },
+  "message.5a0ecb100d0c": {
+    "source": "{v0} 待完成",
+    "en": "{v0} pending"
+  },
+  "message.3840f26ad097": {
+    "source": "{v0} 未来 {v1} 次触发",
+    "en": "{v0} Next {v1} triggers"
+  },
+  "message.1857c27b2d0e": {
+    "source": "{v0} 未确认",
+    "en": "{v0} Unconfirmed"
+  },
+  "message.3306002e3259": {
+    "source": "{v0} 段预计窗口",
+    "en": "{v0} estimated windows"
+  },
+  "message.5504c55c3e48": {
+    "source": "{v0} 跳过",
+    "en": "{v0} Skipped"
+  },
+  "message.335e285efe4c": {
+    "source": "{v0}{v1} 条任务合并为 1 次请求",
+    "en": "{v0}{v1} tasks merged into one request",
+    "plural": {
+      "parameter": "v1",
+      "en": {
+        "one": "{v0}{v1} task merged into one request"
+      }
+    }
+  },
+  "message.eb0ab0697109": {
+    "source": "{v0}{v1} 项结果未确认；不计入成功或未发送，也不自动重放。",
+    "en": "{v0}{v1} results are unconfirmed; they are not counted as success or unsent, and will not be replayed automatically."
+  },
+  "message.5a0b7a97e616": {
+    "source": "{v0}{v1} 预热",
+    "en": "{v0}{v1} Warmup"
+  },
+  "message.6c1d47973ac6": {
+    "source": "{v0}{v1} 预计到期",
+    "en": "{v0}{v1} Estimated expiry"
+  },
+  "message.2a9565f8f50b": {
+    "source": "{v0}与「{v1}」在预览范围存在同账号、同时间的不同请求配置；每个账号将分别调用并串行执行，不做合并。",
+    "en": "{v0}Overlaps with “{v1}” using different request settings. Requests run separately in sequence for each account."
+  },
+  "message.59bca2b169d3": {
+    "source": "{v0}与「{v1}」存在相同时间与配置的命中。将按账号合并，保留任务来源。",
+    "en": "{v0}Overlaps with “{v1}” at the same time and settings. Requests are merged per account and retain task sources."
+  },
+  "message.ea3317c8553f": {
+    "source": "{v0}全部调度已暂停，已保存的任务配置仍然保留。恢复后从下一个时间点继续。",
+    "en": "{v0}All schedules paused; configuration is retained. Resumes at the next future trigger."
+  },
+  "message.a91af60253bf": {
+    "source": "{v0}创建分组",
+    "en": "{v0}Create group"
+  },
+  "message.43fc392d2b24": {
+    "source": "{v0}合并来源：{v1}",
+    "en": "{v0}Merged sources:{v1}"
+  },
+  "message.b99c4405ddae": {
+    "source": "{v0}定时计划已{v1}{v2}",
+    "en": "{v0}Schedule {v1}{v2}"
+  },
+  "message.d2e0f89c9da7": {
+    "source": "{v0}导出记录",
+    "en": "{v0}Export history"
+  },
+  "message.9e91c0143f81": {
+    "source": "{v0}跳过 {v1} 个账号：{v2}",
+    "en": "{v0}Skipped {v1} accounts：{v2}",
+    "plural": {
+      "parameter": "v1",
+      "en": {
+        "one": "{v0}Skipped {v1} account：{v2}"
+      }
+    }
+  },
+  "message.0482cf37abcb": {
+    "source": "{v10}恢复默认",
+    "en": "{v10}Reset to defaults"
+  },
+  "message.3b3c6b166586": {
+    "source": "{v10}配置保存在 CPA 插件 SQLite；请求通过 CPA 指定账号执行。",
+    "en": "{v10}Settings are stored in the plugin SQLite database. Requests run through CPA with the selected accounts."
+  },
+  "message.4d9e05725b2a": {
+    "source": "{v12}立即预热",
+    "en": "{v12}Warm up now"
+  },
+  "message.4d23be724035": {
+    "source": "{v13} 条 · {v14} 条已启用",
+    "en": "{v13} items · {v14} enabled"
+  },
+  "message.e4e999368f74": {
+    "source": "{v13} 条关联任务",
+    "en": "{v13} linked tasks"
+  },
+  "message.5bfbac012332": {
+    "source": "{v14}预热开关",
+    "en": "{v14}Warmup toggle"
+  },
+  "message.eb74e76bde38": {
+    "source": "{v15}色带是计划估算，实际重置以上游为准。Antigravity Pro/Ultra 为 5h + 周额度；其他套餐按周或标记未知。",
+    "en": "{v15}Bands are projections; actual resets require upstream data. Antigravity Pro/Ultra: 5h plus weekly cap. Other plans: weekly or unknown."
+  },
+  "message.d57c0b342ee1": {
+    "source": "{v16} · {v17} 个目标",
+    "en": "{v16} · {v17} targets"
+  },
+  "message.1e3072d7b0a6": {
+    "source": "{v16}定时开关",
+    "en": "{v16}schedule toggle"
+  },
+  "message.62ca9e6addfc": {
+    "source": "{v16}本批次由 CPA 服务端执行。请求成功不代表额度窗口已开启或重置。",
+    "en": "{v16}This run is executed by the CPA server. A successful request does not confirm that a quota window opened or reset."
+  },
+  "message.48ae9b3e7416": {
+    "source": "{v17} / {v18} 个账号已处理",
+    "en": "{v17} / {v18} accounts processed",
+    "plural": {
+      "parameter": "v18",
+      "en": {
+        "one": "{v17} / {v18} account processed"
+      }
+    }
+  },
+  "message.b070f655abe4": {
+    "source": "{v18}立即预热",
+    "en": "{v18}Warm up now"
+  },
+  "message.a95116d6f534": {
+    "source": "{v1} · 当前不可用",
+    "en": "{v1} · currently unavailable"
+  },
+  "message.9a99a1bfde0c": {
+    "source": "{v1} · 请重新选择",
+    "en": "{v1} · select again"
+  },
+  "message.71c40f01bc22": {
+    "source": "{v1} 预热起点",
+    "en": "{v1} Warmup start"
+  },
+  "message.93e08e15d110": {
+    "source": "{v1}删除分组",
+    "en": "{v1}Delete group"
+  },
+  "message.7fe695e66a5b": {
+    "source": "{v1}复制任务",
+    "en": "{v1}Duplicate task"
+  },
+  "message.dd90349320e7": {
+    "source": "{v1}清除筛选结果",
+    "en": "{v1}Clear filtered history"
+  },
+  "message.62393a556045": {
+    "source": "{v27}更多操作",
+    "en": "{v27}More actions"
+  },
+  "message.c0cb00ba756e": {
+    "source": "{v2} 分钟",
+    "en": "{v2} minutes",
+    "plural": {
+      "parameter": "v2",
+      "en": {
+        "one": "{v2} minute"
+      }
+    }
+  },
+  "message.394e125db2af": {
+    "source": "{v2} 天",
+    "en": "{v2} days",
+    "plural": {
+      "parameter": "v2",
+      "en": {
+        "one": "{v2} day"
+      }
+    }
+  },
+  "message.480e9809a7b2": {
+    "source": "{v2}分组",
+    "en": "{v2}Group"
+  },
+  "message.adb0c7f2dea3": {
+    "source": "{v2}发送一条短文本请求，要求模型回复 OK。请求使用正常账号额度，窗口是否开启由上游决定。",
+    "en": "{v2}Sends a short request for OK using normal quota. The upstream service determines the window."
+  },
+  "message.960719171084": {
+    "source": "{v3} 个任务已暂停",
+    "en": "{v3} tasks paused",
+    "plural": {
+      "parameter": "v3",
+      "en": {
+        "one": "{v3} task paused"
+      }
+    }
+  },
+  "message.f9ebeefeadb2": {
+    "source": "{v3} 小时",
+    "en": "{v3} hours",
+    "plural": {
+      "parameter": "v3",
+      "en": {
+        "one": "{v3} hour"
+      }
+    }
+  },
+  "message.f9b5d06c3169": {
+    "source": "{v3} 预计到期{v4}",
+    "en": "{v3} Estimated expiry{v4}"
+  },
+  "message.eb962c95bb4d": {
+    "source": "{v3}删除任务",
+    "en": "{v3}Delete task"
+  },
+  "message.2518a33ec6dc": {
+    "source": "{v4} 小时",
+    "en": "{v4} hours",
+    "plural": {
+      "parameter": "v4",
+      "en": {
+        "one": "{v4} hour"
+      }
+    }
+  },
+  "message.81fe28c4e536": {
+    "source": "{v4} 次请求{v5}",
+    "en": "{v4} requests{v5}"
+  },
+  "message.eeb35cfee948": {
+    "source": "{v4}分组与账号取并集。同一个账号即使多次选中，也只计算一次。",
+    "en": "{v4}Groups and explicit accounts form a union. Repeated accounts count once."
+  },
+  "message.38aae79980c7": {
+    "source": "{v4}新建任务",
+    "en": "{v4}New task"
+  },
+  "message.033c836da83e": {
+    "source": "{v5} 个账号 · {v6}",
+    "en": "{v5} accounts · {v6}",
+    "plural": {
+      "parameter": "v5",
+      "en": {
+        "one": "{v5} account · {v6}"
+      }
+    }
+  },
+  "message.ab355558b4fa": {
+    "source": "{v5}保存后从下一个未来时间点开始。服务中断时，默认不补发错过的请求。",
+    "en": "{v5}Starts at the next future trigger. Missed downtime requests are not replayed by default."
+  },
+  "message.031d471f16db": {
+    "source": "{v7} · {v8}/{v9} 可用 · {v10} 条任务",
+    "en": "{v7} · {v8}/{v9} available · {v10} tasks",
+    "plural": {
+      "parameter": "v10",
+      "en": {
+        "one": "{v7} · {v8}/{v9} available · {v10} task"
+      }
+    }
+  },
+  "message.0b46e4e2062d": {
+    "source": "{v7} 成功",
+    "en": "{v7} Success"
+  },
+  "message.275f8d728ba4": {
+    "source": "{v7}/{v8} 可用 · {v9} 条任务",
+    "en": "{v7}/{v8} available · {v9} tasks",
+    "plural": {
+      "parameter": "v9",
+      "en": {
+        "one": "{v7}/{v8} available · {v9} task"
+      }
+    }
+  },
+  "message.f12b22737ee5": {
+    "source": "{v8} 个可用 / {v9} 个目标",
+    "en": "{v8} available / {v9} targets"
+  },
+  "message.50c07dc7ecb0": {
+    "source": "{v8} 个可用{v9}",
+    "en": "{v8} available{v9}"
+  },
+  "message.0d0f82ffcec1": {
+    "source": "{v8}组成员变更仅影响未来批次；账号登录与禁用状态由 CPA 管理。",
+    "en": "{v8}Membership changes affect future batches. CPA manages account sign-in and disablement."
+  },
+  "message.c752c72f57cc": {
+    "source": "{v9} 个账号",
+    "en": "{v9} accounts",
+    "plural": {
+      "parameter": "v9",
+      "en": {
+        "one": "{v9} account"
+      }
+    }
+  },
+  "message.12e7e444557a": {
+    "source": "{v9} 定时任务由 CPA 服务端调度，关闭浏览器后仍继续执行。",
+    "en": "{v9}Schedules run on the CPA server and continue after the browser closes."
+  },
+  "message.b562226badb2": {
+    "source": "{v9} 条关联任务",
+    "en": "{v9} linked tasks"
+  },
+  "message.f5ab5f3a8e91": {
+    "source": "{v9}一个账号可以属于多个分组。成员变更只影响未来批次，已排队的批次保留成员快照。",
+    "en": "{v9}Accounts may belong to multiple groups. Future batches use new members; queued batches retain their snapshot."
+  },
+  "message.3da0d7ae1ca8": {
+    "source": "{v9}导出",
+    "en": "{v9}Export"
+  },
+  "message.13f8deb5002e": {
+    "source": "· {v0} 个跳过",
+    "en": "· {v0} skipped"
+  },
+  "message.8af8c27dd0d9": {
+    "source": "· {v0} 个重复命中已合并",
+    "en": "· {v0} duplicate hits merged"
+  },
+  "message.8a6913b36d5e": {
+    "source": "· 副本",
+    "en": "· Copy"
+  },
+  "message.7e504309b815": {
+    "source": "· 单账号",
+    "en": "· Single account"
+  },
+  "message.618c2ed380cb": {
+    "source": "· 已暂停",
+    "en": "· Paused"
+  },
+  "message.522a807a521a": {
+    "source": "· 最低预算",
+    "en": "· Minimum budget"
+  },
+  "message.da89f36c6ea4": {
+    "source": "→ 5 小时 →",
+    "en": "→ 5 hours →"
+  },
+  "message.05d3e3b13a79": {
+    "source": "」在预览范围存在同账号、同时间的不同请求配置；每个账号将分别调用并串行执行，不做合并。",
+    "en": "” has a same-account, same-time configuration conflict. Separate requests run serially.",
+    "zh-TW": "」有同帳號同時點的不同設定；分別請求並依序執行。",
+    "ru": "» совпадает аккаунт и время, но не запрос; выполняются раздельно и последовательно.",
+    "vi": "” có cùng tài khoản và giờ nhưng khác cấu hình; yêu cầu chạy riêng, tuần tự.",
+    "ko": "” 같은 계정과 시각에 다른 요청 설정이 있습니다. 병합하지 않고 별도로 순차 실행합니다."
+  },
+  "message.51cbe3391e26": {
+    "source": "」存在相同时间与配置的命中。将按账号合并，保留任务来源。",
+    "en": "” there are identical schedule hits. Requests merge per account and retain sources.",
+    "zh-TW": "」有相同時間與設定，將依帳號合併並保留來源。",
+    "ru": "» совпадает время и запрос; объединяются по аккаунту с сохранением источников.",
+    "vi": "” có lịch và cấu hình trùng nhau; hợp nhất theo tài khoản và giữ nguồn.",
+    "ko": "” 동일 시각 및 설정이 겹칩니다. 계정별로 병합하고 원본을 유지합니다."
+  },
+  "message.8b9fe991481a": {
+    "source": "一个账号可以加入多个分组",
+    "en": "An account can belong to multiple groups",
+    "zh-TW": "一個帳號可加入多個分組",
+    "ru": "Аккаунт может состоять в нескольких группах",
+    "vi": "Một tài khoản có thể thuộc nhiều nhóm",
+    "ko": "하나의 계정은 여러 그룹에 속할 수 있습니다"
+  },
+  "message.07334c4044c8": {
+    "source": "一个账号可以属于多个分组。成员变更只影响未来批次，已排队的批次保留成员快照。",
+    "en": "Accounts may belong to multiple groups. Future batches use new members; queued batches retain their snapshot.",
+    "zh-TW": "帳號可屬於多組；成員變更影響未來批次，排隊批次保留快照。",
+    "ru": "Аккаунт может быть в нескольких группах. Очередь сохраняет снимок, новые запуски получают новый состав.",
+    "vi": "Tài khoản có thể thuộc nhiều nhóm. Đợt mới dùng thành viên mới; đợt chờ giữ ảnh chụp cũ.",
+    "ko": "계정은 여러 그룹에 속할 수 있습니다. 새 배치는 변경된 구성원을 사용하며 대기 배치는 스냅샷을 유지합니다."
+  },
+  "message.5f36b7544e77": {
+    "source": "一个账号，多条计划",
+    "en": "One account, multiple schedules",
+    "zh-TW": "一個帳號，多條計畫",
+    "ru": "Один аккаунт, несколько расписаний",
+    "vi": "Một tài khoản, nhiều lịch chạy",
+    "ko": "하나의 계정, 여러 일정"
+  },
+  "message.b2aa7059c9b5": {
+    "source": "一天可设置多个时间点；保存时会排序并去重。",
+    "en": "Add multiple daily times; saving sorts and deduplicates them.",
+    "zh-TW": "每日可設定多個時點；儲存時排序並去重。",
+    "ru": "Несколько времён в день; при сохранении повторы удаляются.",
+    "vi": "Có thể thêm nhiều giờ mỗi ngày; lưu sẽ sắp xếp và bỏ trùng.",
+    "ko": "하루 여러 시간을 설정할 수 있으며 저장 시 정렬하고 중복을 제거합니다."
+  },
+  "message.da336fdc0dbd": {
+    "source": "上一步",
+    "en": "Back",
+    "zh-TW": "上一步",
+    "ru": "Назад",
+    "vi": "Quay lại",
+    "ko": "이전"
+  },
+  "message.4906a49adc5c": {
+    "source": "上海",
+    "en": "Shanghai",
+    "zh-TW": "上海",
+    "ru": "Шанхай",
+    "vi": "Thượng Hải",
+    "ko": "상하이"
+  },
+  "message.5b81b0ff301b": {
+    "source": "上海 · UTC+8",
+    "en": "Shanghai · UTC+8",
+    "zh-TW": "上海 · UTC+8",
+    "ru": "Шанхай · UTC+8",
+    "vi": "Thượng Hải · UTC+8",
+    "ko": "상하이 · UTC+8"
+  },
+  "message.4e6510eb1e8e": {
+    "source": "上海 北京",
+    "en": "Shanghai Beijing"
+  },
+  "message.103cb105aec9": {
+    "source": "上海时间",
+    "en": "Shanghai time",
+    "zh-TW": "上海時間",
+    "ru": "Время Шанхая",
+    "vi": "Giờ Thượng Hải",
+    "ko": "상하이 시간"
+  },
+  "message.701217439dee": {
+    "source": "上游确认重置",
+    "en": "Upstream-confirmed reset",
+    "zh-TW": "上游確認重置",
+    "ru": "Подтверждённый сброс",
+    "vi": "Đặt lại được xác nhận",
+    "ko": "공급자 확인 초기화"
+  },
+  "message.cd17fccb57d0": {
+    "source": "上游窗口重置",
+    "en": "Upstream window reset",
+    "zh-TW": "上游視窗重置",
+    "ru": "Сброс окна провайдера",
+    "vi": "Đặt lại cửa sổ phía nguồn",
+    "ko": "공급자 창 초기화"
+  },
+  "message.073a6e1b8010": {
+    "source": "下一次",
+    "en": "Next",
+    "zh-TW": "下一次",
+    "ru": "Следующий",
+    "vi": "Kế tiếp",
+    "ko": "다음"
+  },
+  "message.de205e81c51d": {
+    "source": "下一次触发",
+    "en": "Next trigger",
+    "zh-TW": "下次觸發",
+    "ru": "Следующий запуск",
+    "vi": "Lần kích hoạt kế tiếp",
+    "ko": "다음 트리거"
+  },
+  "message.8252f4b912f7": {
+    "source": "下一次触发{v11}",
+    "en": "Next trigger{v11}"
+  },
+  "message.acfc4e74a650": {
+    "source": "下一步",
+    "en": "Next",
+    "zh-TW": "下一步",
+    "ru": "Далее",
+    "vi": "Tiếp",
+    "ko": "다음"
+  },
+  "message.6f7517d250d8": {
+    "source": "下次",
+    "en": "Next"
+  },
+  "message.e207bddd4103": {
+    "source": "下次预热",
+    "en": "Next warmup"
+  },
+  "message.906d7e13ce29": {
+    "source": "下载当前分组、任务和偏好 JSON",
+    "en": "Download groups, tasks and preferences as JSON",
+    "zh-TW": "下載分組、任務與偏好的 JSON",
+    "ru": "Скачать группы, задачи и параметры в JSON",
+    "vi": "Tải nhóm, tác vụ và tùy chọn dạng JSON",
+    "ko": "그룹, 작업 및 환경 설정을 JSON으로 다운로드"
+  },
+  "message.a1e52711365f": {
+    "source": "不套用 5h 窗口",
+    "en": "No 5h window assumed",
+    "zh-TW": "不套用 5h 視窗",
+    "ru": "Без предположения окна 5 ч",
+    "vi": "Không áp dụng cửa sổ 5 giờ",
+    "ko": "5시간 창 미적용"
+  },
+  "message.f203d577d142": {
+    "source": "不限",
+    "en": "Any"
+  },
+  "message.408cf06896e6": {
+    "source": "与「",
+    "en": "With “",
+    "zh-TW": "與「",
+    "ru": "С «",
+    "vi": "Với “",
+    "ko": "다음과 함께 “"
+  },
+  "message.95b3ec132e6e": {
+    "source": "东京",
+    "en": "Tokyo"
+  },
+  "message.3d97f42e9e81": {
+    "source": "东京 · UTC+9",
+    "en": "Tokyo · UTC+9",
+    "zh-TW": "東京 · UTC+9",
+    "ru": "Токио · UTC+9",
+    "vi": "Tokyo · UTC+9",
+    "ko": "도쿄 · UTC+9"
+  },
+  "message.3a116815bc9d": {
+    "source": "个",
+    "en": "accounts",
+    "zh-TW": "個",
+    "ru": "акк.",
+    "vi": "tài khoản",
+    "ko": "개"
+  },
+  "message.d3389202d8de": {
+    "source": "个任务",
+    "en": "tasks",
+    "zh-TW": "個任務",
+    "ru": "задач",
+    "vi": "tác vụ",
+    "ko": "개 작업"
+  },
+  "message.d2ece36ef664": {
+    "source": "个任务已暂停",
+    "en": "tasks paused",
+    "zh-TW": "個任務已暫停",
+    "ru": "задач приостановлено",
+    "vi": "tác vụ đã tạm dừng",
+    "ko": "개 작업 일시 중지"
+  },
+  "message.c2144b0b3814": {
+    "source": "个可用",
+    "en": "available",
+    "zh-TW": "個可用",
+    "ru": "доступно",
+    "vi": "khả dụng",
+    "ko": "개 사용 가능"
+  },
+  "message.adc46b52038f": {
+    "source": "个批次",
+    "en": "batches",
+    "zh-TW": "個批次",
+    "ru": "запусков",
+    "vi": "đợt chạy",
+    "ko": "개 배치"
+  },
+  "message.24bab5d15a9b": {
+    "source": "个目标",
+    "en": "targets",
+    "zh-TW": "個目標",
+    "ru": "целей",
+    "vi": "tài khoản đích",
+    "ko": "개 대상"
+  },
+  "message.5088a9fe8dd5": {
+    "source": "个账号",
+    "en": "accounts",
+    "zh-TW": "個帳號",
+    "ru": "аккаунтов",
+    "vi": "tài khoản",
+    "ko": "개 계정"
+  },
+  "message.8990e4d31739": {
+    "source": "个账号已处理",
+    "en": "accounts processed",
+    "zh-TW": "個帳號已處理",
+    "ru": "аккаунтов обработано",
+    "vi": "tài khoản đã xử lý",
+    "ko": "개 계정 처리됨"
+  },
+  "message.df613d6407dd": {
+    "source": "个账号结果",
+    "en": "account results",
+    "zh-TW": "個帳號結果",
+    "ru": "результатов аккаунтов",
+    "vi": "kết quả tài khoản",
+    "ko": "개 계정 결과"
+  },
+  "message.d9be53e3d475": {
+    "source": "个跳过",
+    "en": "skipped",
+    "zh-TW": "個略過",
+    "ru": "пропущено",
+    "vi": "đã bỏ qua",
+    "ko": "개 건너뜀"
+  },
+  "message.0b65864c9243": {
+    "source": "个重复命中已合并",
+    "en": "duplicate hits merged",
+    "zh-TW": "個重複命中已合併",
+    "ru": "повторов объединено",
+    "vi": "lần trùng đã hợp nhất",
+    "ko": "개 중복 항목 병합됨"
+  },
+  "message.a567bdaa1136": {
+    "source": "中",
+    "en": "Medium"
+  },
+  "message.767519cb5d6f": {
+    "source": "为 CLIProxyAPI 提供轻量的账号定时预热、分组调度与额度窗口可视化。",
+    "en": "Lightweight account warmup, group scheduling and quota window visualization for CLIProxyAPI."
+  },
+  "message.ea1cde343540": {
+    "source": "为单个账号或分组，安排各自的运行节奏。",
+    "en": "Give each account or group its own schedule.",
+    "zh-TW": "為單一帳號或分組安排獨立排程。",
+    "ru": "Отдельное расписание для аккаунта или группы.",
+    "vi": "Đặt lịch riêng cho từng tài khoản hoặc nhóm.",
+    "ko": "계정 또는 그룹마다 독립 일정을 설정하세요."
+  },
+  "message.9a1f90de0dc1": {
+    "source": "为这些账号安排共同的计划",
+    "en": "Schedule these accounts together"
+  },
+  "message.44fb814b166e": {
+    "source": "主题模式",
+    "en": "Theme mode",
+    "zh-TW": "主題模式",
+    "ru": "Режим темы",
+    "vi": "Chế độ giao diện",
+    "ko": "테마 모드"
+  },
+  "message.f163780e776f": {
+    "source": "也可以点击星期，组合自定义运行日期。",
+    "en": "Select individual weekdays for a custom schedule.",
+    "zh-TW": "也可點選星期以自訂執行日期。",
+    "ru": "Выберите нужные дни недели.",
+    "vi": "Chọn từng ngày trong tuần để tùy chỉnh.",
+    "ko": "요일을 개별 선택하여 일정을 맞춤 설정할 수 있습니다."
+  },
+  "message.eaf5c51d83ca": {
+    "source": "交互原型",
+    "en": "Interactive prototype",
+    "zh-TW": "互動原型",
+    "ru": "Интерактивный прототип",
+    "vi": "Nguyên mẫu tương tác",
+    "ko": "인터랙티브 프로토타입"
+  },
+  "message.649c24199343": {
+    "source": "仅删除这一条执行记录。",
+    "en": "Delete only this run record."
+  },
+  "message.093755165eb6": {
+    "source": "仅展示保存的计划",
+    "en": "Saved plans only",
+    "zh-TW": "僅顯示已儲存計畫",
+    "ru": "Только сохранённые планы",
+    "vi": "Chỉ hiện lịch đã lưu",
+    "ko": "저장된 계획만 표시"
+  },
+  "message.db31eef0aa26": {
+    "source": "仅展示已知计划",
+    "en": "Only known schedules are shown"
+  },
+  "message.62df096956b8": {
+    "source": "仅展示计划触发点",
+    "en": "Planned triggers only",
+    "zh-TW": "僅顯示計畫觸發點",
+    "ru": "Только плановые запуски",
+    "vi": "Chỉ hiện điểm kích hoạt dự kiến",
+    "ko": "계획 트리거만 표시"
+  },
+  "message.59bd35874fd9": {
+    "source": "仅展示预热时间",
+    "en": "Only warmup times are shown"
+  },
+  "message.8191350b45e5": {
+    "source": "仅执行一次，不新增定时任务。",
+    "en": "Run once without creating a schedule."
+  },
+  "message.24015650cad5": {
+    "source": "仅执行一次，不新增定时任务。请求使用正常账号额度。",
+    "en": "Runs once without creating a schedule. Requests use the account’s normal quota."
+  },
+  "message.fa0e5cc85ebf": {
+    "source": "仅显示计划触发点",
+    "en": "Only scheduled triggers are shown"
+  },
+  "message.66e416e711b6": {
+    "source": "仅触发点",
+    "en": "Triggers only",
+    "zh-TW": "僅觸發點",
+    "ru": "Только запуски",
+    "vi": "Chỉ điểm kích hoạt",
+    "ko": "트리거만 표시"
+  },
+  "message.d5f5a7a01073": {
+    "source": "今天",
+    "en": "Today",
+    "zh-TW": "今天",
+    "ru": "Сегодня",
+    "vi": "Hôm nay",
+    "ko": "오늘"
+  },
+  "message.1467a3a50960": {
+    "source": "今日模拟成功",
+    "en": "Simulated successes today",
+    "zh-TW": "今日模擬成功",
+    "ru": "Успешные симуляции сегодня",
+    "vi": "Mô phỏng thành công hôm nay",
+    "ko": "오늘 모의 성공"
+  },
+  "message.9af190814253": {
+    "source": "今日请求成功{v6}",
+    "en": "Successful requests today{v6}"
+  },
+  "message.ff67edaf9258": {
+    "source": "从 CPA 模型能力自动获取；新任务默认选择最低可用强度。",
+    "en": "Loaded from CPA model capabilities. New tasks use the lowest supported reasoning level."
+  },
+  "message.13ca9be46fb8": {
+    "source": "从下次计划开始，不补发错过的请求。",
+    "en": "Starts at the next scheduled time. Missed requests are not replayed."
+  },
+  "message.535680c6f3c1": {
+    "source": "从目标开始，编排一条独立的预热计划。",
+    "en": "Choose targets, then build an independent schedule.",
+    "zh-TW": "先選目標，再編排獨立預熱計畫。",
+    "ru": "Выберите цели и задайте независимое расписание.",
+    "vi": "Chọn tài khoản đích rồi tạo lịch độc lập.",
+    "ko": "대상을 선택한 후 독립 워밍업 일정을 만드세요."
+  },
+  "message.a894019cd0f7": {
+    "source": "以下 {v0} 条任务会移除此组引用；失去全部目标的任务会自动暂停。",
+    "en": "The group reference will be removed from {v0} tasks. Tasks with no remaining targets will be paused.",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "The group reference will be removed from {v0} task. Tasks with no remaining targets will be paused."
+      }
+    }
+  },
+  "message.bb17051c7a95": {
+    "source": "任务 / 批次",
+    "en": "Task / batch",
+    "zh-TW": "任務／批次",
+    "ru": "Задача / запуск",
+    "vi": "Tác vụ / đợt",
+    "ko": "작업 / 배치"
+  },
+  "message.74fe641fd20a": {
+    "source": "任务可设置独立时区；这里的时区用于新任务及页面展示。",
+    "en": "Tasks have their own time zones. This default applies to new tasks and displays.",
+    "zh-TW": "任務可有獨立時區；此預設用於新任務與頁面。",
+    "ru": "У задач свои часовые пояса. Здесь задаётся пояс новых задач и интерфейса.",
+    "vi": "Mỗi tác vụ có múi giờ riêng; mặc định này dùng cho tác vụ mới và hiển thị.",
+    "ko": "작업마다 시간대를 설정할 수 있으며 이 기본값은 새 작업과 화면 표시에 사용됩니다."
+  },
+  "message.2479560deb33": {
+    "source": "任务名称",
+    "en": "Task name",
+    "zh-TW": "任務名稱",
+    "ru": "Название задачи",
+    "vi": "Tên tác vụ",
+    "ko": "작업 이름"
+  },
+  "message.0773f53fe626": {
+    "source": "任务已保存",
+    "en": "Task saved"
+  },
+  "message.e09c6c8220b2": {
+    "source": "任务已创建",
+    "en": "Task created"
+  },
+  "message.18693cb1dc8a": {
+    "source": "任务已删除",
+    "en": "Task deleted"
+  },
+  "message.02a5d8409b02": {
+    "source": "任务已更新，未来批次采用新配置",
+    "en": "Task updated; future batches use the new configuration",
+    "zh-TW": "任務已更新，未來批次採用新設定",
+    "ru": "Задача обновлена для будущих запусков",
+    "vi": "Đã cập nhật, đợt sau dùng cấu hình mới",
+    "ko": "작업이 업데이트되어 이후 배치에 새 설정이 적용됨"
+  },
+  "message.7e8bb525468c": {
+    "source": "任务时区",
+    "en": "Task time zone",
+    "zh-TW": "任務時區",
+    "ru": "Часовой пояс задачи",
+    "vi": "Múi giờ tác vụ",
+    "ko": "작업 시간대"
+  },
+  "message.1f39096f50fc": {
+    "source": "任务来源",
+    "en": "Source tasks",
+    "zh-TW": "任務來源",
+    "ru": "Исходные задачи",
+    "vi": "Tác vụ nguồn",
+    "ko": "원본 작업"
+  },
+  "message.14d614e81c9d": {
+    "source": "任务类型",
+    "en": "Task filter",
+    "zh-TW": "任務類型",
+    "ru": "Фильтр задач",
+    "vi": "Bộ lọc tác vụ",
+    "ko": "작업 필터"
+  },
+  "message.a6c0db788b58": {
+    "source": "伦敦",
+    "en": "London"
+  },
+  "message.aa9e366f68d3": {
+    "source": "低",
+    "en": "Low"
+  },
+  "message.dc9df9d8f1cb": {
+    "source": "低 · 适合短请求",
+    "en": "Low · short requests",
+    "zh-TW": "低，適合短請求",
+    "ru": "Низкая · короткие запросы",
+    "vi": "Thấp · yêu cầu ngắn",
+    "ko": "낮음 · 짧은 요청"
+  },
+  "message.f3494283cf9c": {
+    "source": "使用任务「{v0}」当前保存的配置，创建一次独立的手动运行，不改变后续定时。",
+    "en": "Create a manual run using the saved settings of “{v0}”. Future schedules are unchanged."
+  },
+  "message.b36c6db1067d": {
+    "source": "例如：工作主力账号",
+    "en": "e.g. Primary work accounts",
+    "zh-TW": "例如：工作主力帳號",
+    "ru": "Например: рабочие аккаунты",
+    "vi": "Ví dụ: tài khoản công việc chính",
+    "ko": "예: 주요 업무 계정"
+  },
+  "message.14ea13b6b795": {
+    "source": "例如：工作日主账号预热",
+    "en": "e.g. Weekday primary account",
+    "zh-TW": "例如：平日主帳號預熱",
+    "ru": "Например: основной аккаунт по будням",
+    "vi": "Ví dụ: tài khoản chính ngày thường",
+    "ko": "예: 평일 기본 계정 워밍업"
+  },
+  "message.ff509c9ba052": {
+    "source": "保存中…",
+    "en": "Saving…"
+  },
+  "message.56257e8eb81a": {
+    "source": "保存位置：当前浏览器",
+    "en": "Storage: this browser",
+    "zh-TW": "儲存位置：目前瀏覽器",
+    "ru": "Хранение: этот браузер",
+    "vi": "Lưu tại: trình duyệt này",
+    "ko": "저장 위치: 현재 브라우저"
+  },
+  "message.f96c9903175e": {
+    "source": "保存偏好",
+    "en": "Save preferences",
+    "zh-TW": "儲存偏好",
+    "ru": "Сохранить параметры",
+    "vi": "Lưu tùy chọn",
+    "ko": "환경 설정 저장"
+  },
+  "message.b1acb72364b3": {
+    "source": "保存分组",
+    "en": "Save group",
+    "zh-TW": "儲存分組",
+    "ru": "Сохранить группу",
+    "vi": "Lưu nhóm",
+    "ko": "그룹 저장"
+  },
+  "message.faf6d8584a4b": {
+    "source": "保存后从下一个未来时间点",
+    "en": "Starts at the next scheduled time after saving"
+  },
+  "message.70f31dbdfc6f": {
+    "source": "保存后从下一个未来时间点开始。服务中断时，默认不补发错过的请求。",
+    "en": "Starts at the next future trigger. Missed downtime requests are not replayed by default.",
+    "zh-TW": "儲存後從未來觸發點開始；預設不補發停機期間的請求。",
+    "ru": "Старт со следующего времени. Пропуски при простое не воспроизводятся.",
+    "vi": "Bắt đầu ở lần kích hoạt tương lai kế tiếp; mặc định không chạy bù lúc gián đoạn.",
+    "ko": "다음 예정 시점부터 시작하며 중단 중 놓친 요청은 기본적으로 재실행하지 않습니다."
+  },
+  "message.a8615dbb932c": {
+    "source": "保存后启用",
+    "en": "Enable after saving",
+    "zh-TW": "儲存後啟用",
+    "ru": "Включить после сохранения",
+    "vi": "Bật sau khi lưu",
+    "ko": "저장 후 활성화"
+  },
+  "message.7d1f6d313a1d": {
+    "source": "保存后启用任务",
+    "en": "Enable task after saving",
+    "zh-TW": "儲存後啟用任務",
+    "ru": "Включить после сохранения",
+    "vi": "Bật tác vụ sau khi lưu",
+    "ko": "저장 후 작업 활성화"
+  },
+  "message.f42a1238b44a": {
+    "source": "保存失败，请重试",
+    "en": "Save failed. Please retry."
+  },
+  "message.6ade7baf8737": {
+    "source": "保存失败：",
+    "en": "Save failed:"
+  },
+  "message.ecf0ea01192d": {
+    "source": "保存更改",
+    "en": "Save changes",
+    "zh-TW": "儲存變更",
+    "ru": "Сохранить изменения",
+    "vi": "Lưu thay đổi",
+    "ko": "변경 사항 저장"
+  },
+  "message.c8550237ba70": {
+    "source": "保存设置",
+    "en": "Save settings"
+  },
+  "message.d0d87a818bdc": {
+    "source": "保留记录",
+    "en": "History retention"
+  },
+  "message.7ef719fc5c1a": {
+    "source": "修改配置，未来批次自动采用新安排。",
+    "en": "Changes apply to future batches.",
+    "zh-TW": "變更設定後，未來批次採用新安排。",
+    "ru": "Изменения применяются к будущим запускам.",
+    "vi": "Thay đổi áp dụng cho các đợt chạy sau.",
+    "ko": "변경 사항은 이후 배치에 적용됩니다."
+  },
+  "message.c4393a590c94": {
+    "source": "偏好来源",
+    "en": "Preference source",
+    "zh-TW": "偏好來源",
+    "ru": "Источник параметров",
+    "vi": "Nguồn tùy chọn",
+    "ko": "환경 설정 출처"
+  },
+  "message.de77bd7b8ff0": {
+    "source": "允许迟到",
+    "en": "Late tolerance"
+  },
+  "message.ef05dd3830f3": {
+    "source": "允许迟到时间",
+    "en": "Allowed delay",
+    "zh-TW": "允許延遲時間",
+    "ru": "Допустимая задержка",
+    "vi": "Độ trễ cho phép",
+    "ko": "허용 지연 시간"
+  },
+  "message.f93c5bb03e91": {
+    "source": "允许预热",
+    "en": "Warmup allowed",
+    "zh-TW": "允許預熱",
+    "ru": "Прогрев разрешён",
+    "vi": "Cho phép làm nóng",
+    "ko": "워밍업 허용"
+  },
+  "message.13e704a2a1a9": {
+    "source": "全局已暂停",
+    "en": "All schedules paused"
+  },
+  "message.b8cc2d56c0ad": {
+    "source": "全局调度已暂停，下方为保存的计划。",
+    "en": "All schedules paused; saved plans are shown below.",
+    "zh-TW": "全域排程已暫停，下方為已儲存計畫。",
+    "ru": "Расписания приостановлены, ниже сохранённые планы.",
+    "vi": "Lịch đã dừng; bên dưới là lịch đã lưu.",
+    "ko": "전체 일정이 일시 중지되어 아래에 저장된 계획을 표시합니다."
+  },
+  "message.3a5040b68abf": {
+    "source": "全选",
+    "en": "Select all",
+    "zh-TW": "全選",
+    "ru": "Выбрать всё",
+    "vi": "Chọn tất cả",
+    "ko": "전체 선택"
+  },
+  "message.683a0ee8135e": {
+    "source": "全选 / 取消",
+    "en": "Select / deselect all",
+    "zh-TW": "全選／取消",
+    "ru": "Выбрать / снять всё",
+    "vi": "Chọn / bỏ chọn tất cả",
+    "ko": "전체 선택 / 해제"
+  },
+  "message.6ff947356394": {
+    "source": "全部任务",
+    "en": "All tasks",
+    "zh-TW": "全部任務",
+    "ru": "Все задачи",
+    "vi": "Tất cả tác vụ",
+    "ko": "전체 작업"
+  },
+  "message.de68c9abcc8e": {
+    "source": "全部成功",
+    "en": "All succeeded",
+    "zh-TW": "全部成功",
+    "ru": "Всё успешно",
+    "vi": "Tất cả thành công",
+    "ko": "모두 성공"
+  },
+  "message.a701bdf38e71": {
+    "source": "全部提供商",
+    "en": "All providers",
+    "zh-TW": "全部供應商",
+    "ru": "Все провайдеры",
+    "vi": "Tất cả nhà cung cấp",
+    "ko": "전체 공급자"
+  },
+  "message.f3b05f7ca7a2": {
+    "source": "全部暂停",
+    "en": "Pause all",
+    "zh-TW": "全部暫停",
+    "ru": "Приостановить всё",
+    "vi": "Tạm dừng tất cả",
+    "ko": "모두 일시 중지"
+  },
+  "message.0a379c1e7398": {
+    "source": "全部状态",
+    "en": "All statuses"
+  },
+  "message.90a45d57e1fb": {
+    "source": "全部结果",
+    "en": "All results",
+    "zh-TW": "全部結果",
+    "ru": "Все результаты",
+    "vi": "Tất cả kết quả",
+    "ko": "전체 결과"
+  },
+  "message.7d995e5c6747": {
+    "source": "全部调度已暂停，已保存的任务配置仍然保留。恢复后从下一个时间点继续。",
+    "en": "All schedules paused; configuration is retained. Resumes at the next future trigger.",
+    "zh-TW": "全部排程已暫停並保留設定，恢復後從未來時點繼續。",
+    "ru": "Расписания остановлены, настройки сохранены; продолжение со следующего времени.",
+    "vi": "Lịch đã dừng, cấu hình giữ nguyên; tiếp tục từ lần kích hoạt tương lai.",
+    "ko": "모든 일정이 일시 중지되었으며 설정은 유지됩니다. 다음 예정 시점부터 재개됩니다."
+  },
+  "message.1ea682bc2813": {
+    "source": "全部调度已暂停，请先恢复调度。",
+    "en": "All schedules paused; resume first.",
+    "zh-TW": "全部排程已暫停，請先恢復。",
+    "ru": "Все расписания приостановлены; сначала возобновите.",
+    "vi": "Mọi lịch đã dừng; hãy tiếp tục trước.",
+    "ko": "모든 일정이 일시 중지되었습니다. 먼저 재개하세요."
+  },
+  "message.26cf194c6180": {
+    "source": "全部账号",
+    "en": "All accounts",
+    "zh-TW": "全部帳號",
+    "ru": "Все аккаунты",
+    "vi": "Tất cả tài khoản",
+    "ko": "전체 계정"
+  },
+  "message.11153705f402": {
+    "source": "全部跳过",
+    "en": "All skipped",
+    "zh-TW": "全部略過",
+    "ru": "Всё пропущено",
+    "vi": "Đã bỏ qua tất cả",
+    "ko": "모두 건너뜀"
+  },
+  "message.0118ac7e1649": {
+    "source": "全部预热已暂停",
+    "en": "All warmups paused",
+    "zh-TW": "全部預熱已暫停",
+    "ru": "Прогрев приостановлен",
+    "vi": "Đã dừng mọi lần làm nóng",
+    "ko": "모든 워밍업 일시 중지"
+  },
+  "message.76e547a8fa54": {
+    "source": "共",
+    "en": "Total",
+    "zh-TW": "共",
+    "ru": "Всего",
+    "vi": "Tổng",
+    "ko": "총"
+  },
+  "message.9d711f21c52c": {
+    "source": "共 {v6} 个任务",
+    "en": "Total {v6} tasks",
+    "plural": {
+      "parameter": "v6",
+      "en": {
+        "one": "Total {v6} task"
+      }
+    }
+  },
+  "message.fbf2a88b1305": {
+    "source": "共 {v6} 个批次 · {v7} 个账号结果",
+    "en": "Total {v6} batches · {v7} account results"
+  },
+  "message.0e8804c03880": {
+    "source": "关于这个原型",
+    "en": "About this prototype",
+    "zh-TW": "關於此原型",
+    "ru": "Об этом прототипе",
+    "vi": "Về nguyên mẫu này",
+    "ko": "이 프로토타입 정보"
+  },
+  "message.8809ef0973b2": {
+    "source": "关联任务",
+    "en": "Linked tasks",
+    "zh-TW": "關聯任務",
+    "ru": "Связанные задачи",
+    "vi": "Tác vụ liên kết",
+    "ko": "연결된 작업"
+  },
+  "message.3fd47edce45b": {
+    "source": "关闭",
+    "en": "Close",
+    "zh-TW": "關閉",
+    "ru": "Закрыть",
+    "vi": "Đóng",
+    "ko": "닫기"
+  },
+  "message.f3ecbd73fcf3": {
+    "source": "关闭任务面板",
+    "en": "Close task editor",
+    "zh-TW": "關閉任務面板",
+    "ru": "Закрыть редактор задачи",
+    "vi": "Đóng bảng tác vụ",
+    "ko": "작업 패널 닫기"
+  },
+  "message.50335ca9176a": {
+    "source": "关闭分组面板",
+    "en": "Close group editor",
+    "zh-TW": "關閉分組面板",
+    "ru": "Закрыть редактор группы",
+    "vi": "Đóng bảng nhóm",
+    "ko": "그룹 패널 닫기"
+  },
+  "message.e80ddf46fb83": {
+    "source": "关闭对话框",
+    "en": "Close dialog",
+    "zh-TW": "關閉對話框",
+    "ru": "Закрыть диалог",
+    "vi": "Đóng hộp thoại",
+    "ko": "대화 상자 닫기"
+  },
+  "message.3e062e6a6012": {
+    "source": "关闭执行详情",
+    "en": "Close run details",
+    "zh-TW": "關閉執行詳情",
+    "ru": "Закрыть запуск",
+    "vi": "Đóng chi tiết chạy",
+    "ko": "실행 세부 정보 닫기"
+  },
+  "message.b9716a3e99fd": {
+    "source": "关闭推理 · 0 token",
+    "en": "Reasoning off · 0 tokens"
+  },
+  "message.7e24afccab28": {
+    "source": "关闭推理 · 最省 token",
+    "en": "Reasoning off · lowest token usage"
+  },
+  "message.d301bc125833": {
+    "source": "关闭提示",
+    "en": "Dismiss notification"
+  },
+  "message.d5b9b018a77b": {
+    "source": "关闭立即预热",
+    "en": "Close instant warmup"
+  },
+  "message.333d5b36247f": {
+    "source": "关闭账号详情",
+    "en": "Close account details",
+    "zh-TW": "關閉帳號詳情",
+    "ru": "Закрыть аккаунт",
+    "vi": "Đóng chi tiết tài khoản",
+    "ko": "계정 세부 정보 닫기"
+  },
+  "message.399ee6934772": {
+    "source": "分组",
+    "en": "Group"
+  },
+  "message.35f05b3d018a": {
+    "source": "分组 / 单账号",
+    "en": "Group / account",
+    "zh-TW": "分組／單帳號",
+    "ru": "Группа / аккаунт",
+    "vi": "Nhóm / tài khoản",
+    "ko": "그룹 / 단일 계정"
+  },
+  "message.b83ce05c9bd7": {
+    "source": "分组与账号取并集。同一个账号即使多次选中，也只计算一次。",
+    "en": "Groups and explicit accounts form a union. Repeated accounts count once.",
+    "zh-TW": "分組與帳號取聯集，重複選取的帳號僅計一次。",
+    "ru": "Группы и аккаунты объединяются без повторов.",
+    "vi": "Hợp nhất nhóm và tài khoản chỉ định, mỗi tài khoản tính một lần.",
+    "ko": "그룹과 지정 계정을 합치며 중복 계정은 한 번만 계산합니다."
+  },
+  "message.d7e266bdc806": {
+    "source": "分组名称",
+    "en": "Group name",
+    "zh-TW": "分組名稱",
+    "ru": "Название группы",
+    "vi": "Tên nhóm",
+    "ko": "그룹 이름"
+  },
+  "message.89b93cba8364": {
+    "source": "分组已保存",
+    "en": "Group saved"
+  },
+  "message.8ffe555168b5": {
+    "source": "分组已创建",
+    "en": "Group created",
+    "zh-TW": "分組已建立",
+    "ru": "Группа создана",
+    "vi": "Đã tạo nhóm",
+    "ko": "그룹이 생성됨"
+  },
+  "message.23dd1ebfe904": {
+    "source": "分组已删除",
+    "en": "Group deleted"
+  },
+  "message.6a31181badcd": {
+    "source": "分组已删除，任务引用已处理",
+    "en": "Group deleted and task references updated"
+  },
+  "message.3a255dd857ab": {
+    "source": "分组已更新，未来任务采用新成员",
+    "en": "Group updated for future batches",
+    "zh-TW": "分組已更新，未來批次採用新成員",
+    "ru": "Состав группы обновлён для будущих запусков",
+    "vi": "Đã cập nhật nhóm cho các đợt sau",
+    "ko": "그룹이 업데이트되어 이후 배치에 새 구성원이 적용됨"
+  },
+  "message.d1d5470e0829": {
+    "source": "分组缺失",
+    "en": "Group missing",
+    "zh-TW": "分組遺失",
+    "ru": "Группа отсутствует",
+    "vi": "Thiếu nhóm",
+    "ko": "그룹 없음"
+  },
+  "message.88f6f0c57e42": {
+    "source": "分组调度",
+    "en": "Group scheduling"
+  },
+  "message.1ca6b0e0253f": {
+    "source": "分组预热与五小时窗口，窄屏可横向滚动",
+    "en": "Group warmups and 5h windows; scroll horizontally",
+    "zh-TW": "分組預熱與五小時視窗，可橫向捲動",
+    "ru": "Группы и окна 5 ч, горизонтальная прокрутка",
+    "vi": "Nhóm và cửa sổ 5 giờ, có thể cuộn ngang",
+    "ko": "그룹 워밍업 및 5시간 창, 가로 스크롤 가능"
+  },
+  "message.2469cfa9b48e": {
+    "source": "分组颜色",
+    "en": "Group color",
+    "zh-TW": "分組顏色",
+    "ru": "Цвет группы",
+    "vi": "Màu nhóm",
+    "ko": "그룹 색상"
+  },
+  "message.bd957bc497aa": {
+    "source": "分钟",
+    "en": "minutes",
+    "zh-TW": "分鐘",
+    "ru": "мин",
+    "vi": "phút",
+    "ko": "분"
+  },
+  "message.6c078d9cf013": {
+    "source": "分钟前",
+    "en": "minutes ago",
+    "zh-TW": "分鐘前",
+    "ru": "мин назад",
+    "vi": "phút trước",
+    "ko": "분 전"
+  },
+  "message.de6785d99e02": {
+    "source": "刚刚",
+    "en": "Just now",
+    "zh-TW": "剛剛",
+    "ru": "Только что",
+    "vi": "Vừa xong",
+    "ko": "방금"
+  },
+  "message.7ec55835d17a": {
+    "source": "创建一个分组，把常用账号放在一起。",
+    "en": "Create a group for frequently used accounts.",
+    "zh-TW": "建立分組以整理常用帳號。",
+    "ru": "Создайте группу часто используемых аккаунтов.",
+    "vi": "Tạo nhóm cho các tài khoản thường dùng.",
+    "ko": "자주 사용하는 계정을 위한 그룹을 만드세요."
+  },
+  "message.d2ff17f44817": {
+    "source": "创建任务",
+    "en": "Create task",
+    "zh-TW": "建立任務",
+    "ru": "Создать задачу",
+    "vi": "Tạo tác vụ",
+    "ko": "작업 만들기"
+  },
+  "message.46c66ba27161": {
+    "source": "创建分组",
+    "en": "Create group",
+    "zh-TW": "建立分組",
+    "ru": "Создать группу",
+    "vi": "Tạo nhóm",
+    "ko": "그룹 만들기"
+  },
+  "message.fc02ca3ed798": {
+    "source": "创建新任务时自动填入",
+    "en": "Prefilled for new tasks",
+    "zh-TW": "新增任務時自動填入",
+    "ru": "По умолчанию для новых задач",
+    "vi": "Tự điền cho tác vụ mới",
+    "ko": "새 작업에 자동 입력"
+  },
+  "message.11f543f34539": {
+    "source": "创建账号分组",
+    "en": "Create account group",
+    "zh-TW": "建立帳號分組",
+    "ru": "Создать группу аккаунтов",
+    "vi": "Tạo nhóm tài khoản",
+    "ko": "계정 그룹 만들기"
+  },
+  "message.403486248542": {
+    "source": "删除 {v1}",
+    "en": "Delete {v1}"
+  },
+  "message.29dfebea0fda": {
+    "source": "删除任务",
+    "en": "Delete task",
+    "zh-TW": "刪除任務",
+    "ru": "Удалить задачу",
+    "vi": "Xóa tác vụ",
+    "ko": "작업 삭제"
+  },
+  "message.7605c1d82eed": {
+    "source": "删除分组",
+    "en": "Delete group",
+    "zh-TW": "刪除分組",
+    "ru": "Удалить группу",
+    "vi": "Xóa nhóm",
+    "ko": "그룹 삭제"
+  },
+  "message.0580fcee37e0": {
+    "source": "删除失败：",
+    "en": "Delete failed:"
+  },
+  "message.c0894c8e9dad": {
+    "source": "删除并处理引用",
+    "en": "Delete and update references"
+  },
+  "message.cac3319029b2": {
+    "source": "删除执行记录",
+    "en": "Delete run record"
+  },
+  "message.b0d53c3b5c4c": {
+    "source": "删除时间",
+    "en": "Remove time",
+    "zh-TW": "刪除時間",
+    "ru": "Удалить время",
+    "vi": "Xóa thời gian",
+    "ko": "시간 삭제"
+  },
+  "message.e64e57f94a10": {
+    "source": "删除时间 {v10}",
+    "en": "Remove time {v10}"
+  },
+  "message.c8b146c2b145": {
+    "source": "删除时间 {v4}",
+    "en": "Remove time {v4}"
+  },
+  "message.f2cf9101bb2d": {
+    "source": "删除记录",
+    "en": "Delete record"
+  },
+  "message.c325cafc4450": {
+    "source": "删除这个分组？",
+    "en": "Delete this group?"
+  },
+  "message.04023ebf6828": {
+    "source": "删除这条任务？",
+    "en": "Delete this task?"
+  },
+  "message.a76952e53abf": {
+    "source": "刷新模型",
+    "en": "Refresh models"
+  },
+  "message.e1e3664a59e6": {
+    "source": "前日",
+    "en": "previous day",
+    "zh-TW": "前日",
+    "ru": "предыдущий день",
+    "vi": "ngày trước",
+    "ko": "이전 날짜"
+  },
+  "message.f26ca1fe2923": {
+    "source": "前日延续",
+    "en": "Carried from previous day",
+    "zh-TW": "前日延續",
+    "ru": "С предыдущего дня",
+    "vi": "Tiếp từ ngày trước",
+    "ko": "이전 날짜에서 이어짐"
+  },
+  "message.1dc12ee02dd2": {
+    "source": "协调世界时",
+    "en": "Coordinated Universal Time"
+  },
+  "message.efc338305b3a": {
+    "source": "协调世界时 · UTC",
+    "en": "Coordinated Universal Time · UTC",
+    "zh-TW": "世界協調時間 · UTC",
+    "ru": "Всемирное время · UTC",
+    "vi": "Giờ quốc tế · UTC",
+    "ko": "협정 세계시 · UTC"
+  },
+  "message.f18ebde5eb65": {
+    "source": "单账号",
+    "en": "Single account",
+    "zh-TW": "單帳號",
+    "ru": "Один аккаунт",
+    "vi": "Tài khoản đơn",
+    "ko": "단일 계정"
+  },
+  "message.71c9294c59c0": {
+    "source": "单账号与分组的定时预热",
+    "en": "Scheduled warmups for accounts and groups",
+    "zh-TW": "單帳號與分組的定時預熱",
+    "ru": "Прогрев аккаунтов и групп по расписанию",
+    "vi": "Làm nóng tài khoản và nhóm theo lịch",
+    "ko": "계정 및 그룹 예약 워밍업"
+  },
+  "message.0dafa69d334e": {
+    "source": "原型使用示例模型。正式插件将读取所选账号的可用模型。",
+    "en": "Sample models in this prototype; the plugin will use account-supported models.",
+    "zh-TW": "原型使用範例模型；正式外掛讀取帳號可用模型。",
+    "ru": "Здесь модели-примеры; плагин использует доступные аккаунту модели.",
+    "vi": "Nguyên mẫu dùng mô hình mẫu; tiện ích thật sẽ đọc mô hình tài khoản hỗ trợ.",
+    "ko": "프로토타입은 예시 모델을 사용하며 실제 플러그인은 계정에서 지원되는 모델을 읽습니다."
+  },
+  "message.07bbe2b6e2d1": {
+    "source": "去重后目标",
+    "en": "Unique targets",
+    "zh-TW": "去重後目標",
+    "ru": "Уникальные цели",
+    "vi": "Tài khoản đích duy nhất",
+    "ko": "중복 제거된 대상"
+  },
+  "message.937853bf81d4": {
+    "source": "发送一条短文本请求",
+    "en": "Sends a short text request"
+  },
+  "message.1dbd12ca2afe": {
+    "source": "发送一条短文本请求，要求模型回复 OK。请求使用正常账号额度，窗口是否开启由上游决定。",
+    "en": "Sends a short request for OK using normal quota. The upstream service determines the window.",
+    "zh-TW": "傳送要求回覆 OK 的短請求，使用正常額度；視窗由上游決定。",
+    "ru": "Короткий запрос с ответом OK расходует обычную квоту. Окно определяет провайдер.",
+    "vi": "Gửi yêu cầu ngắn trả lời OK, dùng hạn mức thường; cửa sổ do nguồn quyết định.",
+    "ko": "OK 응답을 요청하는 짧은 요청은 일반 한도를 사용하며 창은 공급자가 결정합니다."
+  },
+  "message.257dcf43095c": {
+    "source": "发送真实请求",
+    "en": "Send request"
+  },
+  "message.5041e37507d6": {
+    "source": "发送简短 OK 请求，使用正常账号额度。",
+    "en": "Sends a short OK request using normal account quota."
+  },
+  "message.2cd0f3be8738": {
+    "source": "取消",
+    "en": "Cancel",
+    "zh-TW": "取消",
+    "ru": "Отмена",
+    "vi": "Hủy",
+    "ko": "취소"
+  },
+  "message.f94c298814e5": {
+    "source": "取消待执行项",
+    "en": "Cancel queued items",
+    "zh-TW": "取消待執行項目",
+    "ru": "Отменить очередь",
+    "vi": "Hủy mục đang chờ",
+    "ko": "대기 항목 취소"
+  },
+  "message.74966e20df2e": {
+    "source": "取消选择",
+    "en": "Clear selection",
+    "zh-TW": "取消選取",
+    "ru": "Снять выбор",
+    "vi": "Bỏ chọn",
+    "ko": "선택 해제"
+  },
+  "message.2416892ca4a3": {
+    "source": "可以回到任务页面，点击播放按钮模拟执行。",
+    "en": "Return to tasks and use the play button to simulate.",
+    "zh-TW": "回到任務頁點播放按鈕進行模擬。",
+    "ru": "Вернитесь к задачам для симуляции.",
+    "vi": "Về trang tác vụ và nhấn nút chạy để mô phỏng.",
+    "ko": "작업 페이지에서 재생 버튼을 눌러 시뮬레이션하세요."
+  },
+  "message.40f146c8e106": {
+    "source": "可以回到任务页面，点击播放按钮立即执行。",
+    "en": "Return to Tasks and click the play button to run a task."
+  },
+  "message.3c2028de4300": {
+    "source": "可以新建和编辑任务、创建分组、查看账号时间线、立即执行并检查逐账号结果。",
+    "en": "Create and edit tasks, manage groups, view account timelines, run tasks and inspect per-account results."
+  },
+  "message.7ab7815d503d": {
+    "source": "可执行",
+    "en": "Ready"
+  },
+  "message.4d99c976beb8": {
+    "source": "可用",
+    "en": "Available",
+    "zh-TW": "可用",
+    "ru": "Доступно",
+    "vi": "Khả dụng",
+    "ko": "사용 가능"
+  },
+  "message.b4415237de73": {
+    "source": "台北",
+    "en": "Taipei"
+  },
+  "message.3187f95023eb": {
+    "source": "合并来源：",
+    "en": "Merged sources:",
+    "zh-TW": "合併來源：",
+    "ru": "Объединённые источники:",
+    "vi": "Nguồn hợp nhất:",
+    "ko": "병합된 원본:"
+  },
+  "message.69eaac2184de": {
+    "source": "同一时刻、相同账号和请求配置会合并发送。每次合并都会保留任务来源。",
+    "en": "Identical account, time and request configurations merge, retaining all sources.",
+    "zh-TW": "相同時點、帳號與請求設定會合併，並保留來源。",
+    "ru": "Одинаковые аккаунт, время и запрос объединяются с сохранением источников.",
+    "vi": "Cùng tài khoản, thời điểm và cấu hình sẽ được hợp nhất, giữ mọi nguồn.",
+    "ko": "계정, 시각, 요청 설정이 같으면 병합하고 모든 원본 작업을 유지합니다."
+  },
+  "message.f4f0ead1116b": {
+    "source": "启用",
+    "en": "Enable",
+    "zh-TW": "啟用",
+    "ru": "Включить",
+    "vi": "Bật",
+    "ko": "활성화"
+  },
+  "message.7da296f0bd65": {
+    "source": "启用中的任务",
+    "en": "Enabled tasks",
+    "zh-TW": "已啟用任務",
+    "ru": "Включённые задачи",
+    "vi": "Tác vụ đã bật",
+    "ko": "활성 작업"
+  },
+  "message.e0ffef1fe751": {
+    "source": "启用中的任务{v0}",
+    "en": "Enabled tasks{v0}"
+  },
+  "message.c430f4c12eaa": {
+    "source": "周一",
+    "en": "Mon",
+    "zh-TW": "週一",
+    "ru": "Пн",
+    "vi": "Thứ Hai",
+    "ko": "월"
+  },
+  "message.2961168962be": {
+    "source": "周三",
+    "en": "Wed",
+    "zh-TW": "週三",
+    "ru": "Ср",
+    "vi": "Thứ Tư",
+    "ko": "수"
+  },
+  "message.d1378a68e620": {
+    "source": "周二",
+    "en": "Tue",
+    "zh-TW": "週二",
+    "ru": "Вт",
+    "vi": "Thứ Ba",
+    "ko": "화"
+  },
+  "message.572388f3b096": {
+    "source": "周五",
+    "en": "Fri",
+    "zh-TW": "週五",
+    "ru": "Пт",
+    "vi": "Thứ Sáu",
+    "ko": "금"
+  },
+  "message.f9aa11dbb15c": {
+    "source": "周六",
+    "en": "Sat",
+    "zh-TW": "週六",
+    "ru": "Сб",
+    "vi": "Thứ Bảy",
+    "ko": "토"
+  },
+  "message.e9d3b01a5a00": {
+    "source": "周四",
+    "en": "Thu",
+    "zh-TW": "週四",
+    "ru": "Чт",
+    "vi": "Thứ Năm",
+    "ko": "목"
+  },
+  "message.ee239f394329": {
+    "source": "周日",
+    "en": "Sun",
+    "zh-TW": "週日",
+    "ru": "Вс",
+    "vi": "Chủ nhật",
+    "ko": "일"
+  },
+  "message.709b90ebf308": {
+    "source": "周末",
+    "en": "Weekends",
+    "zh-TW": "週末",
+    "ru": "Выходные",
+    "vi": "Cuối tuần",
+    "ko": "주말"
+  },
+  "message.2b9ae48d194f": {
+    "source": "周额度已用尽，等待周重置",
+    "en": "Weekly quota exhausted; waiting for reset",
+    "zh-TW": "週額度已用盡，等待重置",
+    "ru": "Недельная квота исчерпана; ожидается сброс",
+    "vi": "Hết hạn mức tuần; chờ đặt lại",
+    "ko": "주간 한도 소진, 초기화 대기"
+  },
+  "message.3af2ca163c37": {
+    "source": "在 CPA 中修改语言或主题即可",
+    "en": "Change language or theme in CPA",
+    "zh-TW": "在 CPA 中變更語言或主題即可",
+    "ru": "Меняйте язык и тему в CPA",
+    "vi": "Đổi ngôn ngữ hoặc giao diện trong CPA",
+    "ko": "CPA에서 언어 또는 테마 변경"
+  },
+  "message.b8beb923ed03": {
+    "source": "在下面勾选需要从此任务中排除的账号。",
+    "en": "Select accounts to exclude from this task.",
+    "zh-TW": "勾選要從此任務排除的帳號。",
+    "ru": "Отметьте аккаунты для исключения из задачи.",
+    "vi": "Chọn tài khoản cần loại khỏi tác vụ.",
+    "ko": "이 작업에서 제외할 계정을 선택하세요."
+  },
+  "message.a0597336bcf2": {
+    "source": "复制任务",
+    "en": "Duplicate task",
+    "zh-TW": "複製任務",
+    "ru": "Копировать задачу",
+    "vi": "Nhân bản tác vụ",
+    "ko": "작업 복제"
+  },
+  "message.49da61ceeea2": {
+    "source": "天",
+    "en": "days",
+    "zh-TW": "天",
+    "ru": "дн",
+    "vi": "ngày",
+    "ko": "일"
+  },
+  "message.ad841f709d28": {
+    "source": "天前",
+    "en": "days ago",
+    "zh-TW": "天前",
+    "ru": "дн назад",
+    "vi": "ngày trước",
+    "ko": "일 전"
+  },
+  "message.28384d7afd2e": {
+    "source": "失败",
+    "en": "Failed",
+    "zh-TW": "失敗",
+    "ru": "Ошибка",
+    "vi": "Thất bại",
+    "ko": "실패"
+  },
+  "message.fad459f16a3d": {
+    "source": "套餐未确认",
+    "en": "Plan unknown",
+    "zh-TW": "方案未確認",
+    "ru": "Тариф неизвестен",
+    "vi": "Chưa rõ gói",
+    "ko": "요금제 미확인"
+  },
+  "message.328147c0d98d": {
+    "source": "定时开关",
+    "en": "schedule toggle",
+    "zh-TW": "定時開關",
+    "ru": "переключатель расписания",
+    "vi": "bật tắt lịch chạy",
+    "ko": "일정 전환"
+  },
+  "message.2517d8bc6d66": {
+    "source": "定时演示",
+    "en": "Schedule demo",
+    "zh-TW": "定時示範",
+    "ru": "Демо расписания",
+    "vi": "Minh họa lịch chạy",
+    "ko": "일정 데모"
+  },
+  "message.677075af15e0": {
+    "source": "定时预热",
+    "en": "Scheduled warmup"
+  },
+  "message.76420433f22d": {
+    "source": "导出",
+    "en": "Export",
+    "zh-TW": "匯出",
+    "ru": "Экспорт",
+    "vi": "Xuất",
+    "ko": "내보내기"
+  },
+  "message.c62ac9ad962a": {
+    "source": "导出文件已准备好",
+    "en": "Export ready"
+  },
+  "message.b4fbe589c50e": {
+    "source": "导出记录",
+    "en": "Export history",
+    "zh-TW": "匯出記錄",
+    "ru": "Экспорт истории",
+    "vi": "Xuất lịch sử",
+    "ko": "기록 내보내기"
+  },
+  "message.429ea3af443d": {
+    "source": "导出配置",
+    "en": "Export configuration",
+    "zh-TW": "匯出設定",
+    "ru": "Экспорт настроек",
+    "vi": "Xuất cấu hình",
+    "ko": "설정 내보내기"
+  },
+  "message.9105e3cab55a": {
+    "source": "将删除 {v0} 条已结束的执行记录。",
+    "en": "Delete {v0} completed run records."
+  },
+  "message.d5711c8f0479": {
+    "source": "将删除「{v0}」并停止其未来计划。已有执行记录保留，已发出的请求不会被终止。",
+    "en": "Delete “{v0}” and stop future schedules. Run history is retained and in-flight requests continue."
+  },
+  "message.c1444c43b261": {
+    "source": "将删除「{v0}」，账号本身保留。{v1}",
+    "en": "Delete “{v0}”. Accounts are retained. {v1}"
+  },
+  "message.3b6fefc50feb": {
+    "source": "小时",
+    "en": "hours",
+    "zh-TW": "小時",
+    "ru": "ч",
+    "vi": "giờ",
+    "ko": "시간"
+  },
+  "message.595c9daa17b3": {
+    "source": "小时前",
+    "en": "hours ago",
+    "zh-TW": "小時前",
+    "ru": "ч назад",
+    "vi": "giờ trước",
+    "ko": "시간 전"
+  },
+  "message.da539f3b219d": {
+    "source": "尚未确认该账号套餐，仅展示触发点；不会自动套用五小时窗口。",
+    "en": "Account plan is unknown. Only triggers are shown; no 5h window is assumed.",
+    "zh-TW": "尚未確認方案，僅顯示觸發點，不套用五小時視窗。",
+    "ru": "Тариф неизвестен: только запуски, без предположения окна 5 ч.",
+    "vi": "Chưa rõ gói tài khoản: chỉ hiện điểm kích hoạt, không giả định cửa sổ 5 giờ.",
+    "ko": "요금제가 미확인 상태이므로 트리거만 표시하고 5시간 창을 가정하지 않습니다."
+  },
+  "message.bbd93a462efc": {
+    "source": "尚未选择目标",
+    "en": "No targets selected",
+    "zh-TW": "尚未選取目標",
+    "ru": "Цели не выбраны",
+    "vi": "Chưa chọn tài khoản đích",
+    "ko": "선택한 대상 없음"
+  },
+  "message.07161a3bf2c5": {
+    "source": "工作日",
+    "en": "Weekdays",
+    "zh-TW": "平日",
+    "ru": "Будни",
+    "vi": "Ngày trong tuần",
+    "ko": "평일"
+  },
+  "message.73812804fcd8": {
+    "source": "左右滑动查看全天",
+    "en": "Scroll sideways for the full day",
+    "zh-TW": "左右滑動查看全天",
+    "ru": "Прокрутите, чтобы увидеть весь день",
+    "vi": "Cuộn ngang để xem cả ngày",
+    "ko": "좌우로 스크롤하여 하루 전체 보기"
+  },
+  "message.3545652f4168": {
+    "source": "左右滑动查看全天 →",
+    "en": "Scroll sideways for the full day →"
+  },
+  "message.24a1f3de5881": {
+    "source": "已{v0} {v1} 个任务",
+    "en": "{v1} tasks {v0}",
+    "plural": {
+      "parameter": "v1",
+      "en": {
+        "one": "{v1} task {v0}"
+      }
+    }
+  },
+  "message.2190dbf17f7e": {
+    "source": "已保存 ·",
+    "en": "Saved ·"
+  },
+  "message.077a6d37719a": {
+    "source": "已删除",
+    "en": "Deleted"
+  },
+  "message.dfb802238b38": {
+    "source": "已启用",
+    "en": "Enabled",
+    "zh-TW": "已啟用",
+    "ru": "Включено",
+    "vi": "Đã bật",
+    "ko": "활성화됨"
+  },
+  "message.d72d6ba04d0d": {
+    "source": "已启用任务覆盖，按账号去重",
+    "en": "Unique accounts across enabled tasks",
+    "zh-TW": "已啟用任務涵蓋的唯一帳號",
+    "ru": "Уникальные аккаунты включённых задач",
+    "vi": "Tài khoản duy nhất trong các tác vụ đã bật",
+    "ko": "활성 작업 전체에서 계정 중복 제거"
+  },
+  "message.99539d5bb9c2": {
+    "source": "已复制任务，新任务默认暂停",
+    "en": "Task copied. The new task is paused by default."
+  },
+  "message.695258f4bba0": {
+    "source": "已恢复初始演示数据",
+    "en": "Demo data restored"
+  },
+  "message.456bbf2e824f": {
+    "source": "已恢复此账号的预热",
+    "en": "Account warmup resumed"
+  },
+  "message.eb0c326b60ae": {
+    "source": "已暂停",
+    "en": "Paused",
+    "zh-TW": "已暫停",
+    "ru": "Приостановлено",
+    "vi": "Đã tạm dừng",
+    "ko": "일시 중지됨"
+  },
+  "message.7809e389598f": {
+    "source": "已暂停全部新请求，任务配置已保留",
+    "en": "New requests paused. Task settings are retained."
+  },
+  "message.53825fef0b92": {
+    "source": "已暂停此账号的所有预热",
+    "en": "All warmups for this account are paused",
+    "zh-TW": "此帳號的所有預熱已暫停",
+    "ru": "Прогрев аккаунта приостановлен",
+    "vi": "Đã dừng mọi lần làm nóng tài khoản này",
+    "ko": "이 계정의 모든 워밍업이 일시 중지됨"
+  },
+  "message.b1778598e987": {
+    "source": "已有任务引用此分组，提供商不能直接变更。",
+    "en": "Referenced by tasks; the provider cannot be changed.",
+    "zh-TW": "已有任務引用此分組，無法直接變更供應商。",
+    "ru": "Группа используется задачами: смена провайдера недоступна.",
+    "vi": "Nhóm đang được tác vụ dùng; không đổi trực tiếp nhà cung cấp.",
+    "ko": "작업에서 참조 중이므로 공급자를 직접 변경할 수 없습니다."
+  },
+  "message.bc5a87a757a5": {
+    "source": "已禁用",
+    "en": "Disabled",
+    "zh-TW": "已停用",
+    "ru": "Отключено",
+    "vi": "Đã tắt",
+    "ko": "비활성화됨"
+  },
+  "message.4ae1bfcb6bbe": {
+    "source": "已覆盖",
+    "en": "Covers",
+    "zh-TW": "已涵蓋",
+    "ru": "Охвачено",
+    "vi": "Bao gồm",
+    "ko": "대상"
+  },
+  "message.559a1e7a016e": {
+    "source": "已覆盖 {v0} 个账号",
+    "en": "Covers {v0} accounts",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "Covers {v0} account"
+      }
+    }
+  },
+  "message.50c592b580e7": {
+    "source": "已覆盖 {v5} 个账号",
+    "en": "Covers {v5} accounts",
+    "plural": {
+      "parameter": "v5",
+      "en": {
+        "one": "Covers {v5} account"
+      }
+    }
+  },
+  "message.3f4ebc4aad97": {
+    "source": "已选择",
+    "en": "Selected",
+    "zh-TW": "已選取",
+    "ru": "Выбрано",
+    "vi": "Đã chọn",
+    "ko": "선택됨"
+  },
+  "message.09c81d43b854": {
+    "source": "已选择 {v0} 个任务",
+    "en": "Selected {v0} tasks",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "Selected {v0} task"
+      }
+    }
+  },
+  "message.4b3fba09cf88": {
+    "source": "已选择 {v0} 个账号",
+    "en": "Selected {v0} accounts",
+    "plural": {
+      "parameter": "v0",
+      "en": {
+        "one": "Selected {v0} account"
+      }
+    }
+  },
+  "message.c69f8d055729": {
+    "source": "并发账号",
+    "en": "Concurrent accounts"
+  },
+  "message.8da97ddda990": {
+    "source": "开启",
+    "en": "On",
+    "zh-TW": "開啟",
+    "ru": "Вкл.",
+    "vi": "Bật",
+    "ko": "켜짐"
+  },
+  "message.6a9906c79f26": {
+    "source": "开始时间",
+    "en": "Started at",
+    "zh-TW": "開始時間",
+    "ru": "Время начала",
+    "vi": "Thời gian bắt đầu",
+    "ko": "시작 시간"
+  },
+  "message.b68aed33b2bb": {
+    "source": "开始模拟执行",
+    "en": "Start simulation",
+    "zh-TW": "開始模擬執行",
+    "ru": "Начать симуляцию",
+    "vi": "Bắt đầu mô phỏng",
+    "ko": "시뮬레이션 시작"
+  },
+  "message.b49d35287de9": {
+    "source": "当前原型中新增的任务、分组和模拟记录将被替换为初始示例。此操作仅影响当前浏览器里的原型数据。",
+    "en": "Replace local prototype tasks, groups and simulated history with the initial examples. This affects only this browser."
+  },
+  "message.a98b41b029dc": {
+    "source": "当前可用账号",
+    "en": "Currently available",
+    "zh-TW": "目前可用帳號",
+    "ru": "Сейчас доступны",
+    "vi": "Hiện khả dụng",
+    "ko": "현재 사용 가능"
+  },
+  "message.8bc0ff588cb7": {
+    "source": "当前时间",
+    "en": "Current time",
+    "zh-TW": "目前時間",
+    "ru": "Текущее время",
+    "vi": "Thời gian hiện tại",
+    "ko": "현재 시간"
+  },
+  "message.548e22d46a3b": {
+    "source": "当前没有任务引用这个分组。",
+    "en": "No tasks reference this group."
+  },
+  "message.04ef38492f06": {
+    "source": "当前没有符合条件的计划，可新建任务或显示已暂停任务。",
+    "en": "No schedules match. Create a task or show paused tasks."
+  },
+  "message.f436544752a6": {
+    "source": "当前没有符合条件的预热计划",
+    "en": "No warmup schedules match the current filters"
+  },
+  "message.f3dfc354031c": {
+    "source": "当前目标全部被排除，请保留至少一个账号",
+    "en": "All targets excluded; keep at least one account",
+    "zh-TW": "目前目標全被排除，請保留至少一個帳號",
+    "ru": "Все цели исключены; оставьте аккаунт",
+    "vi": "Đã loại mọi tài khoản đích; giữ ít nhất một tài khoản",
+    "ko": "모든 대상이 제외되었습니다. 계정을 하나 이상 유지하세요"
+  },
+  "message.5944a0eaeb33": {
+    "source": "当天间隔 5 小时",
+    "en": "Every 5 hours today"
+  },
+  "message.630e7cf9a8eb": {
+    "source": "当日间隔 5 小时",
+    "en": "Every 5 hours today"
+  },
+  "message.637da5612300": {
+    "source": "待执行",
+    "en": "Queued",
+    "zh-TW": "待執行",
+    "ru": "В очереди",
+    "vi": "Đang chờ",
+    "ko": "대기 중"
+  },
+  "message.699a0f8adb56": {
+    "source": "待执行项已取消，在途模拟请求继续完成",
+    "en": "Queued items cancelled. In-flight simulated requests continue."
+  },
+  "message.5fe7555f9205": {
+    "source": "快捷设置",
+    "en": "Quick times"
+  },
+  "message.e73f5b31cdc9": {
+    "source": "恢复初始数据",
+    "en": "Restore initial data"
+  },
+  "message.1715f9a175f2": {
+    "source": "恢复初始演示",
+    "en": "Reset demo",
+    "zh-TW": "還原初始示範",
+    "ru": "Сброс демонстрации",
+    "vi": "Đặt lại minh họa",
+    "ko": "데모 초기화"
+  },
+  "message.e6fb3c9f00f4": {
+    "source": "恢复初始演示数据？",
+    "en": "Restore initial demo data?"
+  },
+  "message.681c7be20e7e": {
+    "source": "恢复调度",
+    "en": "Resume schedules",
+    "zh-TW": "恢復排程",
+    "ru": "Возобновить расписания",
+    "vi": "Tiếp tục lịch chạy",
+    "ko": "일정 재개"
+  },
+  "message.53bff9a1db6d": {
+    "source": "恢复调度后继续计时",
+    "en": "Resume schedules to continue",
+    "zh-TW": "恢復排程後繼續計時",
+    "ru": "Возобновите расписания",
+    "vi": "Tiếp tục lịch để chạy tiếp",
+    "ko": "일정을 재개하면 계속됨"
+  },
+  "message.ba2e93e73037": {
+    "source": "恢复默认",
+    "en": "Reset to defaults",
+    "zh-TW": "還原預設值",
+    "ru": "Сбросить",
+    "vi": "Khôi phục mặc định",
+    "ko": "기본값 복원"
+  },
+  "message.053461ce86d2": {
+    "source": "成功",
+    "en": "Success",
+    "zh-TW": "成功",
+    "ru": "Успех",
+    "vi": "Thành công",
+    "ko": "성공"
+  },
+  "message.c01279050c72": {
+    "source": "所在分组",
+    "en": "Groups",
+    "zh-TW": "所在分組",
+    "ru": "Группы",
+    "vi": "Nhóm tham gia",
+    "ko": "소속 그룹"
+  },
+  "message.25f754edbc29": {
+    "source": "所有结果均为演示数据",
+    "en": "All results are demo data",
+    "zh-TW": "所有結果均為示範資料",
+    "ru": "Все результаты демонстрационные",
+    "vi": "Mọi kết quả đều là dữ liệu minh họa",
+    "ko": "모든 결과는 데모 데이터입니다"
+  },
+  "message.19635b3775ad": {
+    "source": "所选日期没有预热计划",
+    "en": "No warmups on the selected date",
+    "zh-TW": "所選日期沒有預熱計畫",
+    "ru": "Нет прогрева на выбранную дату",
+    "vi": "Không có lịch làm nóng ngày đã chọn",
+    "ko": "선택한 날짜에 워밍업 계획 없음"
+  },
+  "message.60745a05d55e": {
+    "source": "所选范围内的计划",
+    "en": "Schedules in the selected range"
+  },
+  "message.2bf5cfce61a5": {
+    "source": "任一所选账号支持的模型",
+    "en": "Models supported by any selected account"
+  },
+  "message.5ae6b5883ef6": {
+    "source": "未获取到所选账号支持的文本模型，请刷新或调整账号。",
+    "en": "No text models could be loaded. Refresh models or change the selected accounts."
+  },
+  "message.446d4c4a1e2d": {
+    "source": "手动模拟",
+    "en": "Manual simulation",
+    "zh-TW": "手動模擬",
+    "ru": "Ручная симуляция",
+    "vi": "Mô phỏng thủ công",
+    "ko": "수동 시뮬레이션"
+  },
+  "message.6660d250a97e": {
+    "source": "手动预热",
+    "en": "Manual warmup"
+  },
+  "message.5026a63b58cd": {
+    "source": "执行中",
+    "en": "Running",
+    "zh-TW": "執行中",
+    "ru": "Выполняется",
+    "vi": "Đang chạy",
+    "ko": "실행 중"
+  },
+  "message.928ee86f61b5": {
+    "source": "执行中的记录保留；账号、分组和定时任务不受影响。删除后无法恢复。",
+    "en": "Active runs, accounts, groups and schedules are retained. Deleted history cannot be restored."
+  },
+  "message.238086cfde32": {
+    "source": "执行时将跳过",
+    "en": "Will be skipped at dispatch",
+    "zh-TW": "執行時將略過",
+    "ru": "Будет пропущено при отправке",
+    "vi": "Sẽ bỏ qua khi gửi",
+    "ko": "실행 시 건너뜀"
+  },
+  "message.17337902d692": {
+    "source": "执行记录",
+    "en": "Run history",
+    "zh-TW": "執行記錄",
+    "ru": "История запусков",
+    "vi": "Lịch sử chạy",
+    "ko": "실행 기록"
+  },
+  "message.4cc5447ace1f": {
+    "source": "执行记录保留",
+    "en": "History retention",
+    "zh-TW": "執行記錄保留",
+    "ru": "Хранение истории",
+    "vi": "Thời gian lưu lịch sử",
+    "ko": "실행 기록 보관"
+  },
+  "message.fc224290be75": {
+    "source": "执行详情",
+    "en": "run details",
+    "zh-TW": "執行詳情",
+    "ru": "данные запуска",
+    "vi": "chi tiết chạy",
+    "ko": "실행 세부 정보"
+  },
+  "message.0a394cb2dbea": {
+    "source": "执行追踪",
+    "en": "Run tracking"
+  },
+  "message.125ac8bd725c": {
+    "source": "批次编号",
+    "en": "Batch ID",
+    "zh-TW": "批次編號",
+    "ru": "ID запуска",
+    "vi": "Mã đợt chạy",
+    "ko": "배치 ID"
+  },
+  "message.b4001a71dc8e": {
+    "source": "把使用节奏相近的账号放在一起。",
+    "en": "Group accounts with similar usage patterns.",
+    "zh-TW": "將使用節奏相近的帳號放在一起。",
+    "ru": "Группируйте аккаунты с похожим режимом работы.",
+    "vi": "Nhóm các tài khoản có nhịp sử dụng tương tự.",
+    "ko": "사용 패턴이 비슷한 계정을 그룹으로 묶으세요."
+  },
+  "message.230527fabf7c": {
+    "source": "指定账号",
+    "en": "Specific accounts",
+    "zh-TW": "指定帳號",
+    "ru": "Отдельные аккаунты",
+    "vi": "Tài khoản cụ thể",
+    "ko": "특정 계정"
+  },
+  "message.84d65f680a78": {
+    "source": "按周刷新",
+    "en": "Weekly refresh",
+    "zh-TW": "每週更新",
+    "ru": "Сброс раз в неделю",
+    "vi": "Làm mới hằng tuần",
+    "ko": "주간 초기화"
+  },
+  "message.3c793c66f529": {
+    "source": "按执行结果筛选",
+    "en": "Filter run result",
+    "zh-TW": "依執行結果篩選",
+    "ru": "Фильтр результата",
+    "vi": "Lọc kết quả chạy",
+    "ko": "실행 결과 필터"
+  },
+  "message.7d1979ef71c4": {
+    "source": "按提供商筛选（列表与时间轴）",
+    "en": "Filter provider for list and timeline",
+    "zh-TW": "依供應商篩選列表與時間軸",
+    "ru": "Провайдер: список и шкала",
+    "vi": "Lọc nhà cung cấp cho danh sách và dòng thời gian",
+    "ko": "목록 및 타임라인 공급자 필터"
+  },
+  "message.a98840e3d9c0": {
+    "source": "按日期筛选记录",
+    "en": "Filter history by date",
+    "zh-TW": "依日期篩選記錄",
+    "ru": "Фильтр по дате",
+    "vi": "Lọc lịch sử theo ngày",
+    "ko": "날짜별 기록 필터"
+  },
+  "message.7bb9aa096a4c": {
+    "source": "按计划假设请求成功；5h 区间内再次触发不延长估算窗口。",
+    "en": "Assumes successful requests; triggers inside a 5h window do not extend the estimate.",
+    "zh-TW": "假設請求成功；5h 內再次觸發不延長估算視窗。",
+    "ru": "При успешных запросах повторный запуск внутри 5 ч не продлевает оценку окна.",
+    "vi": "Giả định yêu cầu thành công; kích hoạt trong 5 giờ không kéo dài cửa sổ ước tính.",
+    "ko": "요청 성공을 가정하며 5시간 내 재실행은 예상 창을 연장하지 않습니다."
+  },
+  "message.d1035e89551c": {
+    "source": "按计划推算 · 非实测",
+    "en": "Projected · not observed",
+    "zh-TW": "依計畫推算，非實測",
+    "ru": "Расчёт, не измерение",
+    "vi": "Dự tính, chưa đo thực tế",
+    "ko": "계획 추정 · 실측 아님"
+  },
+  "message.ea2ee60474c2": {
+    "source": "按账号与请求配置合并重复命中",
+    "en": "Merge by account and request configuration",
+    "zh-TW": "依帳號與請求設定合併重複命中",
+    "ru": "Объединение по аккаунту и запросу",
+    "vi": "Hợp nhất theo tài khoản và cấu hình yêu cầu",
+    "ko": "계정 및 요청 설정별 중복 병합"
+  },
+  "message.471536ca38de": {
+    "source": "排序并去重",
+    "en": "Sort and remove duplicates"
+  },
+  "message.ac83d3972fe9": {
+    "source": "排除",
+    "en": "Exclude",
+    "zh-TW": "排除",
+    "ru": "Исключить",
+    "vi": "Loại trừ",
+    "ko": "제외"
+  },
+  "message.077d090c3987": {
+    "source": "排除 {v2}",
+    "en": "Exclude {v2}"
+  },
+  "message.1ff27d1a837b": {
+    "source": "接下来的触发",
+    "en": "Upcoming triggers",
+    "zh-TW": "接下來的觸發",
+    "ru": "Ближайшие запуски",
+    "vi": "Lần kích hoạt sắp tới",
+    "ko": "예정된 트리거"
+  },
+  "message.a70b43d60eee": {
+    "source": "接下来的账号计划",
+    "en": "Upcoming account schedules",
+    "zh-TW": "接下來的帳號計畫",
+    "ru": "Ближайшие планы аккаунта",
+    "vi": "Lịch tài khoản sắp tới",
+    "ko": "계정의 예정 일정"
+  },
+  "message.c8c14507b2d3": {
+    "source": "推理强度",
+    "en": "Reasoning effort",
+    "zh-TW": "推理強度",
+    "ru": "Глубина рассуждения",
+    "vi": "Mức suy luận",
+    "ko": "추론 강도"
+  },
+  "message.663ddbdbe9e4": {
+    "source": "提供商",
+    "en": "Provider",
+    "zh-TW": "供應商",
+    "ru": "Провайдер",
+    "vi": "Nhà cung cấp",
+    "ko": "공급자"
+  },
+  "message.94b3a5f639ef": {
+    "source": "提供商 / 套餐",
+    "en": "Provider / plan",
+    "zh-TW": "供應商／方案",
+    "ru": "Провайдер / тариф",
+    "vi": "Nhà cung cấp / gói",
+    "ko": "공급자 / 요금제"
+  },
+  "message.e211848ab9aa": {
+    "source": "提供商不匹配",
+    "en": "Provider mismatch",
+    "zh-TW": "供應商不符",
+    "ru": "Несовпадение провайдера",
+    "vi": "Nhà cung cấp không khớp",
+    "ko": "공급자 불일치"
+  },
+  "message.938cc205c90d": {
+    "source": "搜尋時區名稱或 UTC 偏移…",
+    "en": "Search time zone or UTC offset…"
+  },
+  "message.5d02c355dcc5": {
+    "source": "搜索任务",
+    "en": "Search tasks",
+    "zh-TW": "搜尋任務",
+    "ru": "Поиск задач",
+    "vi": "Tìm tác vụ",
+    "ko": "작업 검색"
+  },
+  "message.cfcd4cdeb7e2": {
+    "source": "搜索任务、分组或模型…",
+    "en": "Search tasks, groups or models…",
+    "zh-TW": "搜尋任務、分組或模型…",
+    "ru": "Поиск задач, групп или моделей…",
+    "vi": "Tìm tác vụ, nhóm hoặc mô hình…",
+    "ko": "작업, 그룹 또는 모델 검색…"
+  },
+  "message.3208c86a0abc": {
+    "source": "搜索任务、模型或批次编号…",
+    "en": "Search task, model or batch ID…",
+    "zh-TW": "搜尋任務、模型或批次編號…",
+    "ru": "Поиск задачи, модели или ID…",
+    "vi": "Tìm tác vụ, mô hình hoặc mã đợt…",
+    "ko": "작업, 모델 또는 배치 ID 검색…"
+  },
+  "message.540e028d9604": {
+    "source": "搜索任务时区",
+    "en": "Search task time zone"
+  },
+  "message.f9c1d75a72d9": {
+    "source": "搜索分组名称…",
+    "en": "Search group names…",
+    "zh-TW": "搜尋分組名稱…",
+    "ru": "Поиск по названию группы…",
+    "vi": "Tìm tên nhóm…",
+    "ko": "그룹 이름 검색…"
+  },
+  "message.a262757f8640": {
+    "source": "搜索执行记录",
+    "en": "Search run history",
+    "zh-TW": "搜尋執行記錄",
+    "ru": "Поиск запусков",
+    "vi": "Tìm lịch sử chạy",
+    "ko": "실행 기록 검색"
+  },
+  "message.dce623f6a68b": {
+    "source": "搜索时区名称或 UTC 偏移…",
+    "en": "Search time zone or UTC offset…"
+  },
+  "message.4dcbd6f1a436": {
+    "source": "搜索时区，例如 上海、Tokyo、America…",
+    "en": "Search time zones, e.g. Shanghai, Tokyo, America…"
+  },
+  "message.085bd8e1a60f": {
+    "source": "搜索账号与分组",
+    "en": "Search accounts and groups",
+    "zh-TW": "搜尋帳號與分組",
+    "ru": "Поиск аккаунтов и групп",
+    "vi": "Tìm tài khoản và nhóm",
+    "ko": "계정 및 그룹 검색"
+  },
+  "message.f17ae9635751": {
+    "source": "搜索账号名称、邮箱或套餐…",
+    "en": "Search name, email or plan…",
+    "zh-TW": "搜尋帳號名稱、信箱或方案…",
+    "ru": "Поиск по имени, почте или тарифу…",
+    "vi": "Tìm tên, email hoặc gói…",
+    "ko": "이름, 이메일 또는 요금제 검색…"
+  },
+  "message.ed31fbb483ee": {
+    "source": "操作",
+    "en": "Actions",
+    "zh-TW": "操作",
+    "ru": "Действия",
+    "vi": "Thao tác",
+    "ko": "작업"
+  },
+  "message.09e8ee21f4ce": {
+    "source": "数据来源：虚构示例",
+    "en": "Data: fictional examples",
+    "zh-TW": "資料來源：虛構範例",
+    "ru": "Данные: вымышленные примеры",
+    "vi": "Dữ liệu: ví dụ hư cấu",
+    "ko": "데이터: 가상 예시"
+  },
+  "message.f98b2fc82a45": {
+    "source": "新加坡",
+    "en": "Singapore"
+  },
+  "message.6bee2372805a": {
+    "source": "新建任务",
+    "en": "New task",
+    "zh-TW": "新增任務",
+    "ru": "Новая задача",
+    "vi": "Tác vụ mới",
+    "ko": "새 작업"
+  },
+  "message.d695d17cec1c": {
+    "source": "新建任务 {v15}",
+    "en": "New task {v15}"
+  },
+  "message.9a7ac85a9aff": {
+    "source": "新建预热任务",
+    "en": "New warmup task",
+    "zh-TW": "新增預熱任務",
+    "ru": "Новая задача прогрева",
+    "vi": "Tác vụ làm nóng mới",
+    "ko": "새 워밍업 작업"
+  },
+  "message.1bb152925674": {
+    "source": "无可用账号",
+    "en": "No available accounts",
+    "zh-TW": "無可用帳號",
+    "ru": "Нет доступных аккаунтов",
+    "vi": "Không có tài khoản khả dụng",
+    "ko": "사용 가능한 계정 없음"
+  },
+  "message.74f81730e3ea": {
+    "source": "无法读取删除范围：",
+    "en": "Failed to load deletion scope:"
+  },
+  "message.1b4fbbcdfae9": {
+    "source": "日期：{v0}；关键词：{v1}；执行结果：{v2}",
+    "en": "Date: {v0}; search: {v1}; result: {v2}"
+  },
+  "message.b5d72c5c00f2": {
+    "source": "时区",
+    "en": "Time zone",
+    "zh-TW": "時區",
+    "ru": "Часовой пояс",
+    "vi": "Múi giờ",
+    "ko": "시간대"
+  },
+  "message.af7e1e7a1902": {
+    "source": "时区以任务设置为准",
+    "en": "Times use each task's time zone",
+    "zh-TW": "時區依任務設定",
+    "ru": "Часовые пояса указаны в задачах",
+    "vi": "Giờ theo múi giờ của từng tác vụ",
+    "ko": "시간대는 작업 설정을 따름"
+  },
+  "message.1de9cb58bf0b": {
+    "source": "时间轴",
+    "en": "timeline",
+    "zh-TW": "時間軸",
+    "ru": "шкала",
+    "vi": "dòng thời gian",
+    "ko": "타임라인"
+  },
+  "message.53deefab3b70": {
+    "source": "时间轴前一天",
+    "en": "Previous day",
+    "zh-TW": "時間軸前一天",
+    "ru": "Предыдущий день",
+    "vi": "Ngày trước",
+    "ko": "이전 날짜"
+  },
+  "message.05091c00e2de": {
+    "source": "时间轴后一天",
+    "en": "Next day",
+    "zh-TW": "時間軸後一天",
+    "ru": "Следующий день",
+    "vi": "Ngày sau",
+    "ko": "다음 날짜"
+  },
+  "message.256e49ed31b0": {
+    "source": "时间轴显示范围",
+    "en": "Timeline range",
+    "zh-TW": "時間軸顯示範圍",
+    "ru": "Диапазон шкалы",
+    "vi": "Phạm vi dòng thời gian",
+    "ko": "타임라인 범위"
+  },
+  "message.5090701343b5": {
+    "source": "时间轴返回今天",
+    "en": "Back to today",
+    "zh-TW": "時間軸返回今天",
+    "ru": "Сегодня",
+    "vi": "Về hôm nay",
+    "ko": "오늘로 이동"
+  },
+  "message.b1d841b978fb": {
+    "source": "明天",
+    "en": "Tomorrow",
+    "zh-TW": "明天",
+    "ru": "Завтра",
+    "vi": "Ngày mai",
+    "ko": "내일"
+  },
+  "message.8c18bde08f89": {
+    "source": "星火",
+    "en": "Spark"
+  },
+  "message.3a2d42ac5306": {
+    "source": "显示已暂停",
+    "en": "Show paused",
+    "zh-TW": "顯示已暫停",
+    "ru": "Показать приостановленные",
+    "vi": "Hiện đã tạm dừng",
+    "ko": "일시 중지 항목 표시"
+  },
+  "message.bc2ec537e866": {
+    "source": "显示任一所选账号支持的模型；禁用或过期账号在执行时跳过，模型权限由 CPA 校验。",
+    "en": "Shows models supported by any selected account. Disabled or expired accounts are skipped at run time; CPA checks model access."
+  },
+  "message.8ca2341171aa": {
+    "source": "智能账号预热与额度窗口调度",
+    "en": "Account warmup and quota window scheduling"
+  },
+  "message.8d12fc0d4eb2": {
+    "source": "暂停",
+    "en": "Pause",
+    "zh-TW": "暫停",
+    "ru": "Пауза",
+    "vi": "Tạm dừng",
+    "ko": "일시 중지"
+  },
+  "message.7169bdb54aa8": {
+    "source": "暂无下一次",
+    "en": "No upcoming trigger",
+    "zh-TW": "尚無下次觸發",
+    "ru": "Нет следующего запуска",
+    "vi": "Chưa có lần kế tiếp",
+    "ko": "예정된 트리거 없음"
+  },
+  "message.a062959478f7": {
+    "source": "暂无匹配的执行记录",
+    "en": "No matching runs",
+    "zh-TW": "尚無符合的執行記錄",
+    "ru": "Нет подходящих запусков",
+    "vi": "Không có lượt chạy phù hợp",
+    "ko": "일치하는 실행 기록 없음"
+  },
+  "message.97eac9cb0d24": {
+    "source": "暂无可用账号",
+    "en": "No available accounts"
+  },
+  "message.d64a7d475c9d": {
+    "source": "暂无启用中的计划",
+    "en": "No enabled schedules",
+    "zh-TW": "尚無啟用計畫",
+    "ru": "Нет включённых расписаний",
+    "vi": "Chưa có lịch đã bật",
+    "ko": "활성 일정 없음"
+  },
+  "message.7c49df10d411": {
+    "source": "暂无有效目标",
+    "en": "No valid targets",
+    "zh-TW": "尚無有效目標",
+    "ru": "Нет допустимых целей",
+    "vi": "Không có tài khoản đích hợp lệ",
+    "ko": "유효한 대상 없음"
+  },
+  "message.a2911d98650f": {
+    "source": "暂无窗口",
+    "en": "No windows"
+  },
+  "message.46ca86da52b3": {
+    "source": "暂无记录",
+    "en": "No history yet",
+    "zh-TW": "尚無記錄",
+    "ru": "Записей пока нет",
+    "vi": "Chưa có lịch sử",
+    "ko": "기록 없음"
+  },
+  "message.9f07d2ce4115": {
+    "source": "更多操作",
+    "en": "More actions",
+    "zh-TW": "更多操作",
+    "ru": "Другие действия",
+    "vi": "Thao tác khác",
+    "ko": "추가 작업"
+  },
+  "message.a362aecad54a": {
+    "source": "更高",
+    "en": "Extra high"
+  },
+  "message.8b5f2a61b797": {
+    "source": "最低",
+    "en": "Minimum"
+  },
+  "message.a5cefa88a481": {
+    "source": "最低 · 需模型支持",
+    "en": "Minimal · model support required",
+    "zh-TW": "最低，需模型支援",
+    "ru": "Минимальная · нужна поддержка",
+    "vi": "Tối thiểu · cần mô hình hỗ trợ",
+    "ko": "최소 · 모델 지원 필요"
+  },
+  "message.2e6821254c0c": {
+    "source": "最大并发账号数",
+    "en": "Maximum concurrent accounts",
+    "zh-TW": "最大並行帳號數",
+    "ru": "Максимум параллельных аккаунтов",
+    "vi": "Số tài khoản đồng thời tối đa",
+    "ko": "최대 동시 계정 수"
+  },
+  "message.8f0ef3b2b86d": {
+    "source": "最近结果",
+    "en": "Latest result",
+    "zh-TW": "最近結果",
+    "ru": "Последний результат",
+    "vi": "Kết quả gần nhất",
+    "ko": "최근 결과"
+  },
+  "message.8672864e9041": {
+    "source": "最高",
+    "en": "Maximum"
+  },
+  "message.eedce9bb5959": {
+    "source": "有失败",
+    "en": "Has failures",
+    "zh-TW": "有失敗",
+    "ru": "Есть ошибки",
+    "vi": "Có lỗi",
+    "ko": "실패 있음"
+  },
+  "message.ec02b5b6b1f1": {
+    "source": "服务端数据",
+    "en": "Server data"
+  },
+  "message.e86ea3f280d9": {
+    "source": "未分组",
+    "en": "Ungrouped",
+    "zh-TW": "未分組",
+    "ru": "Без группы",
+    "vi": "Chưa có nhóm",
+    "ko": "그룹 없음"
+  },
+  "message.a8f011b3298b": {
+    "source": "未发送",
+    "en": "Not sent",
+    "zh-TW": "未傳送",
+    "ru": "Не отправлено",
+    "vi": "Chưa gửi",
+    "ko": "미전송"
+  },
+  "message.1da16551ff9f": {
+    "source": "未来",
+    "en": "Next",
+    "zh-TW": "未來",
+    "ru": "Следующие",
+    "vi": "Sắp tới",
+    "ko": "다음"
+  },
+  "message.4d8c1c5b4283": {
+    "source": "未知",
+    "en": "Unknown"
+  },
+  "message.1e0f6ce0109e": {
+    "source": "未知 · 无上游依据",
+    "en": "Unknown · no upstream evidence",
+    "zh-TW": "未知，無上游依據",
+    "ru": "Неизвестно: нет данных провайдера",
+    "vi": "Chưa rõ, không có dữ liệu nguồn",
+    "ko": "미확인 · 공급자 근거 없음"
+  },
+  "message.528a83662e92": {
+    "source": "未知 · 未取得上游依据",
+    "en": "Unknown · no upstream evidence",
+    "zh-TW": "未知，尚無上游依據",
+    "ru": "Неизвестно: нет данных провайдера",
+    "vi": "Chưa rõ, chưa có dữ liệu nguồn",
+    "ko": "미확인 · 공급자 근거 없음"
+  },
+  "message.c098e854e60b": {
+    "source": "未确认",
+    "en": "Unconfirmed",
+    "zh-TW": "未確認",
+    "ru": "Не подтверждено",
+    "vi": "Chưa xác nhận",
+    "ko": "미확인"
+  },
+  "message.61df74bf3401": {
+    "source": "未获取到有效的运行时间",
+    "en": "No valid run times returned"
+  },
+  "message.52e83fa75e7e": {
+    "source": "未识别",
+    "en": "Unidentified"
+  },
+  "message.f633d3602b4a": {
+    "source": "未选择目标",
+    "en": "No target selected",
+    "zh-TW": "未選取目標",
+    "ru": "Цель не выбрана",
+    "vi": "Chưa chọn tài khoản đích",
+    "ko": "대상 미선택"
+  },
+  "message.28326a69ee50": {
+    "source": "未选择账号",
+    "en": "No account selected",
+    "zh-TW": "未選取帳號",
+    "ru": "Аккаунт не выбран",
+    "vi": "Chưa chọn tài khoản",
+    "ko": "계정 미선택"
+  },
+  "message.ecf6ec3f1b4e": {
+    "source": "本批次使用虚构数据。成功仅代表模拟请求成功，不代表真实额度或窗口变化。",
+    "en": "Fictional data. Simulated success does not indicate real quota or window changes.",
+    "zh-TW": "此批次使用虛構資料，模擬成功不代表真實額度或視窗變化。",
+    "ru": "Вымышленные данные. Успех симуляции не отражает реальную квоту.",
+    "vi": "Dữ liệu hư cấu. Mô phỏng thành công không nghĩa là hạn mức thật thay đổi.",
+    "ko": "가상 데이터입니다. 모의 성공은 실제 한도나 창의 변화를 뜻하지 않습니다."
+  },
+  "message.35a0f2c1383b": {
+    "source": "本批次已结束",
+    "en": "Batch finished",
+    "zh-TW": "此批次已結束",
+    "ru": "Запуск завершён",
+    "vi": "Đợt chạy đã kết thúc",
+    "ko": "배치 완료"
+  },
+  "message.f004f1d84cf9": {
+    "source": "条",
+    "en": "items",
+    "zh-TW": "條",
+    "ru": "шт.",
+    "vi": "mục",
+    "ko": "개"
+  },
+  "message.09724983a0a1": {
+    "source": "条任务",
+    "en": "tasks",
+    "zh-TW": "條任務",
+    "ru": "задач",
+    "vi": "tác vụ",
+    "ko": "개 작업"
+  },
+  "message.7bbfdcb80a7e": {
+    "source": "条关联任务",
+    "en": "linked tasks",
+    "zh-TW": "條關聯任務",
+    "ru": "связанных задач",
+    "vi": "tác vụ liên kết",
+    "ko": "개 연결 작업"
+  },
+  "message.3e2a5bdf3bb4": {
+    "source": "条已启用",
+    "en": "enabled",
+    "zh-TW": "條已啟用",
+    "ru": "включено",
+    "vi": "đã bật",
+    "ko": "개 활성화됨"
+  },
+  "message.3ac9686581da": {
+    "source": "条执行记录",
+    "en": "run records"
+  },
+  "message.8b01c87726ac": {
+    "source": "查看 24 小时时间轴",
+    "en": "View 24-hour timeline",
+    "zh-TW": "查看 24 小時時間軸",
+    "ru": "Шкала на 24 часа",
+    "vi": "Xem dòng thời gian 24 giờ",
+    "ko": "24시간 타임라인 보기"
+  },
+  "message.75f273ba414e": {
+    "source": "查看 48 小时时间轴",
+    "en": "View 48-hour timeline",
+    "zh-TW": "查看 48 小時時間軸",
+    "ru": "Шкала на 48 часов",
+    "vi": "Xem dòng thời gian 48 giờ",
+    "ko": "48시간 타임라인 보기"
+  },
+  "message.d39eb752358b": {
+    "source": "查看 {v14}执行详情",
+    "en": "View {v14} run details"
+  },
+  "message.f79ba96e4c45": {
+    "source": "查看 {v3} 小时时间轴",
+    "en": "View {v3}-hour timeline"
+  },
+  "message.58b0ed214f21": {
+    "source": "查看官方说明",
+    "en": "Official documentation",
+    "zh-TW": "查看官方說明",
+    "ru": "Официальная документация",
+    "vi": "Tài liệu chính thức",
+    "ko": "공식 문서 보기"
+  },
+  "message.b5c0ac3f16f8": {
+    "source": "查看目标账号与排除项",
+    "en": "Review targets and exclusions",
+    "zh-TW": "查看目標帳號與排除項",
+    "ru": "Цели и исключения",
+    "vi": "Xem tài khoản đích và loại trừ",
+    "ko": "대상 및 제외 항목 보기"
+  },
+  "message.ef2b3378fe93": {
+    "source": "查看账号时间线",
+    "en": "View account timeline",
+    "zh-TW": "查看帳號時間軸",
+    "ru": "Шкала аккаунта",
+    "vi": "Xem dòng thời gian tài khoản",
+    "ko": "계정 타임라인 보기"
+  },
+  "message.c98e118e0a43": {
+    "source": "模型",
+    "en": "Model"
+  },
+  "message.06fd5f1ef5f3": {
+    "source": "模型已返回有效回复",
+    "en": "Model returned a valid response",
+    "zh-TW": "模型已回傳有效回覆",
+    "ru": "Модель вернула корректный ответ",
+    "vi": "Mô hình đã trả lời hợp lệ",
+    "ko": "모델이 유효한 응답을 반환함"
+  },
+  "message.7d49d080d015": {
+    "source": "模型请求：仅模拟",
+    "en": "Model requests: simulated",
+    "zh-TW": "模型請求：僅模擬",
+    "ru": "Запросы к моделям: симуляция",
+    "vi": "Yêu cầu mô hình: chỉ mô phỏng",
+    "ko": "모델 요청: 모의 실행만"
+  },
+  "message.9a36b187cea4": {
+    "source": "模型默认",
+    "en": "Model default"
+  },
+  "message.e03a0cf7d609": {
+    "source": "模型默认（CPA 未提供推理能力信息）",
+    "en": "Model default (reasoning capabilities unavailable)"
+  },
+  "message.63d6d61d784c": {
+    "source": "模型默认（无需推理配置）",
+    "en": "Model default (no reasoning configuration)"
+  },
+  "message.109b8ad85cdb": {
+    "source": "模拟值",
+    "en": "simulated",
+    "zh-TW": "模擬值",
+    "ru": "симуляция",
+    "vi": "mô phỏng",
+    "ko": "모의 값"
+  },
+  "message.1307cf619a2e": {
+    "source": "模拟执行",
+    "en": "Simulate run",
+    "zh-TW": "模擬執行",
+    "ru": "Симуляция запуска",
+    "vi": "Mô phỏng chạy",
+    "ko": "실행 시뮬레이션"
+  },
+  "message.59e80c97cf32": {
+    "source": "模拟执行一次",
+    "en": "Simulate once",
+    "zh-TW": "模擬執行一次",
+    "ru": "Одна симуляция",
+    "vi": "Mô phỏng một lần",
+    "ko": "한 번 시뮬레이션"
+  },
+  "message.ee27864ac9ec": {
+    "source": "模拟执行遵守此上限；每提供商最多 2 个，同账号串行",
+    "en": "Used by simulations; max 2 per provider, one per account",
+    "zh-TW": "模擬遵守此上限；每供應商最多 2 個，同帳號循序",
+    "ru": "Симуляция: до 2 на провайдера, 1 на аккаунт",
+    "vi": "Mô phỏng theo giới hạn này; tối đa 2 mỗi nguồn, tuần tự mỗi tài khoản",
+    "ko": "모의 실행에 적용되며 공급자당 최대 2개, 계정당 순차 실행"
+  },
+  "message.ba55ff82b529": {
+    "source": "模拟批次已创建",
+    "en": "Simulation batch created",
+    "zh-TW": "模擬批次已建立",
+    "ru": "Симуляция создана",
+    "vi": "Đã tạo đợt mô phỏng",
+    "ko": "모의 배치가 생성됨"
+  },
+  "message.e762d142395f": {
+    "source": "模拟数据 · 未连接真实 CPA",
+    "en": "Demo data · no live CPA connection",
+    "zh-TW": "模擬資料，未連接真實 CPA",
+    "ru": "Демо · без подключения к CPA",
+    "vi": "Dữ liệu mô phỏng · chưa kết nối CPA",
+    "ko": "모의 데이터 · 실제 CPA 미연결"
+  },
+  "message.aa1e899dd357": {
+    "source": "橙色",
+    "en": "Orange"
+  },
+  "message.0cc3dbcd6567": {
+    "source": "橙色分组",
+    "en": "Orange group",
+    "zh-TW": "橘色分組",
+    "ru": "Оранжевая группа",
+    "vi": "Nhóm màu cam",
+    "ko": "주황색 그룹"
+  },
+  "message.172fb7e67b9b": {
+    "source": "次",
+    "en": "requests",
+    "zh-TW": "次",
+    "ru": "запр.",
+    "vi": "lần",
+    "ko": "회"
+  },
+  "message.a390214b5adc": {
+    "source": "次触发",
+    "en": "triggers",
+    "zh-TW": "次觸發",
+    "ru": "запусков",
+    "vi": "lần kích hoạt",
+    "ko": "회 트리거"
+  },
+  "message.8ef718aa0db7": {
+    "source": "次请求",
+    "en": "requests",
+    "zh-TW": "次請求",
+    "ru": "запросов",
+    "vi": "yêu cầu",
+    "ko": "회 요청"
+  },
+  "message.e8967dab8e26": {
+    "source": "次跳过",
+    "en": "skips",
+    "zh-TW": "次略過",
+    "ru": "пропусков",
+    "vi": "lần bỏ qua",
+    "ko": "회 건너뜀"
+  },
+  "message.cd8125720af3": {
+    "source": "次预计请求",
+    "en": "estimated requests",
+    "zh-TW": "次預計請求",
+    "ru": "ожидаемых запросов",
+    "vi": "yêu cầu ước tính",
+    "ko": "회 예상 요청"
+  },
+  "message.8059307ae762": {
+    "source": "正在从 CPA 获取目标账号的模型与推理能力…",
+    "en": "Loading models and reasoning capabilities from CPA…"
+  },
+  "message.6bdb4435095e": {
+    "source": "正在保存…",
+    "en": "Saving…"
+  },
+  "message.275061511cc8": {
+    "source": "正在删除记录…",
+    "en": "Deleting records…"
+  },
+  "message.c87d06cdaae7": {
+    "source": "正在提交预热…",
+    "en": "Submitting warmup…"
+  },
+  "message.cb9110847388": {
+    "source": "正在模拟请求…",
+    "en": "Simulating request…",
+    "zh-TW": "正在模擬請求…",
+    "ru": "Симуляция запроса…",
+    "vi": "Đang mô phỏng yêu cầu…",
+    "ko": "요청 시뮬레이션 중…"
+  },
+  "message.511a3880b9b9": {
+    "source": "正在获取模型…",
+    "en": "Loading models…"
+  },
+  "message.cb12cb3f5d0c": {
+    "source": "正在连接 CPA…",
+    "en": "Connecting to CPA…"
+  },
+  "message.08910e5b36a5": {
+    "source": "正在逐账号模拟执行",
+    "en": "Simulating account requests",
+    "zh-TW": "正在模擬帳號請求",
+    "ru": "Симуляция запросов",
+    "vi": "Đang mô phỏng từng tài khoản",
+    "ko": "계정 요청 시뮬레이션 중"
+  },
+  "message.b7a6dad8c6ae": {
+    "source": "正在逐账号立即执行",
+    "en": "Running account requests"
+  },
+  "message.638b23adbf2c": {
+    "source": "正在验证运行时间…",
+    "en": "Validating schedule…"
+  },
+  "message.862482814a92": {
+    "source": "正式插件将由 CPA 服务端完成定时调度。",
+    "en": "Schedules run on the CPA server."
+  },
+  "message.20c8e7a6600b": {
+    "source": "正式插件将由 CPA 服务端调度。此处用于确认页面、操作流程和状态表达。",
+    "en": "The plugin will schedule on the CPA server. This prototype validates the interface and states.",
+    "zh-TW": "正式外掛由 CPA 伺服器排程；此處驗證介面、流程與狀態。",
+    "ru": "Плагин будет работать на сервере CPA. Здесь проверяются интерфейс и состояния.",
+    "vi": "Tiện ích sẽ chạy lịch trên máy chủ CPA; nguyên mẫu kiểm tra giao diện và trạng thái.",
+    "ko": "실제 플러그인은 CPA 서버에서 일정을 실행하며 이 원형은 화면, 흐름 및 상태를 검증합니다."
+  },
+  "message.bd92844d34fa": {
+    "source": "正式插件按此周期清理展示历史",
+    "en": "Plugin history cleanup interval",
+    "zh-TW": "正式外掛依此週期清理歷史",
+    "ru": "Срок очистки истории в плагине",
+    "vi": "Chu kỳ dọn lịch sử của tiện ích",
+    "ko": "실제 플러그인 기록 정리 주기"
+  },
+  "message.7687168ce2f9": {
+    "source": "正式插件用于定时队列；原型只保存此偏好",
+    "en": "For the plugin scheduler; prototype stores this preference only",
+    "zh-TW": "用於正式外掛定時佇列；原型僅儲存偏好",
+    "ru": "Для планировщика плагина; прототип только сохраняет параметр",
+    "vi": "Dùng cho hàng đợi thật; nguyên mẫu chỉ lưu tùy chọn",
+    "ko": "실제 플러그인 일정 대기열용이며 프로토타입에서는 설정만 저장"
+  },
+  "message.81809028f221": {
+    "source": "此任务已有模拟执行正在进行",
+    "en": "This task already has an active simulation",
+    "zh-TW": "此任務已有進行中的模擬",
+    "ru": "Задача уже симулируется",
+    "vi": "Tác vụ đang có mô phỏng chạy",
+    "ko": "이 작업은 이미 시뮬레이션 중입니다"
+  },
+  "message.a5b4b5acd205": {
+    "source": "此套餐按周刷新，仅展示预热计划点。不能通过每五小时预热绕过周额度上限。",
+    "en": "This plan refreshes weekly. Only triggers are shown; 5h warmups cannot bypass its weekly cap.",
+    "zh-TW": "此方案每週更新，僅顯示預熱點；每五小時預熱不能繞過週上限。",
+    "ru": "Тариф обновляется раз в неделю. Прогрев каждые 5 ч не обходит недельный лимит.",
+    "vi": "Gói này làm mới hằng tuần. Chỉ hiện điểm kích hoạt; làm nóng 5 giờ không vượt được hạn mức tuần.",
+    "ko": "이 요금제는 주간 초기화됩니다. 트리거만 표시하며 5시간 워밍업으로 주간 한도를 우회할 수 없습니다."
+  },
+  "message.8892f4706006": {
+    "source": "此操作只生成模拟结果，不会调用真实 CPA 或模型账号。",
+    "en": "Only simulated results are created; no real CPA or model account is called.",
+    "zh-TW": "僅產生模擬結果，不呼叫真實 CPA 或模型帳號。",
+    "ru": "Только симуляция, без реальных запросов к CPA или моделям.",
+    "vi": "Chỉ tạo kết quả mô phỏng, không gọi CPA hoặc tài khoản thật.",
+    "ko": "모의 결과만 생성하며 실제 CPA 또는 모델 계정을 호출하지 않습니다."
+  },
+  "message.941affe04bdd": {
+    "source": "此操作将通过 CPA 向指定账号发送真实请求，会消耗正常额度。",
+    "en": "Sends a request through CPA using the selected accounts and their normal quota."
+  },
+  "message.6fa9c11f20ee": {
+    "source": "此日期没有预热计划",
+    "en": "No warmups on this date",
+    "zh-TW": "此日期沒有預熱計畫",
+    "ru": "На эту дату нет прогрева",
+    "vi": "Không có lịch làm nóng ngày này",
+    "ko": "이 날짜에 워밍업 계획 없음"
+  },
+  "message.edac4e51a309": {
+    "source": "此账号已暂停预热。下方保留计划展示，暂停期间不发送。",
+    "en": "This account is paused. Plans remain visible; no new requests are sent.",
+    "zh-TW": "此帳號已暫停預熱，保留計畫顯示且不發送新請求。",
+    "ru": "Прогрев аккаунта приостановлен; планы видны, новых запросов нет.",
+    "vi": "Tài khoản đã dừng làm nóng; lịch vẫn hiện nhưng không gửi yêu cầu mới.",
+    "ko": "이 계정의 워밍업은 일시 중지되었으며 계획만 표시하고 새 요청을 보내지 않습니다."
+  },
+  "message.99fffe858b2e": {
+    "source": "每一次触发都有据可查，结果按账号分别记录。",
+    "en": "Inspect each trigger and its per-account results.",
+    "zh-TW": "每次觸發均可追蹤，結果依帳號記錄。",
+    "ru": "Каждый запуск и результат аккаунта доступны для проверки.",
+    "vi": "Theo dõi từng lần kích hoạt và kết quả từng tài khoản.",
+    "ko": "각 트리거와 계정별 결과를 확인하세요."
+  },
+  "message.05afd19706ca": {
+    "source": "每个任务使用同一提供商，模型配置更清晰。",
+    "en": "Each task uses one provider.",
+    "zh-TW": "每個任務使用同一供應商。",
+    "ru": "Один провайдер на задачу.",
+    "vi": "Mỗi tác vụ dùng một nhà cung cấp.",
+    "ko": "각 작업은 하나의 공급자를 사용합니다."
+  },
+  "message.eea1694c235b": {
+    "source": "每天",
+    "en": "Daily",
+    "zh-TW": "每天",
+    "ru": "Ежедневно",
+    "vi": "Hằng ngày",
+    "ko": "매일"
+  },
+  "message.85db26f5a629": {
+    "source": "每天最多设置 24 个时间点",
+    "en": "Use up to 24 times per day"
+  },
+  "message.7be7de4bfc6d": {
+    "source": "汇总这个账号来自所有任务的运行安排。",
+    "en": "All schedules affecting this account.",
+    "zh-TW": "彙整此帳號在所有任務中的安排。",
+    "ru": "Все расписания этого аккаунта.",
+    "vi": "Tổng hợp lịch từ mọi tác vụ của tài khoản.",
+    "ko": "이 계정에 적용되는 모든 작업 일정을 모아 봅니다."
+  },
+  "message.851fe577abbd": {
+    "source": "沒有符合的時區",
+    "en": "No matching time zones"
+  },
+  "message.47bbb49e917d": {
+    "source": "没有可用模型",
+    "en": "No models available"
+  },
+  "message.75391d574dda": {
+    "source": "没有匹配的分组",
+    "en": "No matching groups",
+    "zh-TW": "沒有符合的分組",
+    "ru": "Нет подходящих групп",
+    "vi": "Không có nhóm phù hợp",
+    "ko": "일치하는 그룹 없음"
+  },
+  "message.bbecba5ee016": {
+    "source": "没有匹配的时区",
+    "en": "No matching time zones"
+  },
+  "message.9d8d154e2dfa": {
+    "source": "没有可删除的已结束记录",
+    "en": "No completed run records to delete"
+  },
+  "message.20bf7e451412": {
+    "source": "没有可执行账号",
+    "en": "No accounts ready to run"
+  },
+  "message.c3350bb5af2e": {
+    "source": "没有可执行账号，请检查账号状态",
+    "en": "No accounts ready to run. Check account status."
+  },
+  "message.c4d541d687e5": {
+    "source": "没有找到匹配的任务",
+    "en": "No matching tasks",
+    "zh-TW": "找不到符合的任務",
+    "ru": "Нет подходящих задач",
+    "vi": "Không tìm thấy tác vụ phù hợp",
+    "ko": "일치하는 작업 없음"
+  },
+  "message.ce6e7a63d63a": {
+    "source": "没有找到账号",
+    "en": "No accounts found",
+    "zh-TW": "找不到帳號",
+    "ru": "Аккаунты не найдены",
+    "vi": "Không tìm thấy tài khoản",
+    "ko": "계정을 찾을 수 없음"
+  },
+  "message.bd12e7ddfed2": {
+    "source": "洛杉矶",
+    "en": "Los Angeles"
+  },
+  "message.666ce5e740d1": {
+    "source": "洛杉矶 · 自动夏令时",
+    "en": "Los Angeles · daylight saving",
+    "zh-TW": "洛杉磯 · 自動日光節約時間",
+    "ru": "Лос-Анджелес · летнее время",
+    "vi": "Los Angeles · giờ mùa hè tự động",
+    "ko": "로스앤젤레스 · 자동 서머타임"
+  },
+  "message.aa0819dfc4d8": {
+    "source": "浅色",
+    "en": "Light",
+    "zh-TW": "淺色",
+    "ru": "Светлая",
+    "vi": "Sáng",
+    "ko": "밝게"
+  },
+  "message.89051e21d5b5": {
+    "source": "浏览器关闭后仍应由 CPA 服务端调度。此原型仅展示计划，不会后台发请求。",
+    "en": "The CPA server will schedule with the browser closed. This prototype only previews plans.",
+    "zh-TW": "瀏覽器關閉後仍由 CPA 伺服器排程；原型僅預覽計畫。",
+    "ru": "Сервер CPA будет работать при закрытом браузере. Прототип только показывает планы.",
+    "vi": "Máy chủ CPA sẽ chạy khi đóng trình duyệt; nguyên mẫu chỉ xem trước lịch.",
+    "ko": "브라우저가 닫혀도 실제 CPA 서버가 실행하며 프로토타입은 계획만 표시합니다."
+  },
+  "message.a6b75d068032": {
+    "source": "深色",
+    "en": "Dark",
+    "zh-TW": "深色",
+    "ru": "Тёмная",
+    "vi": "Tối",
+    "ko": "어둡게"
+  },
+  "message.526fed29561d": {
+    "source": "添加时间",
+    "en": "Add time",
+    "zh-TW": "新增時間",
+    "ru": "Добавить время",
+    "vi": "Thêm thời gian",
+    "ko": "시간 추가"
+  },
+  "message.55f1033fab69": {
+    "source": "清除全部",
+    "en": "Clear all"
+  },
+  "message.51f27de322b9": {
+    "source": "清除全部记录",
+    "en": "Clear all history"
+  },
+  "message.b65cd0fddfa6": {
+    "source": "清除本原型的编辑，重新加载示例",
+    "en": "Discard prototype edits and reload examples",
+    "zh-TW": "清除原型編輯並重新載入範例",
+    "ru": "Удалить правки прототипа и загрузить примеры",
+    "vi": "Xóa chỉnh sửa nguyên mẫu và tải lại mẫu",
+    "ko": "프로토타입 편집 내용을 지우고 예시 다시 로드"
+  },
+  "message.657d9cbf45ec": {
+    "source": "清除筛选",
+    "en": "Clear filters",
+    "zh-TW": "清除篩選",
+    "ru": "Сбросить фильтры",
+    "vi": "Xóa bộ lọc",
+    "ko": "필터 지우기"
+  },
+  "message.70ed2721f612": {
+    "source": "清除筛选结果",
+    "en": "Clear filtered history"
+  },
+  "message.d05224a246b1": {
+    "source": "清除筛选结果：按当前日期、关键词和执行结果筛选。清除全部：忽略筛选条件。执行中的记录会保留。",
+    "en": "Clear filtered history uses the current date, search and result filters. Clear all ignores filters. Active runs are retained."
+  },
+  "message.a646e009a119": {
+    "source": "演示数据",
+    "en": "Demo data",
+    "zh-TW": "示範資料",
+    "ru": "Демонстрационные данные",
+    "vi": "Dữ liệu minh họa",
+    "ko": "데모 데이터"
+  },
+  "message.160f82fcccba": {
+    "source": "演示数据保存在当前浏览器；模拟请求不会访问真实账号。",
+    "en": "Demo data stays in this browser. Simulations do not access real accounts.",
+    "zh-TW": "示範資料儲存在目前瀏覽器；模擬不存取真實帳號。",
+    "ru": "Демо хранится в этом браузере. Реальные аккаунты не используются.",
+    "vi": "Dữ liệu minh họa lưu ở trình duyệt này; mô phỏng không truy cập tài khoản thật.",
+    "ko": "데모 데이터는 현재 브라우저에 저장되며 실제 계정에 접근하지 않습니다."
+  },
+  "message.5d68f9b613d4": {
+    "source": "点击色带或圆点查看详情",
+    "en": "Click a window or dot for details"
+  },
+  "message.55469713fc17": {
+    "source": "点击账号查看全部预热计划",
+    "en": "Select an account to see all its schedules",
+    "zh-TW": "點選帳號查看全部預熱計畫",
+    "ru": "Выберите аккаунт для просмотра расписаний",
+    "vi": "Chọn tài khoản để xem mọi lịch làm nóng",
+    "ko": "계정을 선택하여 모든 워밍업 일정 보기"
+  },
+  "message.6320b4a8722a": {
+    "source": "状态",
+    "en": "Status",
+    "zh-TW": "狀態",
+    "ru": "Статус",
+    "vi": "Trạng thái",
+    "ko": "상태"
+  },
+  "message.2a058ae75898": {
+    "source": "独立任务",
+    "en": "Independent tasks"
+  },
+  "message.5560cb437696": {
+    "source": "独立预览 · 浏览器回退",
+    "en": "Standalone preview · browser fallback",
+    "zh-TW": "獨立預覽，使用瀏覽器備援",
+    "ru": "Отдельный просмотр · браузер",
+    "vi": "Xem riêng · dùng trình duyệt",
+    "ko": "독립 미리 보기 · 브라우저 대체 설정"
+  },
+  "message.802a6ea3c021": {
+    "source": "玫红",
+    "en": "Rose"
+  },
+  "message.43584f37c1f4": {
+    "source": "现在",
+    "en": "Now",
+    "zh-TW": "現在",
+    "ru": "Сейчас",
+    "vi": "Bây giờ",
+    "ko": "현재"
+  },
+  "message.0d349e57dafa": {
+    "source": "现在 {v1}",
+    "en": "Now {v1}"
+  },
+  "message.d5234258fd84": {
+    "source": "琥珀色",
+    "en": "Amber"
+  },
+  "message.51b684265f97": {
+    "source": "用户取消，尚未发送",
+    "en": "Cancelled before sending"
+  },
+  "message.f6f6c452685f": {
+    "source": "用自己的方式组织账号，让计划覆盖恰当的目标。",
+    "en": "Organize accounts into groups for your schedules.",
+    "zh-TW": "依需求整理帳號，讓計畫涵蓋合適的目標。",
+    "ru": "Объединяйте аккаунты для нужных расписаний.",
+    "vi": "Sắp xếp tài khoản thành nhóm phù hợp với lịch chạy.",
+    "ko": "일정에 맞게 계정을 그룹으로 정리하세요."
+  },
+  "message.fa33e2a11309": {
+    "source": "由 CPA 后台统一管理，设置变化后自动同步。",
+    "en": "Managed by CPA; changes sync automatically.",
+    "zh-TW": "由 CPA 後台統一管理，設定變更後自動同步。",
+    "ru": "Управляется CPA; изменения синхронизируются автоматически.",
+    "vi": "Do CPA quản lý; thay đổi được đồng bộ tự động.",
+    "ko": "CPA에서 관리하며 변경 사항이 자동 동기화됩니다."
+  },
+  "message.3d13868593ae": {
+    "source": "界面语言",
+    "en": "Interface language",
+    "zh-TW": "介面語言",
+    "ru": "Язык интерфейса",
+    "vi": "Ngôn ngữ giao diện",
+    "ko": "인터페이스 언어"
+  },
+  "message.f56e7eff58bf": {
+    "source": "白色",
+    "en": "White",
+    "zh-TW": "白色",
+    "ru": "Белая",
+    "vi": "Trắng",
+    "ko": "흰색"
+  },
+  "message.c1b9b91be88d": {
+    "source": "目标时间表",
+    "en": "Target schedule",
+    "zh-TW": "目標時間表",
+    "ru": "Расписание цели",
+    "vi": "Lịch dự kiến",
+    "ko": "대상 일정"
+  },
+  "message.4c74e040c922": {
+    "source": "目标账号",
+    "en": "Target accounts",
+    "zh-TW": "目標帳號",
+    "ru": "Целевые аккаунты",
+    "vi": "Tài khoản đích",
+    "ko": "대상 계정"
+  },
+  "message.192f66a229d5": {
+    "source": "真实 CPA 连接：未启用",
+    "en": "Live CPA connection: disabled",
+    "zh-TW": "真實 CPA 連線：未啟用",
+    "ru": "Подключение к CPA: нет",
+    "vi": "Kết nối CPA thật: chưa bật",
+    "ko": "실제 CPA 연결: 비활성화"
+  },
+  "message.de32e20193ad": {
+    "source": "知道了",
+    "en": "Got it",
+    "zh-TW": "知道了",
+    "ru": "Понятно",
+    "vi": "Đã hiểu",
+    "ko": "확인"
+  },
+  "message.36f33adaf094": {
+    "source": "确认",
+    "en": "Confirm",
+    "zh-TW": "確認",
+    "ru": "Подтвердить",
+    "vi": "Xác nhận",
+    "ko": "확인"
+  },
+  "message.285e0ac56cee": {
+    "source": "确认配置",
+    "en": "Review configuration",
+    "zh-TW": "確認設定",
+    "ru": "Проверка настроек",
+    "vi": "Xác nhận cấu hình",
+    "ko": "설정 확인"
+  },
+  "message.e30f6351f3ec": {
+    "source": "窗口为计划估算，实际额度重置以上游为准。",
+    "en": "Windows are estimates. Actual quota resets are determined by the upstream provider."
+  },
+  "message.8cba69a66925": {
+    "source": "窗口可视化",
+    "en": "Window visualization"
+  },
+  "message.1fd916e43234": {
+    "source": "窗口提示",
+    "en": "Window status",
+    "zh-TW": "視窗提示",
+    "ru": "Состояние окна",
+    "vi": "Trạng thái cửa sổ",
+    "ko": "창 상태"
+  },
+  "message.6d0b2522621b": {
+    "source": "窗口时间轴，窄屏可左右滚动",
+    "en": "Window timeline. Scroll horizontally on narrow screens."
+  },
+  "message.356d09ae3e53": {
+    "source": "窗口状态",
+    "en": "Window status"
+  },
+  "message.cdb6be7c1465": {
+    "source": "立即执行",
+    "en": "Run now"
+  },
+  "message.6f942efe498c": {
+    "source": "立即执行 {v21}",
+    "en": "Run now {v21}"
+  },
+  "message.5fe74d577c6f": {
+    "source": "立即执行一次",
+    "en": "Run once"
+  },
+  "message.adddb4446be2": {
+    "source": "立即执行遵守此上限；每提供商最多 2 个，同账号串行",
+    "en": "Immediate runs use this limit. Up to two accounts per provider; requests for the same account run in sequence."
+  },
+  "message.f03bb06e75ce": {
+    "source": "立即预热",
+    "en": "Warm up now"
+  },
+  "message.50d8cda8d3ad": {
+    "source": "立即预热 ·",
+    "en": "Instant warmup ·"
+  },
+  "message.af50a0fe2a50": {
+    "source": "第",
+    "en": "Page",
+    "zh-TW": "第",
+    "ru": "Стр.",
+    "vi": "Trang",
+    "ko": "페이지"
+  },
+  "message.1b9ef55a5fcb": {
+    "source": "第 1 / 1 页",
+    "en": "Page 1 / 1 page"
+  },
+  "message.70bc557a9741": {
+    "source": "等待并发名额 / 账号锁",
+    "en": "Waiting for capacity / account lock",
+    "zh-TW": "等待並行名額／帳號鎖",
+    "ru": "Ожидание слота / блокировки аккаунта",
+    "vi": "Chờ lượt đồng thời / khóa tài khoản",
+    "ko": "동시 실행 슬롯 / 계정 잠금 대기"
+  },
+  "message.9937e365aaf3": {
+    "source": "简体中文",
+    "en": "Simplified Chinese"
+  },
+  "message.7fa5c4051f1f": {
+    "source": "管理调度偏好，以及当前原型的演示数据。",
+    "en": "Manage scheduling preferences and demo data.",
+    "zh-TW": "管理排程偏好與原型示範資料。",
+    "ru": "Параметры расписаний и демонстрационных данных.",
+    "vi": "Quản lý tùy chọn lịch chạy và dữ liệu minh họa.",
+    "ko": "일정 환경 설정 및 데모 데이터를 관리하세요."
+  },
+  "message.2ed9c6fabac2": {
+    "source": "紫色",
+    "en": "Purple"
+  },
+  "message.6f7a8befcfb1": {
+    "source": "紫色分组",
+    "en": "Purple group",
+    "zh-TW": "紫色分組",
+    "ru": "Фиолетовая группа",
+    "vi": "Nhóm màu tím",
+    "ko": "보라색 그룹"
+  },
+  "message.1c95ab9b144e": {
+    "source": "繁體中文",
+    "en": "Traditional Chinese"
+  },
+  "message.8e584bf1991a": {
+    "source": "纯前端交互原型",
+    "en": "Frontend interaction prototype",
+    "zh-TW": "前端互動原型",
+    "ru": "Прототип интерфейса",
+    "vi": "Nguyên mẫu giao diện",
+    "ko": "프런트엔드 인터랙션 프로토타입"
+  },
+  "message.21f9f830edf1": {
+    "source": "纽约",
+    "en": "New York"
+  },
+  "message.12bcfe214fdc": {
+    "source": "组合选择",
+    "en": "Combined targets",
+    "zh-TW": "組合選擇",
+    "ru": "Комбинированный выбор",
+    "vi": "Chọn kết hợp",
+    "ko": "조합 선택"
+  },
+  "message.cd5fc5f9b747": {
+    "source": "组成员变更仅影响未来批次；账号登录与禁用状态由 CPA 管理。",
+    "en": "Membership changes affect future batches. CPA manages account sign-in and disablement.",
+    "zh-TW": "成員變更僅影響未來批次；登入與停用狀態由 CPA 管理。",
+    "ru": "Изменения состава влияют на будущие запуски. Входом и отключением управляет CPA.",
+    "vi": "Đổi thành viên chỉ ảnh hưởng đợt sau; CPA quản lý đăng nhập và trạng thái tắt.",
+    "ko": "구성원 변경은 이후 배치에 적용되며 로그인 및 비활성화는 CPA에서 관리합니다."
+  },
+  "message.e6bedaccc265": {
+    "source": "结果未确认",
+    "en": "Result unconfirmed",
+    "zh-TW": "結果未確認",
+    "ru": "Результат неизвестен",
+    "vi": "Chưa xác nhận kết quả",
+    "ko": "결과 미확인"
+  },
+  "message.30c83dc25b12": {
+    "source": "绿色",
+    "en": "Green"
+  },
+  "message.c1ad25ed59ac": {
+    "source": "绿色分组",
+    "en": "Green group",
+    "zh-TW": "綠色分組",
+    "ru": "Зелёная группа",
+    "vi": "Nhóm màu xanh lá",
+    "ko": "녹색 그룹"
+  },
+  "message.051836569928": {
+    "source": "编辑",
+    "en": "Edit",
+    "zh-TW": "編輯",
+    "ru": "Изменить",
+    "vi": "Sửa",
+    "ko": "편집"
+  },
+  "message.af22155b0e05": {
+    "source": "编辑 {v24}",
+    "en": "Edit {v24}"
+  },
+  "message.1f8732f1de54": {
+    "source": "编辑任务",
+    "en": "Edit task",
+    "zh-TW": "編輯任務",
+    "ru": "Изменить задачу",
+    "vi": "Sửa tác vụ",
+    "ko": "작업 편집"
+  },
+  "message.d00b2a96c3b3": {
+    "source": "编辑分组",
+    "en": "Edit group",
+    "zh-TW": "編輯分組",
+    "ru": "Изменить группу",
+    "vi": "Sửa nhóm",
+    "ko": "그룹 편집"
+  },
+  "message.6b34086af195": {
+    "source": "编辑分组 {v3}",
+    "en": "Edit group {v3}"
+  },
+  "message.7eb336e42cb5": {
+    "source": "自动",
+    "en": "Automatic",
+    "zh-TW": "自動",
+    "ru": "Автоматически",
+    "vi": "Tự động",
+    "ko": "자동"
+  },
+  "message.0e4a68e93607": {
+    "source": "自动 ·",
+    "en": "Automatic ·"
+  },
+  "message.931c17869989": {
+    "source": "自动复用 CPA 已保存的登录信息，无需在插件中填写密钥。",
+    "en": "Uses the saved CPA session automatically. No key is required in the plugin."
+  },
+  "message.8d843d034cff": {
+    "source": "自动定时发送：未启用",
+    "en": "Automatic dispatch: disabled",
+    "zh-TW": "自動定時傳送：未啟用",
+    "ru": "Автоматическая отправка: нет",
+    "vi": "Tự động gửi theo lịch: chưa bật",
+    "ko": "자동 예약 전송: 비활성화"
+  },
+  "message.71e7a5efaa0a": {
+    "source": "自动模式同时跟随系统明暗变化",
+    "en": "Automatic mode follows system appearance",
+    "zh-TW": "自動模式同時跟隨系統明暗變化",
+    "ru": "Автоматический режим следует теме системы",
+    "vi": "Chế độ tự động theo giao diện hệ thống",
+    "ko": "자동 모드에서 시스템 테마도 따름"
+  },
+  "message.f679a59543c8": {
+    "source": "自动预算",
+    "en": "Automatic budget"
+  },
+  "message.c08b046b5470": {
+    "source": "自定义分组",
+    "en": "Custom groups",
+    "zh-TW": "自訂分組",
+    "ru": "Свои группы",
+    "vi": "Nhóm tùy chỉnh",
+    "ko": "사용자 지정 그룹"
+  },
+  "message.696f746a9d76": {
+    "source": "色带是计划估算，实际重置以上游为准。Antigravity Pro/Ultra 为 5h + 周额度；其他套餐按周或标记未知。",
+    "en": "Bands are projections; actual resets require upstream data. Antigravity Pro/Ultra: 5h plus weekly cap. Other plans: weekly or unknown.",
+    "zh-TW": "色帶是計畫估算，實際重置以上游為準。Antigravity Pro／Ultra：5h＋週額度；其他方案依週或標記未知。",
+    "ru": "Полосы — оценка. Сброс подтверждает провайдер. Pro/Ultra: 5 ч и недельный лимит; другие тарифы: неделя или неизвестно.",
+    "vi": "Dải màu là ước tính; đặt lại thực tế theo nguồn. Pro/Ultra: 5 giờ và hạn mức tuần; gói khác: tuần hoặc chưa rõ.",
+    "ko": "색 띠는 추정이며 실제 초기화는 공급자 데이터가 필요합니다. Pro/Ultra는 5시간과 주간 한도, 나머지는 주간 또는 미확인입니다."
+  },
+  "message.d4711a0fdbb3": {
+    "source": "获取模型失败",
+    "en": "Failed to load models"
+  },
+  "message.e31dde5d7a01": {
+    "source": "获取账号模型失败，请点击刷新模型重试",
+    "en": "Failed to load account models. Refresh models to retry."
+  },
+  "message.67035e6b7f82": {
+    "source": "蓝色",
+    "en": "Blue"
+  },
+  "message.9098b66686da": {
+    "source": "蓝色分组",
+    "en": "Blue group",
+    "zh-TW": "藍色分組",
+    "ru": "Синяя группа",
+    "vi": "Nhóm màu xanh dương",
+    "ko": "파란색 그룹"
+  },
+  "message.b01f5bf0cc99": {
+    "source": "覆盖可用账号",
+    "en": "Available accounts covered",
+    "zh-TW": "涵蓋可用帳號",
+    "ru": "Доступные аккаунты",
+    "vi": "Tài khoản khả dụng",
+    "ko": "사용 가능한 계정"
+  },
+  "message.4c97b3a19bc2": {
+    "source": "覆盖可用账号{v4}",
+    "en": "Available accounts covered{v4}"
+  },
+  "message.40fdf3bc08db": {
+    "source": "覆盖所有日期和执行结果，忽略当前筛选条件。",
+    "en": "Includes all dates and results, regardless of the current filters."
+  },
+  "message.dfcc95a18049": {
+    "source": "触发时间",
+    "en": "Trigger time",
+    "zh-TW": "觸發時間",
+    "ru": "Время запуска",
+    "vi": "Thời gian kích hoạt",
+    "ko": "트리거 시간"
+  },
+  "message.97280efe724c": {
+    "source": "触发时间 {v1} 小时",
+    "en": "Trigger time {v1} hours",
+    "plural": {
+      "parameter": "v1",
+      "en": {
+        "one": "Trigger time {v1} hour"
+      }
+    }
+  },
+  "message.c51302632cca": {
+    "source": "触发时间 {v2}",
+    "en": "Trigger time {v2}"
+  },
+  "message.395d221759dc": {
+    "source": "触发时间 {v4} 分钟",
+    "en": "Trigger time {v4} minutes",
+    "plural": {
+      "parameter": "v4",
+      "en": {
+        "one": "Trigger time {v4} minute"
+      }
+    }
+  },
+  "message.20172bbd7f4e": {
+    "source": "计划估算",
+    "en": "Plan estimate",
+    "zh-TW": "計畫估算",
+    "ru": "Оценка по плану",
+    "vi": "Ước tính theo lịch",
+    "ko": "계획 추정"
+  },
+  "message.84c99de6ee6b": {
+    "source": "计划已保存",
+    "en": "Schedule saved",
+    "zh-TW": "計畫已儲存",
+    "ru": "План сохранён",
+    "vi": "Đã lưu lịch",
+    "ko": "일정이 저장됨"
+  },
+  "message.0a4c4092e678": {
+    "source": "计划已启用 · 模拟环境",
+    "en": "Schedules enabled · simulation",
+    "zh-TW": "計畫已啟用，模擬環境",
+    "ru": "Планы включены · симуляция",
+    "vi": "Lịch đã bật · môi trường mô phỏng",
+    "ko": "일정 활성화됨 · 모의 환경"
+  },
+  "message.0297c9ec1ac7": {
+    "source": "计划已暂停",
+    "en": "Schedules paused",
+    "zh-TW": "計畫已暫停",
+    "ru": "Расписания приостановлены",
+    "vi": "Lịch đã tạm dừng",
+    "ko": "일정 일시 중지됨"
+  },
+  "message.df3d58c7d84b": {
+    "source": "设置",
+    "en": "Settings",
+    "zh-TW": "設定",
+    "ru": "Настройки",
+    "vi": "Cài đặt",
+    "ko": "설정"
+  },
+  "message.bd03c0aad701": {
+    "source": "设置已保存",
+    "en": "Settings saved"
+  },
+  "message.04a3a3bc62a9": {
+    "source": "试试其他关键词。",
+    "en": "Try different keywords.",
+    "zh-TW": "試試其他關鍵字。",
+    "ru": "Попробуйте другой запрос.",
+    "vi": "Thử từ khóa khác.",
+    "ko": "다른 검색어를 사용하세요."
+  },
+  "message.d2d18c0d6480": {
+    "source": "试试其他关键词，或者创建一条新任务。",
+    "en": "Try another search or create a task.",
+    "zh-TW": "試試其他關鍵字，或新增任務。",
+    "ru": "Измените запрос или создайте задачу.",
+    "vi": "Thử từ khóa khác hoặc tạo tác vụ.",
+    "ko": "다른 검색어를 사용하거나 작업을 만드세요."
+  },
+  "message.038604774032": {
+    "source": "语言与主题",
+    "en": "Language & theme",
+    "zh-TW": "語言與主題",
+    "ru": "Язык и тема",
+    "vi": "Ngôn ngữ và giao diện",
+    "ko": "언어 및 테마"
+  },
+  "message.4262c45dc797": {
+    "source": "说明",
+    "en": "Description",
+    "zh-TW": "說明",
+    "ru": "Описание",
+    "vi": "Mô tả",
+    "ko": "설명"
+  },
+  "message.903c91cd0fbe": {
+    "source": "请先在 CPA 登录并勾选“记住密码”，再返回插件",
+    "en": "Sign in to CPA with Remember password enabled, then return to the plugin."
+  },
+  "message.c577119a8069": {
+    "source": "请先恢复全局计划",
+    "en": "Resume all schedules first",
+    "zh-TW": "請先恢復全域計畫",
+    "ru": "Сначала возобновите расписания",
+    "vi": "Trước tiên tiếp tục mọi lịch",
+    "ko": "먼저 전체 일정을 재개하세요"
+  },
+  "message.8fa837ff0d9c": {
+    "source": "请先选择目标账号",
+    "en": "Select target accounts first"
+  },
+  "message.ce47c98b21eb": {
+    "source": "请填写 CPA 中已验证可用的模型 ID；保存后仍由上游校验模型权限。",
+    "en": "Enter a model ID available in CPA. The upstream provider checks model access when requests run."
+  },
+  "message.dd9d9d3542ba": {
+    "source": "请填写任务名称",
+    "en": "Enter a task name",
+    "zh-TW": "請填寫任務名稱",
+    "ru": "Введите название задачи",
+    "vi": "Nhập tên tác vụ",
+    "ko": "작업 이름을 입력하세요"
+  },
+  "message.c4069de63102": {
+    "source": "请填写分组名称",
+    "en": "Enter a group name",
+    "zh-TW": "請填寫分組名稱",
+    "ru": "Введите название группы",
+    "vi": "Nhập tên nhóm",
+    "ko": "그룹 이름을 입력하세요"
+  },
+  "message.af2f28af0f53": {
+    "source": "请填写模型 ID",
+    "en": "Enter a model ID"
+  },
+  "message.126fbf59cf04": {
+    "source": "请求失败",
+    "en": "Request failed",
+    "zh-TW": "請求失敗",
+    "ru": "Ошибка запроса",
+    "vi": "Yêu cầu thất bại",
+    "ko": "요청 실패"
+  },
+  "message.d5f596827e82": {
+    "source": "请求成功",
+    "en": "Request succeeded",
+    "zh-TW": "請求成功",
+    "ru": "Запрос успешен",
+    "vi": "Yêu cầu thành công",
+    "ko": "요청 성공"
+  },
+  "message.bcad276cbeb9": {
+    "source": "请求成功 · {v10} 次跳过",
+    "en": "Request succeeded · {v10} skips"
+  },
+  "message.17da813eee50": {
+    "source": "请求模型",
+    "en": "Request model",
+    "zh-TW": "請求模型",
+    "ru": "Модель запроса",
+    "vi": "Mô hình yêu cầu",
+    "ko": "요청 모델"
+  },
+  "message.a76176f69598": {
+    "source": "请等待模型获取完成，并选择目标账号支持的模型和推理强度",
+    "en": "Wait for models to load, then select a supported model and reasoning level"
+  },
+  "message.a2ce0237006b": {
+    "source": "请等待模拟批次结束后再恢复",
+    "en": "Wait for the simulated run to finish before restoring"
+  },
+  "message.49603c5c1149": {
+    "source": "请至少选择一个分组或账号",
+    "en": "Select at least one group or account",
+    "zh-TW": "請至少選取一個分組或帳號",
+    "ru": "Выберите группу или аккаунт",
+    "vi": "Chọn ít nhất một nhóm hoặc tài khoản",
+    "ko": "그룹 또는 계정을 하나 이상 선택하세요"
+  },
+  "message.691a84695de4": {
+    "source": "请至少选择一个账号",
+    "en": "Select at least one account",
+    "zh-TW": "請至少選取一個帳號",
+    "ru": "Выберите хотя бы один аккаунт",
+    "vi": "Chọn ít nhất một tài khoản",
+    "ko": "계정을 하나 이상 선택하세요"
+  },
+  "message.3b87fa3f5dbd": {
+    "source": "请至少选择一个运行日期",
+    "en": "Select at least one run day",
+    "zh-TW": "請至少選取一個執行日期",
+    "ru": "Выберите день запуска",
+    "vi": "Chọn ít nhất một ngày chạy",
+    "ko": "실행 요일을 하나 이상 선택하세요"
+  },
+  "message.fba6f1f81997": {
+    "source": "请设置至少一个有效的触发时间",
+    "en": "Set at least one valid trigger time",
+    "zh-TW": "請設定至少一個有效觸發時間",
+    "ru": "Укажите корректное время запуска",
+    "vi": "Đặt ít nhất một giờ kích hoạt hợp lệ",
+    "ko": "유효한 트리거 시간을 하나 이상 설정하세요"
+  },
+  "message.da590a8fe3ce": {
+    "source": "请选择",
+    "en": "Select an option"
+  },
+  "message.e8898dac472a": {
+    "source": "请选择有效的 IANA 时区",
+    "en": "Select a valid IANA time zone"
+  },
+  "message.621e846d2bce": {
+    "source": "请选择模型",
+    "en": "Select a model"
+  },
+  "message.00bf1323bf80": {
+    "source": "请选择至少一个仍存在于 CPA 的同提供商账号；暂停或暂时不可用不影响读取模型目录。",
+    "en": "Select at least one existing CPA account from the same provider. Paused or unavailable accounts can still load model catalogs."
+  },
+  "message.63822aac6417": {
+    "source": "请选择运行日期与有效时间",
+    "en": "Select run days and valid times",
+    "zh-TW": "請選取執行日期與有效時間",
+    "ru": "Выберите дни и время",
+    "vi": "Chọn ngày và giờ hợp lệ",
+    "ko": "실행 요일과 유효한 시간을 선택하세요"
+  },
+  "message.173a9d27e121": {
+    "source": "调度偏好",
+    "en": "Scheduling preferences",
+    "zh-TW": "排程偏好",
+    "ru": "Параметры расписания",
+    "vi": "Tùy chọn lịch chạy",
+    "ko": "일정 환경 설정"
+  },
+  "message.83136aeacc9a": {
+    "source": "调度偏好已保存",
+    "en": "Scheduling preferences saved",
+    "zh-TW": "排程偏好已儲存",
+    "ru": "Параметры сохранены",
+    "vi": "Đã lưu tùy chọn lịch chạy",
+    "ko": "일정 환경 설정이 저장됨"
+  },
+  "message.5077b30c7974": {
+    "source": "调度在 CPA 服务端运行，语言和主题自动跟随宿主。",
+    "en": "Scheduling runs on the CPA server. Language and theme follow CPA."
+  },
+  "message.f3569d33f4e8": {
+    "source": "调度已启用",
+    "en": "Scheduling enabled"
+  },
+  "message.8259b97f88e5": {
+    "source": "调度已恢复",
+    "en": "Scheduling resumed"
+  },
+  "message.d334b9e85e26": {
+    "source": "调度已恢复，从下一个时间点继续",
+    "en": "Scheduling resumed from the next scheduled time"
+  },
+  "message.99491deec21d": {
+    "source": "调度已暂停",
+    "en": "Scheduling paused"
+  },
+  "message.7c0ee0f31a3a": {
+    "source": "调度暂停中",
+    "en": "Scheduling paused"
+  },
+  "message.393eeff0906a": {
+    "source": "调度概览",
+    "en": "Schedule overview",
+    "zh-TW": "排程概覽",
+    "ru": "Обзор расписания",
+    "vi": "Tổng quan lịch chạy",
+    "ko": "일정 개요"
+  },
+  "message.ccbe1faba96a": {
+    "source": "调度状态",
+    "en": "Scheduling status"
+  },
+  "message.311bb313fdec": {
+    "source": "账号",
+    "en": "Account"
+  },
+  "message.617578facfd8": {
+    "source": "账号、模型和结果均为演示数据。修改保存在当前浏览器，刷新后保留；没有接入真实 CPA，不会定时或主动调用任何真实账号。",
+    "en": "Accounts, models and results are demo data stored in this browser. No real CPA accounts or requests are used."
+  },
+  "message.d5df069a0892": {
+    "source": "账号与分组",
+    "en": "Accounts & groups",
+    "zh-TW": "帳號與分組",
+    "ru": "Аккаунты и группы",
+    "vi": "Tài khoản và nhóm",
+    "ko": "계정 및 그룹"
+  },
+  "message.199e00b1fcf4": {
+    "source": "账号分组",
+    "en": "Account groups",
+    "zh-TW": "帳號分組",
+    "ru": "Группы аккаунтов",
+    "vi": "Nhóm tài khoản",
+    "ko": "계정 그룹"
+  },
+  "message.8451b6e17f8a": {
+    "source": "账号可用",
+    "en": "Account available",
+    "zh-TW": "帳號可用",
+    "ru": "Аккаунт доступен",
+    "vi": "Tài khoản khả dụng",
+    "ko": "사용 가능한 계정"
+  },
+  "message.b4417f352e63": {
+    "source": "账号已不在 CPA 中",
+    "en": "Account missing from CPA",
+    "zh-TW": "CPA 中已無此帳號",
+    "ru": "Аккаунт отсутствует в CPA",
+    "vi": "Tài khoản không còn trong CPA",
+    "ko": "CPA에 계정이 없음"
+  },
+  "message.5ff5340311b5": {
+    "source": "账号已在 CPA 中禁用",
+    "en": "Account disabled in CPA",
+    "zh-TW": "帳號已在 CPA 中停用",
+    "ru": "Аккаунт отключён в CPA",
+    "vi": "Tài khoản đã tắt trong CPA",
+    "ko": "CPA에서 비활성화된 계정"
+  },
+  "message.31eea5698fda": {
+    "source": "账号成员",
+    "en": "Members",
+    "zh-TW": "帳號成員",
+    "ru": "Участники",
+    "vi": "Thành viên",
+    "ko": "계정 구성원"
+  },
+  "message.fa09224ba319": {
+    "source": "账号提供商筛选",
+    "en": "Filter account provider",
+    "zh-TW": "篩選帳號供應商",
+    "ru": "Фильтр провайдера аккаунта",
+    "vi": "Lọc nhà cung cấp tài khoản",
+    "ko": "계정 공급자 필터"
+  },
+  "message.76986a741c3c": {
+    "source": "账号时间线",
+    "en": "Account timeline",
+    "zh-TW": "帳號時間軸",
+    "ru": "Шкала аккаунта",
+    "vi": "Dòng thời gian tài khoản",
+    "ko": "계정 타임라인"
+  },
+  "message.449636a1fe8d": {
+    "source": "账号状态",
+    "en": "Account status",
+    "zh-TW": "帳號狀態",
+    "ru": "Статус аккаунта",
+    "vi": "Trạng thái tài khoản",
+    "ko": "계정 상태"
+  },
+  "message.1a2f0910f72e": {
+    "source": "账号状态筛选",
+    "en": "Filter account status"
+  },
+  "message.ff15a360e041": {
+    "source": "账号登录已过期",
+    "en": "Account sign-in expired",
+    "zh-TW": "帳號登入已過期",
+    "ru": "Вход в аккаунт истёк",
+    "vi": "Đăng nhập tài khoản hết hạn",
+    "ko": "계정 로그인 만료"
+  },
+  "message.a0c6cec0dc0f": {
+    "source": "账号登录已过期，本次未发送",
+    "en": "Sign-in expired; not sent",
+    "zh-TW": "登入已過期，此次未傳送",
+    "ru": "Вход истёк; не отправлено",
+    "vi": "Đăng nhập hết hạn; chưa gửi",
+    "ko": "로그인 만료로 전송하지 않음"
+  },
+  "message.dbd1c75e5ccb": {
+    "source": "账号视图",
+    "en": "Account view",
+    "zh-TW": "帳號檢視",
+    "ru": "Вид аккаунтов",
+    "vi": "Chế độ tài khoản",
+    "ko": "계정 보기"
+  },
+  "message.2c7b5d04ee75": {
+    "source": "账号详情预热开关",
+    "en": "Account warmup toggle",
+    "zh-TW": "帳號詳情預熱開關",
+    "ru": "Прогрев аккаунта",
+    "vi": "Bật tắt làm nóng tài khoản",
+    "ko": "계정 워밍업 전환"
+  },
+  "message.cbc00b2dfba1": {
+    "source": "账号预热设置已保存",
+    "en": "Account warmup settings saved"
+  },
+  "message.15979de49221": {
+    "source": "起点未确认",
+    "en": "Start unknown",
+    "zh-TW": "起點未確認",
+    "ru": "Начало неизвестно",
+    "vi": "Chưa rõ điểm bắt đầu",
+    "ko": "시작점 미확인"
+  },
+  "message.49793d855d36": {
+    "source": "起点未确认 · 仅触发点",
+    "en": "Start unconfirmed · triggers only"
+  },
+  "message.df1c65acff2a": {
+    "source": "跟随 CPA 后台",
+    "en": "Following CPA",
+    "zh-TW": "跟隨 CPA 後台",
+    "ru": "Из интерфейса CPA",
+    "vi": "Theo CPA",
+    "ko": "CPA 설정 따르기"
+  },
+  "message.904f36578d78": {
+    "source": "跟随 CPA 已保存偏好",
+    "en": "Saved CPA preferences",
+    "zh-TW": "跟隨 CPA 已儲存偏好",
+    "ru": "Сохранённые настройки CPA",
+    "vi": "Theo tùy chọn CPA đã lưu",
+    "ko": "저장된 CPA 설정 따르기"
+  },
+  "message.c12370b0373d": {
+    "source": "跟随 CPA，无独立语言设置",
+    "en": "Uses CPA language; no separate setting",
+    "zh-TW": "跟隨 CPA，無獨立語言設定",
+    "ru": "Язык CPA, без отдельной настройки",
+    "vi": "Theo ngôn ngữ CPA, không cài đặt riêng",
+    "ko": "별도 설정 없이 CPA 언어 사용"
+  },
+  "message.d5ce73673d30": {
+    "source": "跨天延续",
+    "en": "Continues next day",
+    "zh-TW": "跨日延續",
+    "ru": "Продолжится завтра",
+    "vi": "Tiếp sang ngày sau",
+    "ko": "다음 날짜로 이어짐"
+  },
+  "message.6f8303da1d39": {
+    "source": "跨天延续 · 5h",
+    "en": "Continues next day · 5h"
+  },
+  "message.aab1b0aaa286": {
+    "source": "跨日延续",
+    "en": "Continues next day"
+  },
+  "message.fc50a99caae0": {
+    "source": "跳过",
+    "en": "Skipped",
+    "zh-TW": "略過",
+    "ru": "Пропущено",
+    "vi": "Đã bỏ qua",
+    "ko": "건너뜀"
+  },
+  "message.d3a832f8ae1b": {
+    "source": "轻量预热，按时就绪。",
+    "en": "Lightweight warmup. Ready on schedule."
+  },
+  "message.3e5c3ba2c6a7": {
+    "source": "运行方式",
+    "en": "Run mode",
+    "zh-TW": "執行方式",
+    "ru": "Режим запуска",
+    "vi": "Chế độ chạy",
+    "ko": "실행 방식"
+  },
+  "message.48b5ac896b18": {
+    "source": "运行日期",
+    "en": "Run days",
+    "zh-TW": "執行日期",
+    "ru": "Дни запуска",
+    "vi": "Ngày chạy",
+    "ko": "실행 요일"
+  },
+  "message.5986e9d976e0": {
+    "source": "运行时间",
+    "en": "Schedule",
+    "zh-TW": "執行時間",
+    "ru": "Расписание",
+    "vi": "Lịch chạy",
+    "ko": "실행 시간"
+  },
+  "message.fcebd07d8697": {
+    "source": "运行时间验证失败：",
+    "en": "Schedule validation failed:"
+  },
+  "message.a4d3a38bf6e5": {
+    "source": "返回 CPA 登录",
+    "en": "Return to CPA sign-in"
+  },
+  "message.428519e72535": {
+    "source": "还没有待执行的任务",
+    "en": "No upcoming tasks",
+    "zh-TW": "尚無待執行任務",
+    "ru": "Нет ожидающих задач",
+    "vi": "Chưa có tác vụ chờ",
+    "ko": "대기 중인 작업 없음"
+  },
+  "message.3291d9f600d6": {
+    "source": "还没有此提供商的分组，请先在账号与分组页面创建。",
+    "en": "No groups exist for this provider. Create one in Accounts & groups."
+  },
+  "message.6a73627626ed": {
+    "source": "这个分组主要用来做什么？",
+    "en": "What is this group used for?",
+    "zh-TW": "此分組主要用途是什麼？",
+    "ru": "Для чего нужна эта группа?",
+    "vi": "Nhóm này dùng để làm gì?",
+    "ko": "이 그룹의 용도는 무엇인가요?"
+  },
+  "message.04e8fbbbd2f1": {
+    "source": "这个账号暂时没有启用中的任务。",
+    "en": "No enabled tasks for this account.",
+    "zh-TW": "此帳號尚無已啟用任務。",
+    "ru": "Для аккаунта нет включённых задач.",
+    "vi": "Tài khoản chưa có tác vụ đã bật.",
+    "ko": "이 계정에는 활성화된 작업이 없습니다."
+  },
+  "message.779a92589a99": {
+    "source": "这是 CPA Spark 的交互设计原型，用于体验单账号与分组独立调度。",
+    "en": "CPA Spark interaction prototype for independent account and group schedules."
+  },
+  "message.75fd34439b38": {
+    "source": "这里展示模拟请求结果。“请求成功”与“额度窗口已开启”分别判定；没有上游依据时，重置时间显示未知。",
+    "en": "Results are simulated. Request success does not confirm a quota window; resets without upstream evidence stay unknown.",
+    "zh-TW": "此處為模擬結果；請求成功不等於額度視窗開啟，無上游依據則重置未知。",
+    "ru": "Результаты смоделированы. Успех запроса не подтверждает окно квоты; без данных сброс неизвестен.",
+    "vi": "Kết quả là mô phỏng. Yêu cầu thành công không xác nhận cửa sổ hạn mức; thiếu dữ liệu thì đặt lại chưa rõ.",
+    "ko": "모의 결과입니다. 요청 성공이 한도 창 활성화를 확인하지 않으며 공급자 근거가 없으면 초기화는 미확인입니다."
+  },
+  "message.8ca62b571eea": {
+    "source": "选择任务",
+    "en": "Select task",
+    "zh-TW": "選取任務",
+    "ru": "Выбрать задачу",
+    "vi": "Chọn tác vụ",
+    "ko": "작업 선택"
+  },
+  "message.360534a39336": {
+    "source": "选择任务 {v0}",
+    "en": "Select task {v0}"
+  },
+  "message.5eb4187dd665": {
+    "source": "选择可用账号",
+    "en": "Select available accounts",
+    "zh-TW": "選取可用帳號",
+    "ru": "Выбрать доступные аккаунты",
+    "vi": "Chọn tài khoản khả dụng",
+    "ko": "사용 가능한 계정 선택"
+  },
+  "message.a068d7670361": {
+    "source": "选择当前列表全部任务",
+    "en": "Select all listed tasks",
+    "zh-TW": "選取目前列表的全部任務",
+    "ru": "Выбрать все задачи списка",
+    "vi": "Chọn mọi tác vụ trong danh sách",
+    "ko": "현재 목록의 모든 작업 선택"
+  },
+  "message.7c9084ab5be1": {
+    "source": "选择目标",
+    "en": "Select targets",
+    "zh-TW": "選擇目標",
+    "ru": "Выбрать цели",
+    "vi": "Chọn tài khoản đích",
+    "ko": "대상 선택"
+  },
+  "message.558f727c56df": {
+    "source": "选择选项",
+    "en": "Select an option"
+  },
+  "message.a8149f3189ca": {
+    "source": "逐账号结果",
+    "en": "Per-account results",
+    "zh-TW": "逐帳號結果",
+    "ru": "Результаты аккаунтов",
+    "vi": "Kết quả từng tài khoản",
+    "ko": "계정별 결과"
+  },
+  "message.7e214ed64ae3": {
+    "source": "部分失败",
+    "en": "Some failed",
+    "zh-TW": "部分失敗",
+    "ru": "Есть ошибки",
+    "vi": "Thất bại một phần",
+    "ko": "일부 실패"
+  },
+  "message.891eee47c4a6": {
+    "source": "部分跳过",
+    "en": "Some skipped",
+    "zh-TW": "部分略過",
+    "ru": "Есть пропуски",
+    "vi": "Bỏ qua một phần",
+    "ko": "일부 건너뜀"
+  },
+  "message.68891ab35cab": {
+    "source": "重新连接",
+    "en": "Reconnect"
+  },
+  "message.b8784c8dd563": {
+    "source": "重试",
+    "en": "Retry"
+  },
+  "message.dffb064773cb": {
+    "source": "需登录",
+    "en": "Sign-in required",
+    "zh-TW": "需登入",
+    "ru": "Требуется вход",
+    "vi": "Cần đăng nhập",
+    "ko": "로그인 필요"
+  },
+  "message.8aee3f656a95": {
+    "source": "需重新登录",
+    "en": "Sign-in required",
+    "zh-TW": "需重新登入",
+    "ru": "Требуется вход",
+    "vi": "Cần đăng nhập lại",
+    "ko": "다시 로그인 필요"
+  },
+  "message.d76f2cfec994": {
+    "source": "青色",
+    "en": "Cyan"
+  },
+  "message.d24d3c99460c": {
+    "source": "页",
+    "en": "page",
+    "zh-TW": "頁",
+    "ru": "стр.",
+    "vi": "trang",
+    "ko": "페이지"
+  },
+  "message.2051831c1a77": {
+    "source": "预热",
+    "en": "Warmup",
+    "zh-TW": "預熱",
+    "ru": "Прогрев",
+    "vi": "Làm nóng",
+    "ko": "워밍업"
+  },
+  "message.daa6cb046cd8": {
+    "source": "预热 ·",
+    "en": "Warmup ·"
+  },
+  "message.588315045b3c": {
+    "source": "预热任务",
+    "en": "Warmup tasks",
+    "zh-TW": "預熱任務",
+    "ru": "Задачи прогрева",
+    "vi": "Tác vụ làm nóng",
+    "ko": "워밍업 작업"
+  },
+  "message.94cc47e35e12": {
+    "source": "预热任务已创建",
+    "en": "Warmup task created",
+    "zh-TW": "預熱任務已建立",
+    "ru": "Задача прогрева создана",
+    "vi": "Đã tạo tác vụ làm nóng",
+    "ko": "워밍업 작업이 생성됨"
+  },
+  "message.192a8302efdc": {
+    "source": "预热已提交，正在执行",
+    "en": "Warmup submitted. Running"
+  },
+  "message.f55ab29473fe": {
+    "source": "预热开关",
+    "en": "Warmup toggle",
+    "zh-TW": "預熱開關",
+    "ru": "Переключатель прогрева",
+    "vi": "Bật tắt làm nóng",
+    "ko": "워밍업 전환"
+  },
+  "message.3e1dcb417412": {
+    "source": "预热提交失败：",
+    "en": "Warmup submission failed:"
+  },
+  "message.5d3eb1ec66ee": {
+    "source": "预热插件功能",
+    "en": "Warmup plugin navigation",
+    "zh-TW": "預熱外掛功能",
+    "ru": "Навигация плагина",
+    "vi": "Điều hướng tiện ích làm nóng",
+    "ko": "워밍업 플러그인 탐색"
+  },
+  "message.30b8dcf0174f": {
+    "source": "预热时间",
+    "en": "Warmup time",
+    "zh-TW": "預熱時間",
+    "ru": "Время прогрева",
+    "vi": "Thời gian làm nóng",
+    "ko": "워밍업 시간"
+  },
+  "message.049bf7b9f5a3": {
+    "source": "预热模型",
+    "en": "Warmup model",
+    "zh-TW": "預熱模型",
+    "ru": "Модель прогрева",
+    "vi": "Mô hình làm nóng",
+    "ko": "워밍업 모델"
+  },
+  "message.7c8cecbf0b5e": {
+    "source": "预热状态",
+    "en": "Warmup status",
+    "zh-TW": "預熱狀態",
+    "ru": "Статус прогрева",
+    "vi": "Trạng thái làm nóng",
+    "ko": "워밍업 상태"
+  },
+  "message.6a81f8099580": {
+    "source": "预热触发点",
+    "en": "Warmup triggers",
+    "zh-TW": "預熱觸發點",
+    "ru": "Запуски прогрева",
+    "vi": "Điểm kích hoạt làm nóng",
+    "ko": "워밍업 트리거"
+  },
+  "message.66a8f3590ba6": {
+    "source": "预热触发详情",
+    "en": "Trigger details",
+    "zh-TW": "預熱觸發詳情",
+    "ru": "Данные запуска",
+    "vi": "Chi tiết kích hoạt",
+    "ko": "트리거 세부 정보"
+  },
+  "message.de4dd519cbf8": {
+    "source": "预热计划",
+    "en": "Warmup schedules",
+    "zh-TW": "預熱計畫",
+    "ru": "Планы прогрева",
+    "vi": "Lịch làm nóng",
+    "ko": "워밍업 일정"
+  },
+  "message.ea12c9b8d225": {
+    "source": "预热详情",
+    "en": "warmup details",
+    "zh-TW": "預熱詳情",
+    "ru": "данные прогрева",
+    "vi": "chi tiết làm nóng",
+    "ko": "워밍업 세부 정보"
+  },
+  "message.192c93299573": {
+    "source": "预热起点",
+    "en": "Warmup start",
+    "zh-TW": "預熱起點",
+    "ru": "Начало прогрева",
+    "vi": "Bắt đầu làm nóng",
+    "ko": "워밍업 시작"
+  },
+  "message.5752165c3653": {
+    "source": "预计 5h 窗口",
+    "en": "Estimated 5h window",
+    "zh-TW": "預估 5h 視窗",
+    "ru": "Оценка окна 5 ч",
+    "vi": "Cửa sổ 5 giờ ước tính",
+    "ko": "예상 5시간 창"
+  },
+  "message.362dc803efe6": {
+    "source": "预计 {v2}{v3} 到期",
+    "en": "Estimated expiry {v2}{v3}"
+  },
+  "message.c9c894c7cdc9": {
+    "source": "预计到期",
+    "en": "Estimated expiry",
+    "zh-TW": "預估到期",
+    "ru": "Ожидаемый сброс",
+    "vi": "Dự kiến hết hạn",
+    "ko": "예상 만료"
+  },
+  "message.9f542e1cbc31": {
+    "source": "预计窗口",
+    "en": "Estimated window",
+    "zh-TW": "預估視窗",
+    "ru": "Оценка окна",
+    "vi": "Cửa sổ ước tính",
+    "ko": "예상 창"
+  },
+  "message.81be8ec7ba30": {
+    "source": "预计窗口详情",
+    "en": "Estimated window details",
+    "zh-TW": "預估視窗詳情",
+    "ru": "Данные оценки окна",
+    "vi": "Chi tiết cửa sổ ước tính",
+    "ko": "예상 창 세부 정보"
+  },
+  "message.14ec811f73d2": {
+    "source": "预计跳过",
+    "en": "Expected skips",
+    "zh-TW": "預計略過",
+    "ru": "Будет пропущено",
+    "vi": "Dự kiến bỏ qua",
+    "ko": "예상 건너뛰기"
+  },
+  "message.d448d143c4e0": {
+    "source": "香港",
+    "en": "Hong Kong"
+  },
+  "message.b1c27820fec2": {
+    "source": "高",
+    "en": "High"
+  },
+  "message.824f34cb768d": {
+    "source": "默认时区",
+    "en": "Default time zone",
+    "zh-TW": "預設時區",
+    "ru": "Часовой пояс по умолчанию",
+    "vi": "Múi giờ mặc định",
+    "ko": "기본 시간대"
+  },
+  "message.2f2b3510382c": {
+    "source": "默认选择最低可用强度",
+    "en": "Uses the lowest supported reasoning level by default"
+  },
+  "message.2a6ca977f807": {
+    "source": "（5h 估算）",
+    "en": "(5h estimate)",
+    "zh-TW": "（5h 估算）",
+    "ru": "(оценка 5 ч)",
+    "vi": "(ước tính 5 giờ)",
+    "ko": "(5시간 추정)"
+  },
+  "message.3d5c3c3dbaca": {
+    "source": "（可选）",
+    "en": "(optional)",
+    "zh-TW": "（選填）",
+    "ru": "(необязательно)",
+    "vi": "(tùy chọn)",
+    "ko": "(선택 사항)"
+  },
+  "message.bbbf43dcd23f": {
+    "source": "，将跳过这些计划。",
+    "en": "; these plans will be skipped.",
+    "zh-TW": "，將略過這些計畫。",
+    "ru": "; планы будут пропущены.",
+    "vi": "; các lịch này sẽ bị bỏ qua.",
+    "ko": ", 이 계획은 건너뜁니다."
+  },
+  "message.8e6cf5a09db8": {
+    "source": "；手动批次请单独取消",
+    "en": "; cancel manual runs separately"
+  },
+  "brand.subtitle": {
+    "source": "智能账号预热与额度窗口调度",
+    "en": "Account Warmup & Scheduling",
+    "zh-TW": "智慧帳號預熱與額度視窗排程",
+    "ru": "Прогрев аккаунтов и планирование окон квоты",
+    "vi": "Làm nóng tài khoản và lập lịch cửa sổ hạn mức",
+    "ko": "계정 워밍업 및 할당량 창 일정 관리"
+  },
+  "brand.shortName": {
+    "source": "星火",
+    "en": "Spark",
+    "zh-TW": "星火",
+    "ru": "Искра",
+    "vi": "Tia lửa",
+    "ko": "불꽃"
+  },
+  "schedule.summary": {
+    "source": "{schedule} · {zone}",
+    "en": "{schedule} · {zone}"
+  },
+  "history.deleted": {
+    "source": "已删除 {count} 条执行记录",
+    "en": "Deleted {count} run records",
+    "plural": {
+      "parameter": "count",
+      "en": {
+        "one": "Deleted {count} run record"
+      }
+    }
+  },
+  "warmup.submitted": {
+    "source": "预热已提交，正在执行 {count} 个账号",
+    "en": "Warmup submitted. Running {count} accounts",
+    "plural": {
+      "parameter": "count",
+      "en": {
+        "one": "Warmup submitted. Running {count} account"
+      }
+    }
+  },
+  "settings.savedAt": {
+    "source": "已保存 · {time}",
+    "en": "Saved · {time}"
+  },
+  "account.65f226dd6095": {
+    "source": "过去 24 小时执行记录",
+    "en": "Runs in the past 24 hours"
+  },
+  "account.4fdcc17d76d4": {
+    "source": "过去 24 小时暂无执行记录",
+    "en": "No runs in the past 24 hours"
+  },
+  "account.d3f98c243cf0": {
+    "source": "未来 24 小时计划",
+    "en": "Plans for the next 24 hours"
+  },
+  "account.67433537a8e9": {
+    "source": "未来 24 小时暂无计划",
+    "en": "No plans for the next 24 hours"
+  }
+}
