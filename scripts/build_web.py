@@ -76,7 +76,7 @@ js=js.replace('esc(state.settings.timezone)', 'esc(previewZoneLabel(state.settin
 js=js.replace('esc(t.timezone)', 'esc(previewZoneLabel(t.timezone))')
 js=js.replace('esc(zone)', 'esc(previewZoneLabel(zone))')
 s=re.sub(r'<div class="plugin-title">[\s\S]*?</div><p class="plugin-description">[\s\S]*?</p>', '<div class="plugin-title">CPA Spark <span class="brand-cn">星火</span></div><p class="plugin-description">轻量预热，按时就绪。</p>', s, count=1)
-Path('web/style.css').write_text(css+'\n'+Path('web/task-editor.css').read_text()+'\n'+Path('web/product-ui.css').read_text()+'\n'+Path('web/window-timeline.css').read_text()+'\n'+Path('web/host-theme.css').read_text()+'\nbody[data-disconnected="true"] #main{pointer-events:none;opacity:.45}\n')
+Path('web/style.css').write_text(css+'\n'+Path('web/task-editor.css').read_text()+'\n'+Path('web/product-ui.css').read_text()+'\n'+Path('web/window-timeline.css').read_text()+'\n'+Path('web/host-theme.css').read_text()+'\nbody[data-disconnected="true"] #main{pointer-events:none;opacity:.45}\n',newline='\n')
 s=re.sub(r'<div class="plugin-tools">[\s\S]*?</div>', '', s, count=1)
 s=s.replace('class="plugin-version"','class="plugin-version" translate="no"')
 s=re.sub(r'^[ \t]+$','',s,flags=re.M)
