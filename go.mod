@@ -1,15 +1,11 @@
 module cpa-spark
 
-go 1.24.0
+go 1.25.0
 
 require (
-	github.com/gofrs/flock v0.12.1
+	github.com/gofrs/flock v0.13.1
 	github.com/mattn/go-sqlite3 v1.14.24
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require (
-	github.com/kr/text v0.2.0 // indirect
-	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
-)
+require golang.org/x/sys v0.47.0 // indirect
