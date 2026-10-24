@@ -14,8 +14,8 @@ class PrepareReleaseTests(unittest.TestCase):
             calls.append((method, route, body))
             return {'object': {'sha': 'b' * 40}}
         result = prepare('owner/repo', 'a' * 40, api)
-        self.assertEqual(result, {'created': 'false', 'tag': 'v' + source_version()})
-        self.assertEqual(len(calls), 1)
+        self.assertEqual(result, {'created': 'false', 'resume': 'false', 'tag': 'v' + source_version()})
+        self.assertEqual(len(calls), 2)
         self.assertEqual(calls[0][0], 'GET')
 
     def test_only_missing_tags_are_created(self):
@@ -45,3 +45,21 @@ class PrepareReleaseTests(unittest.TestCase):
         for repo, sha in [('owner/repo/extra', 'a' * 40), ('owner/repo', 'main')]:
             with self.assertRaises(ValueError):
                 prepare(repo, sha, api)
+
+    def test_existing_draft_can_resume_without_moving_its_tag(self):
+        methods = []
+        def api(method, route, body):
+            methods.append(method)
+            return {'draft': route.endswith('/tags/v' + source_version())}
+        result = prepare('owner/repo', 'a' * 40, api)
+        self.assertEqual(result['resume'], 'true')
+        self.assertEqual(methods, ['GET', 'GET'])
+
+    def test_verification_runners_remain_read_only(self):
+        root = Path(__file__).resolve().parents[1]
+        verify = (root / '.github/workflows/verify-release.yml').read_text()
+        self.assertNotIn('contents: write', verify)
+        self.assertIn('artifact_name:', verify)
+        release = (root / '.github/workflows/release.yml').read_text()
+        self.assertIn('Download the actual draft assets for read-only verification', release)
+        self.assertIn('artifact_name: cpa-spark_', release)

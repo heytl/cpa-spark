@@ -20,6 +20,7 @@ jobs:
       contents: write
     outputs:
       created: ${{ steps.release.outputs.created }}
+      resume: ${{ steps.release.outputs.resume }}
       tag: ${{ steps.release.outputs.tag }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -34,7 +35,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/prepare_release.py
   release_draft:
-    if: needs.prepare_release.outputs.created == 'true'
+    if: needs.prepare_release.outputs.created == 'true' || needs.prepare_release.outputs.resume == 'true'
     needs: prepare_release
     permissions:
       contents: write

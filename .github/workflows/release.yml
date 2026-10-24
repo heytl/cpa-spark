@@ -88,11 +88,24 @@ jobs:
           else
             gh release create "$RELEASE_TAG" release/packages/* --repo "$GITHUB_REPOSITORY" --draft --verify-tag --notes-file release/notes.md --title "CPA Spark $RELEASE_TAG"
           fi
+      # Draft metadata is only visible to tokens with push access. Reuse the
+      # existing Release writer for downloads; verification runners stay read-only.
+      - name: Download the actual draft assets for read-only verification
+        run: |
+          mkdir -p release/downloaded
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --dir release/downloaded --pattern '*.zip' --pattern checksums.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cpa-spark_${{ needs.validate.outputs.version }}_release_downloads_${{ github.run_attempt }}
+          path: release/downloaded/
+          if-no-files-found: error
+          retention-days: 14
   verify:
     needs: [validate, draft]
     uses: ./.github/workflows/verify-release.yml
     with:
       tag: ${{ needs.validate.outputs.tag }}
+      artifact_name: cpa-spark_${{ needs.validate.outputs.version }}_release_downloads_${{ github.run_attempt }}
   publish:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish'
     needs: [validate, verify]

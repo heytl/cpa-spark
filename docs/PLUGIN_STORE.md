@@ -49,7 +49,7 @@ Actions 依赖固定到 commit SHA，Dependabot 定期更新。普通 CI 仅有�
    ```
 
    每个 ZIP 根目录只含一个同平台的动态库。`checksums.txt` 用 SHA-256 校验 ZIP 本身。
-5. 工作流自动调用 **Verify Release packages**，使用仓库 token 下载草稿的实际资产，并在各平台重新校验、加载。不依赖 Release 事件间接触发验证。
+5. 工作流自动调用 **Verify Release packages**，由现有 Release 创建任务下载草稿的实际资产，再通过同一次运行的 artifact 传递给只读验证任务，在各平台重新校验、加载。不依赖 Release 事件间接触发验证。
 6. 将 ARM64 包安装到实际 CPA，检查元数据注册、套餐、模型目录、一次性预热和调度。GitHub 原生加载测试使用假宿主，不替代真实 CPA 验收。
 7. 可以在 GitHub 手动发布已验证的草稿；也可进入 **Actions → Release → Run workflow**，输入已有 Tag，将 `mode` 选择为 `publish`。已有草稿会复用，不替换其资产和说明；已经正式发布的版本会拒绝覆盖。
 8. `publish` 模式在草稿下载验证通过后发布为最新稳定版，再显式执行一次发布后下载验证。默认 `draft` 只生成并验证草稿。手动在 GitHub 页面发布也保留 `release.published` 验证入口。草稿不会作为商店 latest 的安装来源；当前发布流程仅支持稳定数字版本，不发布 prerelease。
@@ -58,7 +58,7 @@ Release 正文由两份更新日志中的对应版本生成，中文在前、英
 
 Linux CI 用 Ubuntu 22.04 原生 glibc 工具链，要求 glibc ≥ 2.35；不兼容 musl/Alpine。其他 Linux 构建基线以各发行说明为准。
 
-推送到 main 后，CI 在五个平台检查全部成功时为新版本补建标签，并显式调用 Release 草稿构建和验证；已有标签保持原样，不覆盖资产。也保留上面的手动标签及手动 Release 入口。
+推送到 main 后，CI 在五个平台检查全部成功时为新版本补建标签，并显式调用 Release 草稿构建和验证；已有标签保持原样，不覆盖资产；未完成的草稿可以继续验证。也保留上面的手动标签及手动 Release 入口。
 
 ## 先验证自定义商店源
 

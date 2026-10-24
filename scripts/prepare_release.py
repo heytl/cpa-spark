@@ -22,9 +22,16 @@ def prepare(repository, sha, api):
         if error.code != 404:
             raise
     else:
-        return {'created': 'false', 'tag': tag}
+        try:
+            release = api('GET', f'/repos/{repository}/releases/tags/{tag}', None)
+            resume = bool(release.get('draft'))
+        except HTTPError as error:
+            if error.code != 404:
+                raise
+            resume = True
+        return {'created': 'false', 'resume': str(resume).lower(), 'tag': tag}
     api('POST', f'/repos/{repository}/git/refs', {'ref': 'refs/tags/' + tag, 'sha': sha})
-    return {'created': 'true', 'tag': tag}
+    return {'created': 'true', 'resume': 'false', 'tag': tag}
 
 
 def github_api(method, route, body):
