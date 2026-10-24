@@ -63,3 +63,12 @@ class PrepareReleaseTests(unittest.TestCase):
         release = (root / '.github/workflows/release.yml').read_text()
         self.assertIn('Download the actual draft assets for read-only verification', release)
         self.assertIn('artifact_name: cpa-spark_', release)
+
+    def test_publish_requires_explicit_version_specific_commit_or_manual_input(self):
+        root = Path(__file__).resolve().parents[1]
+        ci = (root / '.github/workflows/ci.yml').read_text()
+        self.assertIn("startsWith(github.event.head_commit.message, format('[release:publish {0}]', needs.prepare_release.outputs.tag))", ci)
+        release = (root / '.github/workflows/release.yml').read_text()
+        self.assertEqual(release.count("if: inputs.mode == 'publish'"), 2)
+        self.assertIn('needs: [validate, verify]', release)
+        self.assertIn('needs: [validate, publish]', release)

@@ -107,7 +107,7 @@ jobs:
       tag: ${{ needs.validate.outputs.tag }}
       artifact_name: cpa-spark_${{ needs.validate.outputs.version }}_release_downloads_${{ github.run_attempt }}
   publish:
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish'
+    if: inputs.mode == 'publish'
     needs: [validate, verify]
     runs-on: ubuntu-22.04
     permissions:
@@ -120,7 +120,7 @@ jobs:
         shell: bash
         run: gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
   verify_published:
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish'
+    if: inputs.mode == 'publish'
     needs: [validate, publish]
     uses: ./.github/workflows/verify-release.yml
     with:

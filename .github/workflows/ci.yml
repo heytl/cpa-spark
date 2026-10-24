@@ -42,4 +42,5 @@ jobs:
     uses: ./.github/workflows/release.yml
     with:
       tag: ${{ needs.prepare_release.outputs.tag }}
-      mode: draft
+      # Publishing requires an explicit, version-specific maintainer commit.
+      mode: ${{ startsWith(github.event.head_commit.message, format('[release:publish {0}]', needs.prepare_release.outputs.tag)) && 'publish' || 'draft' }}
