@@ -44,6 +44,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
+const CPA_SPARK_LOGO_URI='__CPA_SPARK_LOGO_URI__';
 // One identity component is shared by the page header and Settings.
-function renderBrandIdentity(){return `<span class="plugin-mark">${icon('flame')}</span><div class="brand-copy"><div class="plugin-title"><span translate="no">CPA Spark</span><span class="brand-cn" data-i18n="brand.shortName">星火</span><span class="spark-version-tag" translate="no">v${CPA_SPARK_VERSION}</span></div><p class="plugin-description" data-i18n="brand.subtitle">智能账号预热与额度窗口调度</p></div>`}
+function renderBrandIdentity(){return `<span class="plugin-mark"><img class="spark-logo" src="${CPA_SPARK_LOGO_URI}" width="46" height="46" alt="" aria-hidden="true" draggable="false"></span><div class="brand-copy"><div class="plugin-title"><span translate="no">CPA Spark</span><span class="brand-cn" data-i18n="brand.shortName">星火</span><span class="spark-version-tag" translate="no">v${CPA_SPARK_VERSION}</span></div><p class="plugin-description" data-i18n="brand.subtitle">智能账号预热与额度窗口调度</p></div>`}
 const brandHeader=document.querySelector('.plugin-identity');if(brandHeader)brandHeader.innerHTML=renderBrandIdentity();

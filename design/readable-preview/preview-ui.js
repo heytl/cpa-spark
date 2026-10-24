@@ -17,4 +17,4 @@ render();
 const centeredRunDetailBase=renderRunDetail;
 renderRunDetail=function(run){document.getElementById('detailDialog').classList.add('execution-detail');centeredRunDetailBase(run)};
 const originalAccountDetail=renderAccountDetail;
-renderAccountDetail=function(){document.getElementById('detailDialog').classList.remove('execution-detail');originalAccountDetail()};
+renderAccountDetail=function(){document.getElementById('accountDialog').classList.remove('execution-detail');originalAccountDetail()};

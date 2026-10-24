@@ -25,4 +25,5 @@ if __name__ == '__main__':
     if args.github_output:
         with args.github_output.open('a', encoding='utf-8', newline='\n') as output:
             output.write('tag=' + tag + '\n')
+            output.write('version=' + tag[1:] + '\n')
     print(tag)

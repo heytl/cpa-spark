@@ -186,7 +186,7 @@ func (e *Engine) Run(id, key string) (string, error) {
 func (e *Engine) Cancel(id string) error {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	xs, err := e.store.Executions()
+	xs, err := e.store.QueuedExecutions()
 	if err != nil {
 		return err
 	}
@@ -266,7 +266,7 @@ func (e *Engine) Tick() {
 		}
 		e.cursor = minute
 	}
-	xs, err := e.store.Executions()
+	xs, err := e.store.QueuedExecutions()
 	if err != nil {
 		e.lastError = err.Error()
 		return
@@ -439,69 +439,38 @@ func (e *Engine) Snapshot() (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	xs, err := e.store.Executions()
+	// Summaries never carry batch items. Full details and account timelines have
+	// separate on-demand endpoints, so history volume does not inflate polling.
+	rows, err := e.store.db.Query(`WITH latest AS (SELECT (SELECT id FROM runs WHERE task_id=json_extract(t.value,'$.id') ORDER BY started DESC,id DESC LIMIT 1) id FROM json_each((SELECT body FROM config WHERE id=1),'$.tasks') t), selected_runs AS (SELECT * FROM runs WHERE id IN(SELECT id FROM latest) OR id IN(SELECT o.run_id FROM executions x JOIN history_origins o ON o.execution_id=x.id WHERE o.active AND json_extract(x.body,'$.status') IN ('queued','running'))), h AS (` + strings.Replace(historyTaskSQL, "FROM runs r LEFT JOIN", "FROM selected_runs r LEFT JOIN", 1) + `) SELECT id,taskId,name,model,provider,mode,started,status,accountCount FROM h ORDER BY started DESC,id DESC`)
 	if err != nil {
 		return nil, err
 	}
-	cutoff := e.now().Add(-24 * time.Hour).UnixMilli()
-	recent := map[string]bool{}
-	for _, x := range xs {
-		if x.Finished >= cutoff || x.Started >= cutoff {
-			for _, o := range x.Origins {
-				recent[o.RunID] = true
-			}
-		}
-	}
-	rows, err := e.store.db.Query("SELECT id,task_id,name,model,provider,mode,started FROM runs ORDER BY started DESC,rowid DESC")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
 	runs := []map[string]any{}
-	runIndex := 0
 	for rows.Next() {
-		var id, tid, name, model, provider, mode string
-		var at int64
-		if err = rows.Scan(&id, &tid, &name, &model, &provider, &mode, &at); err != nil {
+		var id, tid, name, model, provider, mode, status string
+		var started int64
+		var count int
+		if err = rows.Scan(&id, &tid, &name, &model, &provider, &mode, &started, &status, &count); err != nil {
+			rows.Close()
 			return nil, err
 		}
-		runIndex++
-		if runIndex > 200 && at < cutoff && !recent[id] {
-			continue
-		}
-		items := []map[string]any{}
-		finished := true
-		for _, x := range xs {
-			belongs := false
-			names := []string{}
-			for _, o := range x.Origins {
-				if o.Active {
-					names = append(names, o.Name)
-				}
-				if o.RunID == id {
-					belongs = true
-				}
-			}
-			if !belongs {
-				continue
-			}
-			status := x.Status
-			message := x.Message
-			for _, o := range x.Origins {
-				if o.RunID == id && !o.Active {
-					status = "skipped"
-					message = "Source cancelled before dispatch"
-				}
-			}
-			if status == "queued" || status == "running" {
-				finished = false
-			}
-			items = append(items, map[string]any{"id": x.ID, "authId": x.AuthID, "status": status, "message": message, "latency": x.Latency, "tokens": x.Tokens, "sources": names, "httpStatus": x.HTTPStatus, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled})
-		}
-		runs = append(runs, map[string]any{"id": id, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": at, "finished": finished, "items": items})
+		runs = append(runs, map[string]any{"id": id, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": started, "status": status, "finished": status != "running", "accountCount": count, "items": []map[string]any{}, "summary": true})
 	}
-	if err = rows.Err(); err != nil {
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"config": c, "runs": runs, "now": e.now().UnixMilli(), "lastError": e.lastError, "version": Version, "active": len(e.active)}, nil
+	zone, err := time.LoadLocation(c.Settings.Timezone)
+	if err != nil {
+		return nil, err
+	}
+	local := e.now().In(zone)
+	start := time.Date(local.Year(), local.Month(), local.Day(), 0, 0, 0, 0, zone)
+	var attempted, success int
+	err = e.store.db.QueryRow(`SELECT coalesce(sum(json_extract(x.body,'$.status') IN ('success','failed')),0),coalesce(sum(json_extract(x.body,'$.status')='success'),0) FROM executions x WHERE x.id IN(SELECT o.execution_id FROM runs r JOIN history_origins o ON o.run_id=r.id WHERE r.started>=? AND r.started<?)`, start.UnixMilli(), start.AddDate(0, 0, 1).UnixMilli()).Scan(&attempted, &success)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"config": c, "runs": runs, "todayStats": map[string]int{"attempted": attempted, "success": success}, "now": e.now().UnixMilli(), "lastError": e.lastError, "version": Version, "active": len(e.active)}, nil
 }

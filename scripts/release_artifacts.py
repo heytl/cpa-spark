@@ -41,10 +41,13 @@ def verify(directory, version, target):
         if binary_target(binary)!=target:raise ValueError('Binary architecture mismatch')
     return binary
 
-def package(native, output, version, targets, allow_prerelease=False):
+def package(native, output, version, targets, allow_prerelease=False, artifact_version=None):
     pattern=r'\d+\.\d+\.\d+'+(r'(?:-[A-Za-z0-9.-]+)?' if allow_prerelease else '')
     if not re.fullmatch(pattern,version):raise ValueError('Store latest requires numeric x.y.z; use --allow-prerelease only for development bundles')
     if version!=source_version():raise ValueError('Release version must match source Version')
+    artifact_version = artifact_version or version
+    if artifact_version != version and (not allow_prerelease or not re.fullmatch(re.escape(version) + r'-dev\.[0-9a-f]{7}', artifact_version)):
+        raise ValueError('Development artifact version must match source version and commit suffix')
     prepared=[]
     for target in targets:
         library=Path(native)/target/f'{PLUGIN_ID}.{TARGETS[target]}';raw=library.read_bytes()
@@ -57,13 +60,13 @@ def package(native, output, version, targets, allow_prerelease=False):
     if output.exists() and any(output.iterdir()):raise ValueError('Output directory must be empty to avoid mixing release assets')
     output.mkdir(parents=True,exist_ok=True);checks=[]
     for target,raw in prepared:
-        name=f'{PLUGIN_ID}_{version}_{target}.zip'
+        name=f'{PLUGIN_ID}_{artifact_version}_{target}.zip'
         with zipfile.ZipFile(output/name,'w',zipfile.ZIP_DEFLATED) as z:z.writestr(f'{PLUGIN_ID}.{TARGETS[target]}',raw)
         checks.append(hashlib.sha256((output/name).read_bytes()).hexdigest()+'  '+name)
     (output/'checksums.txt').write_text('\n'.join(checks)+'\n')
-    for target in targets:verify(output,version,target)
+    for target in targets:verify(output,artifact_version,target)
     return [line.split('  ')[1] for line in checks]
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--native',default='dist/native');p.add_argument('--output',required=True);p.add_argument('--version',default=source_version());p.add_argument('--target',action='append',choices=TARGETS);p.add_argument('--allow-prerelease',action='store_true');a=p.parse_args()
-    print(json.dumps(package(a.native,a.output,a.version,a.target or list(TARGETS),a.allow_prerelease),indent=2))
+    p=argparse.ArgumentParser();p.add_argument('--native',default='dist/native');p.add_argument('--output',required=True);p.add_argument('--version',default=source_version());p.add_argument('--target',action='append',choices=TARGETS);p.add_argument('--allow-prerelease',action='store_true');p.add_argument('--artifact-version');a=p.parse_args()
+    print(json.dumps(package(a.native,a.output,a.version,a.target or list(TARGETS),a.allow_prerelease,a.artifact_version),indent=2))

@@ -1,12 +1,18 @@
 # CPA Spark · 星火
 
+<img src="logo.svg" width="80" height="80" alt="CPA Spark">
+
+**简体中文** | [English](README.en.md)
+
+[最新稳定版](https://github.com/heytl/cpa-spark/releases/latest) · [全部版本](https://github.com/heytl/cpa-spark/releases) · [更新记录](CHANGELOG.md)
+
 [![CI](https://github.com/heytl/cpa-spark/actions/workflows/ci.yml/badge.svg)](https://github.com/heytl/cpa-spark/actions/workflows/ci.yml)
 
 **智能账号预热与额度窗口调度 / Account Warmup & Scheduling**
 
 CPA Spark 是 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 的原生插件，支持为单个账号或自定义分组安排独立预热任务。调度在服务端运行，关闭浏览器后仍继续执行。
 
-当前开发版本为 **0.1.7**，尚未上架 CPA 官方插件商店。请求成功不等于额度窗口已开启；窗口可视化为计划估算，实际额度重置以上游为准。
+当前开发版本为 **0.1.8**，尚未上架 CPA 官方插件商店。请求成功不等于额度窗口已开启；窗口可视化为计划估算，实际额度重置以上游为准。
 
 ## 功能
 
@@ -34,13 +40,13 @@ CPA Spark 是 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 的原
 
 ## 安装到 Docker Compose 部署的 CPA
 
-在 CPA 插件管理页导入**匹配服务器平台的动态库**并启用。ARM64 Linux 使用 `cpa-spark.so`，不要导入源码 ZIP。
+在 CPA 插件管理页导入**匹配服务器平台的动态库**并启用。ARM64 Linux 使用 `cpa-spark-v0.1.8.so`，不要导入源码 ZIP。
 
 若手动复制文件，在 CPA Compose 项目目录执行：
 
 ```bash
 mkdir -p plugins/linux/arm64
-cp /你的下载目录/cpa-spark.so plugins/linux/arm64/cpa-spark.so
+cp /你的下载目录/cpa-spark-v0.1.8.so plugins/linux/arm64/cpa-spark.so
 ```
 
 确认 Compose 已将插件目录挂载到容器，并在 CPA 配置中启用：
@@ -82,7 +88,7 @@ python3 scripts/ci.py
 make build
 ```
 
-产物为当前平台的 `dist/cpa-spark.so`、`.dylib` 或 `.dll`，安装通常只需动态库。必须为实际运行的 OS/CPU 构建；Linux 动态库不能直接在 macOS 或 Windows 使用。
+下载产物位于 `dist/downloads/平台/cpa-spark-v版本.so`（macOS 为 `.dylib`，Windows 为 `.dll`）；内部 ABI 校验及商店 ZIP 保留规范文件名 `cpa-spark.so`，安装通常只需动态库。必须为实际运行的 OS/CPU 构建；Linux 动态库不能直接在 macOS 或 Windows 使用。
 
 也可以运行匹配当前平台的原生构建及 ABI 验证：
 
@@ -92,15 +98,32 @@ python3 scripts/build_native.py --target linux_arm64
 
 其他目标为 `linux_amd64`、`darwin_amd64`、`darwin_arm64`、`windows_amd64`。脚本拒绝在不同平台冒充原生构建。
 
-## 自动化构建与插件商店
+## 自动化构建与 Release
 
-- 推送 `main` 或提交 PR：运行检查，分别在五个平台原生构建并加载 C ABI，输出安装包。
-- 推送与源码版本匹配的 `v0.1.7` 标签：生成 Release **草稿**，包含平台 ZIP、SHA-256 校验、`registry.json` 和商店 PR 材料。
-- 发布前需完成真实 CPA 验收；草稿及 prerelease 不作为商店 latest 安装来源。
+普通 CI 检查五个平台，构建并加载动态库，输出可下载的安装包：
 
-工作流固定第三方 Actions 的 commit SHA，普通 CI 仅授予读取权限。只有创建 Release 草稿的任务使用仓库写权限；不需要个人令牌、CPA key 或 OAuth 凭据。
+| 类型 | 文件名示例 |
+| --- | --- |
+| 开发安装包 | `cpa-spark_0.1.8-dev.a976b6b_linux_arm64.zip` |
+| 正式安装包 | `cpa-spark_0.1.8_linux_arm64.zip` |
+| Actions 汇总下载 | `cpa-spark_0.1.8-dev.a976b6b_packages.zip` |
 
-详见 [发布与插件商店流程](docs/PLUGIN_STORE.md)。小型开发调整不自动递增版本；已经发布的标签和 Release 保持不可变。
+开发包名称中的提交短码标识构建代码；插件页面仍显示源码版本，不自动递增版本号。Actions 外层 ZIP 内有五个平台的安装 ZIP 和 `checksums.txt`，解压对应平台 ZIP 后再导入动态库。原生构建诊断产物名称也包含版本，另附 ABI 验证凭据。
+
+发布方式：
+
+1. 在 `internal/warmup/types.go` 设置正式版本，在 `CHANGELOG.md` 与 `CHANGELOG.en.md` 填写同版本更新内容，提交代码。
+2. 创建并推送与源码版本一致的 Tag，例如 `v0.1.8`；Action 默认生成 **Release 草稿**。
+3. 如需由 Action 正式发布，在 **Actions → Release → Run workflow** 输入已有 Tag，选择 `publish`；默认 `draft` 只生成草稿。已有草稿可以重新运行校验并发布；已有正式 Release 会拒绝覆盖。
+4. 五个平台构建、测试、打包和 Release 实际下载包验证全部成功后，`publish` 模式才将草稿发布为最新稳定版，发布后再验证实际下载包。草稿模式的下载验证也会执行。
+
+每个 Release 页面包含中文和英文更新日志、五个平台下载、校验文件及历史版本入口。查看旧版请进入“全部版本”，手动构建也可通过 GitHub 的分支/Tag 选择器选择代码版本；发布时还需指定对应 Tag。缺少任何一种语言的当前版本日志都会阻止发布。
+
+工作流固定第三方 Actions 的 commit SHA，普通 CI 仅授予读取权限，创建和发布 Release 的任务使用仓库写权限。无需个人令牌、CPA key 或 OAuth 凭据。重跑会复用已有草稿的资产和说明；已发布标签和安装包不覆盖。
+
+开发包不生成商店登记文件。正式 Release 包含 `registry.json` 与商店 PR 材料；草稿不会成为商店 latest 安装来源。发布前仍需完成真实 CPA 验收，详见 [发布与插件商店流程](docs/PLUGIN_STORE.md)。
+
+推送到 `main` 后，五平台 CI 全部通过时，会为尚无标签的新版本创建 `v版本号` 标签并显式调用 Release 草稿流程；已有标签保持不变。
 
 ## 开发与目录
 
@@ -134,9 +157,9 @@ make test     # 与 CI 相同的完整检查
 
 已发出的请求不会伪报为取消。重启后在途结果标记为未知，不自动重放；SQLite 写入失败时停止自动分发。CPA 自身路由与重试配置仍可能影响实际网络尝试次数。
 
-执行历史默认保留 30 天，可设 7/30/90 天。清理展示历史不会清理防重复执行凭据；凭据有界归档、历史分页、配置导入、通知及多节点协调尚未实现。
+执行历史默认保留 30 天，可设 7/30/90 天。清理展示历史不会清理防重复执行凭据；执行记录由服务端分页查询，默认每页 50 条，可选 20/50/100 条，现有日期筛选保持不变。凭据有界归档、配置导入、通知及多节点协调尚未实现。
 
-Linux amd64 已通过本地假宿主 C ABI 加载验证；ARM64 已交叉编译。其他平台及 GitHub runner 结果以实际 Actions 为准，假宿主测试不替代真实 CPA 验收。套餐显示读取明确元数据及 Codex JWT claims；未知套餐和窗口不作猜测。
+Linux amd64/arm64、macOS Intel/Apple Silicon 和 Windows amd64 已通过 GitHub 原生构建、测试、动态库加载与打包验证；后续提交结果以对应 Actions 为准，假宿主测试不替代真实 CPA 验收。套餐显示读取明确元数据及 Codex JWT claims；未知套餐和窗口不作猜测。
 
 ## 许可与致谢
 

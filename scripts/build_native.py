@@ -24,4 +24,7 @@ smoke=[sys.executable,str(ROOT/'tests/native_smoke.py'),str(library),'--expected
 if repo:smoke+=['--expected-repository','https://github.com/'+repo]
 if author:smoke+=['--expected-author',author]
 subprocess.run(smoke,cwd=ROOT,check=True)
-print(library)
+download=ROOT/'dist/downloads'/a.target/f'cpa-spark-v{version}.{TARGETS[a.target]}'
+download.parent.mkdir(parents=True,exist_ok=True)
+shutil.copy2(library,download)
+print(download)

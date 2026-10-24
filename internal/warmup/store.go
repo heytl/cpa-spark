@@ -74,6 +74,10 @@ func Open(dir string) (*Store, error) {
 		return nil, e
 	}
 	s := &Store{db: db, lock: lock, path: abs}
+	if e = s.initHistoryIndex(); e != nil {
+		s.Close()
+		return nil, e
+	}
 	_, e = db.Exec("INSERT OR IGNORE INTO config VALUES(1,?)", marshal(DefaultConfig()))
 	if e != nil {
 		s.Close()
@@ -157,7 +161,7 @@ func (s *Store) Save(c Config) error {
 		return e
 	}
 	// Paused/deleted scheduled sources are withdrawn; manual runs are explicit independent actions.
-	rows, e := tx.Query("SELECT body FROM executions")
+	rows, e := tx.Query("SELECT body FROM executions WHERE json_extract(body,'$.status')='queued'")
 	if e != nil {
 		return e
 	}
@@ -223,7 +227,13 @@ func (s *Store) Save(c Config) error {
 	return tx.Commit()
 }
 func (s *Store) Executions() ([]Execution, error) {
-	rows, e := s.db.Query("SELECT body FROM executions ORDER BY rowid")
+	return s.executionQuery("SELECT body FROM executions ORDER BY rowid")
+}
+func (s *Store) QueuedExecutions() ([]Execution, error) {
+	return s.executionQuery("SELECT body FROM executions WHERE json_extract(body,'$.status')='queued' ORDER BY rowid")
+}
+func (s *Store) executionQuery(query string) ([]Execution, error) {
+	rows, e := s.db.Query(query)
 	if e != nil {
 		return nil, e
 	}

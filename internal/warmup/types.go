@@ -23,7 +23,7 @@ var Author = "heytl"
 var Repository = "https://github.com/heytl/cpa-spark"
 
 const ProjectDescription = "为 CLIProxyAPI 提供轻量的账号定时预热、分组调度与额度窗口可视化。"
-const Version = "0.1.7"
+const Version = "0.1.8"
 
 type Host interface{ Call(string, any, any) error }
 type HostError struct {

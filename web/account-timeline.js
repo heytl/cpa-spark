@@ -5,7 +5,7 @@ function accountTimelineData(id,now=Date.now()){
   if(at>now+day)continue;const key=at+profile(task);if(!map.has(key))map.set(key,{at,tasks:[],model:task.model});map.get(key).tasks.push(task);
  }
  const past=new Map();
- for(const run of state.runs)for(const item of run.items){
+ for(const run of (typeof accountTimelineRuns!=='undefined'&&accountTimelineAccount===id&&accountTimelineRuns?accountTimelineRuns:state.runs))for(const item of run.items){
   if(item.authId!==id||['queued','running'].includes(item.status))continue;
   const at=Number(item.finished||item.started||run.started);if(!(at>now-day&&at<=now))continue;
   const key=item.id||run.id+':'+id;if(past.has(key))continue;

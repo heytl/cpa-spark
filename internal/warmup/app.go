@@ -1,6 +1,7 @@
 package warmup
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"gopkg.in/yaml.v3"
@@ -92,13 +93,23 @@ func (a *App) configure(raw []byte) error {
 func reply(code int, v any) ManagementResponse {
 	return ManagementResponse{code, http.Header{"Content-Type": {"application/json; charset=utf-8"}, "Cache-Control": {"no-store"}, "X-Content-Type-Options": {"nosniff"}}, marshal(v)}
 }
+func (a *App) sidebarIcon() string {
+	if a.Assets == nil {
+		return ""
+	}
+	logo, err := fs.ReadFile(a.Assets, "sidebar-icon.svg")
+	if err != nil {
+		return ""
+	}
+	return "data:image/svg+xml;base64," + base64.StdEncoding.EncodeToString(logo)
+}
 func (a *App) Call(method string, raw []byte) []byte {
 	var result any
 	var err error
 	switch method {
 	case "plugin.register", "plugin.reconfigure":
 		err = a.configure(raw)
-		result = map[string]any{"schema_version": 6, "metadata": map[string]any{"Name": ProjectName, "Version": Version, "Author": Author, "GitHubRepository": Repository, "Logo": "", "ConfigFields": []map[string]string{{"Name": "state_dir", "Type": "string", "Description": "SQLite state directory; persist this directory across restarts"}}}, "capabilities": map[string]bool{"management_api": true}}
+		result = map[string]any{"schema_version": 6, "metadata": map[string]any{"Name": ProjectName, "Version": Version, "Author": Author, "GitHubRepository": Repository, "Logo": a.sidebarIcon(), "ConfigFields": []map[string]string{{"Name": "state_dir", "Type": "string", "Description": "SQLite state directory; persist this directory across restarts"}}}, "capabilities": map[string]bool{"management_api": true}}
 	case "plugin.quiesce", "plugin.shutdown":
 		a.Close()
 		result = struct{}{}
@@ -107,10 +118,10 @@ func (a *App) Call(method string, raw []byte) []byte {
 		for _, p := range []string{"state", "accounts"} {
 			routes = append(routes, map[string]string{"Method": "GET", "Path": "/plugins/" + PluginID + "/" + p})
 		}
-		for _, p := range []string{"config", "run", "run-once", "delete-history", "cancel", "preview"} {
+		for _, p := range []string{"config", "run", "run-once", "delete-history", "cancel", "preview", "history", "history-detail", "account-timeline"} {
 			routes = append(routes, map[string]string{"Method": "POST", "Path": "/plugins/" + PluginID + "/" + p})
 		}
-		result = map[string]any{"routes": routes, "resources": []map[string]string{{"Path": "/status", "Menu": ProjectName, "Description": ProjectDescription}, {"Path": "/app.js"}, {"Path": "/style.css"}, {"Path": "/third-party-notices.txt"}}}
+		result = map[string]any{"routes": routes, "resources": []map[string]string{{"Path": "/status", "Menu": ProjectName, "Description": ProjectDescription}, {"Path": "/app.js"}, {"Path": "/style.css"}, {"Path": "/logo.svg"}, {"Path": "/sidebar-icon.svg"}, {"Path": "/third-party-notices.txt"}}}
 	case "management.handle":
 		var req ManagementRequest
 		if len(raw) > 2*1024*1024 || json.Unmarshal(raw, &req) != nil {
@@ -136,7 +147,7 @@ func (a *App) Handle(r ManagementRequest) ManagementResponse {
 		if file == "status" {
 			file = "index.html"
 		}
-		if file != "index.html" && file != "app.js" && file != "style.css" && file != "third-party-notices.txt" {
+		if file != "index.html" && file != "app.js" && file != "style.css" && file != "logo.svg" && file != "sidebar-icon.svg" && file != "third-party-notices.txt" {
 			return reply(404, map[string]string{"error": "resource missing"})
 		}
 		b, e := fs.ReadFile(a.Assets, file)
@@ -152,6 +163,9 @@ func (a *App) Handle(r ManagementRequest) ManagementResponse {
 		}
 		if path.Ext(file) == ".txt" {
 			content = "text/plain; charset=utf-8"
+		}
+		if path.Ext(file) == ".svg" {
+			content = "image/svg+xml"
 		}
 		return ManagementResponse{200, http.Header{"Content-Type": {content}, "Cache-Control": {"no-store"}, "X-Content-Type-Options": {"nosniff"}, "Content-Security-Policy": {"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'none'; object-src 'none'"}}, b}
 	}
@@ -191,6 +205,34 @@ func (a *App) Handle(r ManagementRequest) ManagementResponse {
 		return reply(413, map[string]string{"error": "request too large"})
 	}
 	switch endpoint {
+	case "history":
+		var query HistoryQuery
+		if json.Unmarshal(r.Body, &query) != nil {
+			return reply(400, map[string]string{"error": "invalid history query"})
+		}
+		v, err := e.History(query)
+		if err != nil {
+			return reply(400, map[string]string{"error": err.Error()})
+		}
+		return reply(200, v)
+	case "history-detail", "account-timeline":
+		var query struct {
+			ID string `json:"id"`
+		}
+		if json.Unmarshal(r.Body, &query) != nil || query.ID == "" {
+			return reply(400, map[string]string{"error": "record ID required"})
+		}
+		var v map[string]any
+		var err error
+		if endpoint == "history-detail" {
+			v, err = e.HistoryDetail(query.ID)
+		} else {
+			v, err = e.AccountTimeline(query.ID)
+		}
+		if err != nil {
+			return reply(404, map[string]string{"error": "record unavailable"})
+		}
+		return reply(200, v)
 	case "config":
 		var c Config
 		if json.Unmarshal(r.Body, &c) != nil {

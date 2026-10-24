@@ -25,3 +25,9 @@ test('bundled zone catalog covers IANA aliases and Shanghai default',()=>{
  const zones=JSON.parse(fs.readFileSync(path.join(__dirname,'../web/timezones.json'),'utf8'));
  assert(zones.length>500);for(const zone of ['Asia/Shanghai','UTC','Europe/Paris','America/St_Johns','Asia/Kathmandu','Pacific/Chatham'])assert(zones.includes(zone),zone);
 });
+test('five-hour preset starts with the first time and stops at midnight',()=>{
+ assert.deepEqual(Array.from(rules.fiveHourTimes('07:35')),['07:35','12:35','17:35','22:35']);
+ assert.deepEqual(Array.from(rules.fiveHourTimes('23:59')),['23:59']);
+ assert.deepEqual(Array.from(rules.fiveHourTimes('00:00')),['00:00','05:00','10:00','15:00','20:00']);
+ assert.deepEqual(Array.from(rules.fiveHourTimes('invalid')),[]);
+});

@@ -29,6 +29,17 @@ class ReleaseTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);folder=self.make_native(root,'linux_amd64');(folder/'cpa-spark.so').write_bytes(fixture('linux_amd64')+b'changed')
             with self.assertRaisesRegex(ValueError,'receipt'):r.package(root/'native',root/'release',r.source_version(),['linux_amd64'],True)
+    def test_development_package_names_keep_native_receipt_version(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);self.make_native(root,'linux_arm64')
+            artifact_version=r.source_version()+'-dev.abcdef0'
+            names=r.package(root/'native',root/'release',r.source_version(),['linux_arm64'],True,artifact_version)
+            self.assertEqual(names,[f'cpa-spark_{artifact_version}_linux_arm64.zip'])
+            self.assertEqual(r.binary_target(r.verify(root/'release',artifact_version,'linux_arm64')),'linux_arm64')
+    def test_stable_packages_reject_development_labels(self):
+        for label in (r.source_version()+'-dev.abcdef0','../escape','9.9.9-dev.abcdef0'):
+            with self.assertRaisesRegex(ValueError,'artifact version'):
+                r.package('none','none',r.source_version(),[],False,label)
     def test_prerelease_not_store_latest(self):
         with self.assertRaisesRegex(ValueError,'numeric'):r.package('none','none','0.1.0-alpha.2',[],False)
     def test_missing_platform_fails_before_output(self):

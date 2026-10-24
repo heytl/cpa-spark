@@ -84,7 +84,7 @@ func TestRunOnceDoesNotSaveTaskAndIsIdempotent(t *testing.T) {
 	}
 }
 
-func TestSnapshotRetainsAllRecentRunsAndActualExecutionTimes(t *testing.T) {
+func TestTimelineRetainsActualExecutionTimesWithoutInflatingSnapshot(t *testing.T) {
 	e, s := engineFixture(t, goodHost())
 	now := e.now().UnixMilli()
 	for i := 0; i < 205; i++ {
@@ -104,9 +104,20 @@ func TestSnapshotRetainsAllRecentRunsAndActualExecutionTimes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	runs := snap["runs"].([]map[string]any)
-	if len(runs) != 206 {
-		t.Fatalf("recent runs truncated: %d", len(runs))
+	if len(snap["runs"].([]map[string]any)) != 0 {
+		t.Fatal("removed task history leaked into home polling")
+	}
+	page, err := e.History(HistoryQuery{Mode: "task", Page: 1, PageSize: 50})
+	if err != nil || page["total"] != 206 || len(page["rows"].([]map[string]any)) != 50 {
+		t.Fatal(page, err)
+	}
+	timeline, err := e.AccountTimeline("a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	runs := timeline["runs"].([]map[string]any)
+	if len(runs) != 1 {
+		t.Fatalf("account timeline contains unrelated runs: %d", len(runs))
 	}
 	found := false
 	for _, r := range runs {
@@ -120,5 +131,51 @@ func TestSnapshotRetainsAllRecentRunsAndActualExecutionTimes(t *testing.T) {
 	}
 	if !found {
 		t.Fatal("delayed execution missing from recent history")
+	}
+}
+
+func TestAccountHistoryDeletionRetainsOtherAccountsAndDedupKeys(t *testing.T) {
+	e, s := engineFixture(t, &fakeHost{})
+	for _, id := range []string{"r1", "r2"} {
+		if _, err := s.db.Exec("INSERT INTO runs VALUES(?,?,?,?,?,?,?)", id, "t", "Task", "m", "codex", "scheduled", e.now().UnixMilli()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	xs := []Execution{
+		{ID: "x1", AuthID: "a", Status: "success", Origins: []Origin{{RunID: "r1", Active: true}, {RunID: "r2", Active: true}}},
+		{ID: "x2", AuthID: "b", Status: "success", Origins: []Origin{{RunID: "r1", Active: true}}},
+		{ID: "x3", AuthID: "c", Status: "running", Origins: []Origin{{RunID: "r2", Active: true}}},
+	}
+	for _, x := range xs {
+		if _, err := s.db.Exec("INSERT INTO executions VALUES(?,?,?)", x.ID, "dedup-"+x.ID, marshal(x)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	req := HistoryDelete{Mode: "account", ExecutionIDs: []string{"x1", "x1", "x3"}, Preview: true}
+	if n, err := e.DeleteHistory(req); err != nil || n != 1 {
+		t.Fatal(n, err)
+	}
+	req.Preview = false
+	if n, err := e.DeleteHistory(req); err != nil || n != 1 {
+		t.Fatal(n, err)
+	}
+	remaining, err := s.Executions()
+	if err != nil || len(remaining) != 2 {
+		t.Fatal(remaining, err)
+	}
+	var key string
+	if err := s.db.QueryRow("SELECT dedup FROM execution_keys WHERE dedup=?", "dedup-x1").Scan(&key); err != nil {
+		t.Fatal("charged-request key lost", err)
+	}
+	if n, err := e.DeleteHistory(HistoryDelete{Mode: "account", All: true}); err != nil || n != 1 {
+		t.Fatal(n, err)
+	}
+	var count int
+	s.db.QueryRow("SELECT count(*) FROM runs").Scan(&count)
+	if count != 1 {
+		t.Fatal("active run removed", count)
+	}
+	if _, err := e.DeleteHistory(HistoryDelete{ExecutionIDs: []string{"x3"}}); err == nil {
+		t.Fatal("execution IDs accepted without account mode")
 	}
 }

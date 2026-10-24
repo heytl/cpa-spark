@@ -54,7 +54,7 @@ renderTaskDialog=function(){
  if(taskStep===1){
   const list=dialog.querySelector('.time-list');
   list.innerHTML=draft.times.map((v,i)=>{const [hour,minute]=v.split(':');return `<div class="time-entry"><span class="time-index">${i+1}</span><label><span class="sr-only">触发时间 ${i+1} 小时</span><select class="field clock-select" data-clock-hour="${i}">${Array.from({length:24},(_,n)=>String(n).padStart(2,'0')).map(h=>`<option ${h===hour?'selected':''}>${h}</option>`).join('')}</select></label><span class="clock-colon">:</span><label><span class="sr-only">触发时间 ${i+1} 分钟</span><select class="field clock-select" data-clock-minute="${i}">${Array.from({length:60},(_,n)=>String(n).padStart(2,'0')).map(m=>`<option ${m===minute?'selected':''}>${m}</option>`).join('')}</select></label><input type="hidden" data-time-index="${i}" value="${esc(v)}"><button class="iconbtn" data-action="remove-time" data-id="${i}" aria-label="删除时间 ${esc(v)}">${icon('x')}</button></div>`}).join('')+`<button class="add-time" data-action="add-time" data-i18n="message.17101b8ca4ca">+ 添加时间</button>`;
-  list.insertAdjacentHTML('afterend','<div class="time-presets"><span data-i18n="message.5fe7555f9205">快捷设置</span><button class="btn compact" data-editor-preset="06:00,11:00,16:00">06:00 / 11:00 / 16:00</button><button class="btn compact" data-editor-preset="00:00,05:00,10:00,15:00,20:00" data-i18n="message.5944a0eaeb33">当天间隔 5 小时</button><button class="btn compact" data-editor-sort data-i18n="message.471536ca38de">排序并去重</button></div>');
+  list.insertAdjacentHTML('afterend','<div class="time-presets"><span data-i18n="message.5fe7555f9205">快捷设置</span><button class="btn compact" data-editor-preset="06:00,11:00,16:00">06:00 / 11:00 / 16:00</button><button class="btn compact" data-editor-preset="00:00,05:00,10:00,15:00,20:00" data-i18n="message.5944a0eaeb33">当天间隔 5 小时</button><button class="btn compact" data-editor-five-hour data-i18n="schedule.fromFirst">首项 +5h</button><button class="btn compact" data-editor-sort data-i18n="message.471536ca38de">排序并去重</button></div>');
   $('#taskZone').insertAdjacentHTML('beforebegin','<input class="field zone-search" data-zone-search="taskZone" type="search" aria-label="搜索任务时区" placeholder="搜索时区，例如 上海、Tokyo、America…">');
  }
  if(taskStep===2){
@@ -80,9 +80,10 @@ document.addEventListener('change',event=>{
  if(el.id==='taskModel'){readTaskForm();draft.model=el.value;draft._modelChosen=el.value;draft.effort=CPATaskControls.efforts(modelContext(draft).models.find(m=>m.id===el.value))[0].value;renderTaskDialog();event.stopImmediatePropagation()}
 },true);
 document.addEventListener('click',event=>{
- const el=event.target.closest('[data-editor-preset],[data-editor-sort],[data-refresh-models]');if(!el)return;
+ const el=event.target.closest('[data-editor-preset],[data-editor-sort],[data-editor-five-hour],[data-refresh-models]');if(!el)return;
  event.preventDefault();readTaskForm();
  if(el.dataset.editorPreset!==undefined)draft.times=el.dataset.editorPreset.split(',');
+ if(el.hasAttribute('data-editor-five-hour'))draft.times=CPATaskControls.fiveHourTimes(draft.times[0]);
  if(el.hasAttribute('data-editor-sort'))draft.times=[...new Set(draft.times)].sort();
  if(el.hasAttribute('data-refresh-models')){taskCatalogGeneration++;taskCatalog.clear();taskDefinitions.clear();invalidateTaskPreview()}
  renderTaskDialog();

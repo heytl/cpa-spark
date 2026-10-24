@@ -1,5 +1,5 @@
 from pathlib import Path
-import re,sys,json,subprocess
+import re,sys,json,subprocess,base64
 source=Path(sys.argv[1]) if len(sys.argv)>1 else Path('design/prototype.html')
 notices = [('CLIProxyAPI native ABI', 'cliproxyapi-LICENSE.txt'),
            ('CPA Management Center storage compatibility', 'cpa-webui-LICENSE.txt'),
@@ -7,13 +7,20 @@ notices = [('CLIProxyAPI native ABI', 'cliproxyapi-LICENSE.txt'),
 Path('web/third-party-notices.txt').write_text('\n\n'.join(
     title + '\n\n' + Path('docs/third-party', name).read_text().strip()
     for title, name in notices) + '\n', encoding='utf-8', newline='\n')
+logo = Path('logo.svg').read_bytes()
+Path('web/logo.svg').write_bytes(logo)
+Path('web/sidebar-icon.svg').write_bytes(Path('sidebar-icon.svg').read_bytes())
+logo_uri = 'data:image/svg+xml;base64,' + base64.b64encode(logo).decode('ascii')
+brand_source = Path('web/brand.js').read_text().replace('__CPA_SPARK_LOGO_URI__', logo_uri)
 release_version=re.search(r'const Version = "([^"]+)"',Path('internal/warmup/types.go').read_text())[1]
 s=source.read_text()
+s=s.replace('</head>', '<link rel="icon" type="image/svg+xml" href="./logo.svg">\n</head>', 1)
 messages=json.loads(Path('web/locales/messages.json').read_text())
 s=s.replace('/* CPA_I18N_RUNTIME */',Path('web/i18n.js').read_text())
 s=re.sub(r'<meta name="description" content="[^"]*">', '<meta name="description" content="CPA Spark（星火）：为 CLIProxyAPI 提供单账号与自定义分组的独立预热调度、计划预览和执行追踪。">', s, count=1)
 css=re.search(r'<style>([\s\S]*?)</style>',s).group(1)
 js=re.search(r'<script>([\s\S]*?)</script>',s).group(1)
+js=js.replace('src="../logo.svg"', 'src="./logo.svg"')
 s=re.sub(r'<style>[\s\S]*?</style>','<link rel="stylesheet" href="./style.css">',s,count=1)
 s=re.sub(r'<script>[\s\S]*?</script>','<script src="./app.js" defer></script>',s,count=1)
 # Strip demo bootstrap, storage and all simulation entry points.
@@ -81,6 +88,6 @@ s=re.sub(r'<div class="plugin-tools">[\s\S]*?</div>', '', s, count=1)
 s=s.replace('class="plugin-version"','class="plugin-version" translate="no"')
 s=re.sub(r'^[ \t]+$','',s,flags=re.M)
 Path('web/index.html').write_text(s,newline='\n')
-Path('web/app.js').write_text('const CPA_SPARK_VERSION='+json.dumps(release_version)+';\nconst CPA_I18N_CATALOG='+json.dumps(messages,ensure_ascii=False,separators=(',',':'))+';\n// CPA_I18N_CATALOG_END\nconst CPA_TIME_ZONES='+Path('web/timezones.json').read_text()+';\n'+js+'\n'+Path('web/cpa-session.js').read_text()+'\n'+Path('web/live-bridge.js').read_text()+'\n'+Path('web/task-controls.js').read_text()+'\n'+Path('web/task-editor.js').read_text()+'\n'+Path('web/account-timeline.js').read_text()+'\n'+Path('web/brand.js').read_text()+'\n// CPA_PRODUCT_UI_START\n'+Path('web/window-timeline.js').read_text()+'\n'+Path('web/product-ui.js').read_text(),newline='\n')
+Path('web/app.js').write_text('const CPA_SPARK_VERSION='+json.dumps(release_version)+';\nconst CPA_I18N_CATALOG='+json.dumps(messages,ensure_ascii=False,separators=(',',':'))+';\n// CPA_I18N_CATALOG_END\nconst CPA_TIME_ZONES='+Path('web/timezones.json').read_text()+';\n'+js+'\n'+Path('web/cpa-session.js').read_text()+'\n'+Path('web/live-bridge.js').read_text()+'\n'+Path('web/task-controls.js').read_text()+'\n'+Path('web/task-editor.js').read_text()+'\n'+Path('web/account-timeline.js').read_text()+'\n'+brand_source+'\n// CPA_PRODUCT_UI_START\n'+Path('web/window-timeline.js').read_text()+'\n'+Path('web/product-ui.js').read_text()+'\n'+Path('web/history-data.js').read_text()+'\n'+Path('web/history-ui.js').read_text(),newline='\n')
 subprocess.run(['node','scripts/check_i18n.cjs'],check=True)
 print('Built real-mode assets without demo accounts or simulated execution')

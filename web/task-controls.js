@@ -32,5 +32,11 @@ const CPATaskControls = (() => {
    if(!times.includes(value))return value;
   }return '06:00';
  }
- return Object.freeze({modelOptions,preferredModel,efforts,nextTime});
+ function fiveHourTimes(first){
+  if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(first||''))return [];
+  const [hour,minute]=first.split(':').map(Number),result=[];
+  for(let at=hour*60+minute;at<1440;at+=300)result.push(String(Math.floor(at/60)).padStart(2,'0')+':'+String(at%60).padStart(2,'0'));
+  return result;
+ }
+ return Object.freeze({modelOptions,preferredModel,efforts,nextTime,fiveHourTimes});
 })();

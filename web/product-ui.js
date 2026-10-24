@@ -16,7 +16,7 @@ render();
 const centeredRunDetailBase=renderRunDetail;
 renderRunDetail=function(run){document.getElementById('detailDialog').classList.add('execution-detail');centeredRunDetailBase(run)};
 const originalAccountDetail=renderAccountDetail;
-renderAccountDetail=function(){document.getElementById('detailDialog').classList.remove('execution-detail');originalAccountDetail()};
+renderAccountDetail=function(){document.getElementById('accountDialog').classList.remove('execution-detail');originalAccountDetail()};
 
 // Static review: account enabled state is independent of warmup overrides and login health.
 function previewAccountEnabled(a){return !!a&&!a.disabled&&a.status!=='disabled'}
@@ -89,7 +89,7 @@ function previewHistoryMatches(r){return (filters.historyStatus==='all'||runStat
 const clearHistoryBase=renderHistory;
 renderHistory=function(){
  const count=state.runs.filter(r=>r.finished&&previewHistoryMatches(r)).length,all=state.runs.filter(r=>r.finished).length;
- return clearHistoryBase().replace('<button class="btn" data-action="export-history">',`<button class="btn" data-clear-history="filtered" ${!count?'disabled':''}>${icon('trash')}清除筛选结果 <span class="badge">${count}</span></button><button class="btn danger" data-clear-history="all" ${!all?'disabled':''} data-i18n="message.55f1033fab69">清除全部</button><button class="btn" data-action="export-history">`).replace('<section class="panel">','<p class="history-clear-note" data-i18n="message.d05224a246b1">清除筛选结果：按当前日期、关键词和执行结果筛选。清除全部：忽略筛选条件。执行中的记录会保留。</p><section class="panel">').replace(/(<button class="iconbtn" data-action="run-detail" data-id="([^"]+)"[^>]*>[\s\S]*?<\/button>)/g,(_,button,id)=>{const r=state.runs.find(r=>r.id===id);return button+`<button class="iconbtn history-delete" data-delete-run="${esc(id)}" aria-label="删除 ${esc(r?.name||'执行记录')}" title="删除记录" ${!r?.finished?'disabled':''}>${icon('trash')}</button>`})
+ return clearHistoryBase().replace('<button class="btn" data-action="export-history">',`<button class="btn" data-clear-history="filtered" ${!count?'disabled':''}>${icon('trash')}删除筛选结果 <span class="badge">${count}</span></button><button class="btn danger" data-clear-history="all" ${!all?'disabled':''} data-i18n="message.55f1033fab69">删除全部</button><button class="btn" data-action="export-history">`).replace('<section class="panel">','<p class="history-clear-note" data-i18n="message.d05224a246b1">删除筛选结果：按当前日期、关键词和执行结果筛选。删除全部：忽略筛选条件。执行中的记录会保留。</p><section class="panel">').replace(/(<button class="iconbtn" data-action="run-detail" data-id="([^"]+)"[^>]*>[\s\S]*?<\/button>)/g,(_,button,id)=>{const r=state.runs.find(r=>r.id===id);return button+`<button class="iconbtn history-delete" data-delete-run="${esc(id)}" aria-label="删除 ${esc(r?.name||'执行记录')}" title="删除记录" ${!r?.finished?'disabled':''}>${icon('trash')}</button>`})
 };
 async function previewRemoveRuns(scope){
  if(mutating)return;mutating=true;const pending=toast('正在删除记录…','loader');
@@ -101,7 +101,7 @@ document.addEventListener('click',async e=>{
  const filtered=bulk?.dataset.clearHistory==='filtered';
  const scope=single?{ids:[single.dataset.deleteRun]}:filtered?{filter:{date:filters.historyDate,query:filters.historyQuery,status:filters.historyStatus,timezone:state.settings.timezone}}:{all:true};
  try{const result=await api('delete-history',{...scope,preview:true});if(!result.count){toast('没有可删除的已结束记录','info');return}
- const title=single?'删除执行记录':filtered?'清除筛选结果':'清除全部记录';
+ const title=single?'删除执行记录':filtered?'删除筛选结果':'删除全部记录';
  const summary=single?'仅删除这一条执行记录。':filtered?`日期：${filters.historyDate||'不限'}；关键词：${filters.historyQuery||'不限'}；执行结果：${document.querySelector('[data-filter="historyStatus"]')?.selectedOptions[0]?.textContent||'全部结果'}`:'覆盖所有日期和执行结果，忽略当前筛选条件。';
  modal(title,`<p>将删除 ${result.count} 条已结束的执行记录。</p><p class="history-delete-scope">${esc(summary)}</p><p class="small muted" data-i18n="message.928ee86f61b5">执行中的记录保留；账号、分组和定时任务不受影响。删除后无法恢复。</p>`,title,()=>previewRemoveRuns(scope),true)
  }catch(error){toast('无法读取删除范围：'+error.message,'alert')}

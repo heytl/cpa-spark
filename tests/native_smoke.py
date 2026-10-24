@@ -51,18 +51,30 @@ with tempfile.TemporaryDirectory() as directory:
   registration=rpc('plugin.register',{'schema_version':6,'config_yaml':base64.b64encode(('enabled: true\nstate_dir: '+directory+'\n').encode()).decode()});assert registration['capabilities']=={'management_api':True}
   assert registration['metadata']['Name']=='CPA Spark'
   assert registration['metadata']['Version']==expected_version
+  logo_bytes=(pathlib.Path(__file__).resolve().parents[1]/'logo.svg').read_bytes()
+  sidebar_bytes=(pathlib.Path(__file__).resolve().parents[1]/'sidebar-icon.svg').read_bytes()
+  assert registration['metadata']['Logo']=='data:image/svg+xml;base64,'+base64.b64encode(sidebar_bytes).decode()
+  assert b'<rect' not in sidebar_bytes and b'#808080' in sidebar_bytes
   if args.expected_repository:assert registration['metadata']['GitHubRepository']==args.expected_repository
   if args.expected_author:assert registration['metadata']['Author']==args.expected_author
   # Match CPA's validPlugin metadata gate, including local builds without CI -X flags.
   for field in ('Name','Version','Author','GitHubRepository'):
    assert isinstance(registration['metadata'].get(field),str) and registration['metadata'][field].strip(), ('CPA rejects empty registration metadata',field,registration)
-  routes=rpc('management.register',{});assert len(routes['routes'])==8
+  routes=rpc('management.register',{});assert len(routes['routes'])==11
+  for endpoint_name in ('history','history-detail','account-timeline'):
+   assert any(r['Method']=='POST' and r['Path']=='/plugins/cpa-spark/'+endpoint_name for r in routes['routes'])
   resource=rpc('management.handle',{'Method':'GET','Path':'/v0/resource/plugins/cpa-spark/status'});assert resource['StatusCode']==200
   script=rpc('management.handle',{'Method':'GET','Path':'/v0/resource/plugins/cpa-spark/app.js'});assert script['StatusCode']==200
   assert base64.b64decode(resource['Body'])==(pathlib.Path(__file__).resolve().parents[1]/'web/index.html').read_bytes()
   assert base64.b64decode(script['Body'])==(pathlib.Path(__file__).resolve().parents[1]/'web/app.js').read_bytes()
   stylesheet=rpc('management.handle',{'Method':'GET','Path':'/v0/resource/plugins/cpa-spark/style.css'});assert stylesheet['StatusCode']==200
   assert base64.b64decode(stylesheet['Body'])==(pathlib.Path(__file__).resolve().parents[1]/'web/style.css').read_bytes()
+  logo=rpc('management.handle',{'Method':'GET','Path':'/v0/resource/plugins/cpa-spark/logo.svg'})
+  assert logo['StatusCode']==200 and logo['Headers']['Content-Type']==['image/svg+xml']
+  assert base64.b64decode(logo['Body'])==logo_bytes
+  sidebar=rpc('management.handle',{'Method':'GET','Path':'/v0/resource/plugins/cpa-spark/sidebar-icon.svg'})
+  assert sidebar['StatusCode']==200 and sidebar['Headers']['Content-Type']==['image/svg+xml']
+  assert base64.b64decode(sidebar['Body'])==sidebar_bytes
   notices=rpc('management.handle',{'Method':'GET','Path':'/v0/resource/plugins/cpa-spark/third-party-notices.txt'})
   assert notices['StatusCode']==200 and notices['Headers']['Content-Type']==['text/plain; charset=utf-8']
   notice_text=base64.b64decode(notices['Body']).decode()
@@ -78,7 +90,11 @@ with tempfile.TemporaryDirectory() as directory:
    state=endpoint('GET','state')
    if state['runs'] and state['runs'][0]['finished']:break
    time.sleep(.05)
-  assert state['runs'][0]['items'][0]['status']=='success',state
+  assert state['runs'][0]['summary'] and not state['runs'][0]['items'],state
+  detail=endpoint('POST','history-detail',{'id':state['runs'][0]['id']})
+  assert detail['items'][0]['status']=='success',detail
+  page=endpoint('POST','history',{'mode':'account','pageSize':20})
+  assert page['total']==1 and len(page['rows'])==1 and page['rows'][0]['status']=='success',page
   assert len(model_calls)==1
   count=endpoint('POST','delete-history',{'ids':[run['runId']],'preview':True});assert count['count']==1
   once=endpoint('POST','run-once',{'task':config['tasks'][0],'key':'native-once-test'})

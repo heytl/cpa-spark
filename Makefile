@@ -1,5 +1,6 @@
 GO ?= go
 OS := $(shell $(GO) env GOOS)
+ARCH := $(shell $(GO) env GOARCH)
 EXT := so
 ifeq ($(OS),darwin)
 EXT := dylib
@@ -9,8 +10,7 @@ EXT := dll
 endif
 .PHONY: build test ci web preview dev clean
 build:
-	mkdir -p dist
-	CGO_ENABLED=1 $(GO) build -buildvcs=false -buildmode=c-shared -o dist/cpa-spark.$(EXT) ./cmd/plugin
+	GO=$(GO) python3 scripts/build_native.py --target $(OS)_$(ARCH)
 test:
 	GO=$(GO) python3 scripts/ci.py
 web:

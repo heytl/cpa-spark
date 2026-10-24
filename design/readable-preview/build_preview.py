@@ -1,12 +1,12 @@
 from pathlib import Path
-import argparse,json,re
+import argparse,json,re,base64
 root=Path(__file__).resolve().parents[2]
 parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,default=root/'dist/CPA-Spark-Static-Preview.html');args=parser.parse_args();out=args.output.resolve()
 html=(root/'web/index.html').read_text();css=(root/'web/style.css').read_text();js=(root/'web/app.js').read_text()
 js=js.split('// CPA_PRODUCT_UI_START')[0]
 # Keep the preview typography identical to the shipped application.
 # The preview is self-contained: no stored credentials, backend, storage writes or network.
-start=js.index('// Read CPA WebUI\'s saved session;')
+start=js.index('/* CPA WebUI storage interoperability.')
 end=js.index('// Production bridge:',start)
 js=js[:start]+"const CPAPluginSession=Object.freeze({savedConnection:()=>({managementKey:'static-preview-only'}),resourcePrefix:()=>'',loginURL:()=> '#settings'});\n"+js[end:]
 a=js.index('async function authenticatedAPI(url,data){');b=js.index('function currentConfig()',a)
@@ -14,6 +14,7 @@ js=js[:a]+"async function authenticatedAPI(url,data){return previewAPI(url,data)
 js=js.replace('function resolveHostPreferences(', 'function previewResolveHostPreferences(',1)
 js+='\nfunction resolveHostPreferences(env){if(env.parent!==env)return previewResolveHostPreferences(env);return {language:\'zh-CN\',mode:\'light\',theme:\'white\',source:\'fallback\'}}\n'
 # Production templates already include the approved presentation.
+html=html.replace('href="./logo.svg"', 'href="data:image/svg+xml;base64,'+base64.b64encode((root/'logo.svg').read_bytes()).decode('ascii')+'"')
 html=re.sub(r'<title>.*?</title>','<title>CPA Spark · 星火 — 静态效果预览</title>',html,count=1)
 html=re.sub(r'<meta name="description"[^>]*>','<meta name="description" content="CPA Spark（星火）— 轻量预热，按时就绪。">',html,count=1)
 html=re.sub(r'<div class="plugin-title">[\s\S]*?</div><p class="plugin-description">[\s\S]*?</p>', '<div class="plugin-title">CPA Spark <span class="brand-cn">星火</span></div><p class="plugin-description">轻量预热，按时就绪。</p>',html,count=1)
@@ -39,13 +40,23 @@ async function previewAPI(url,data){
  if(path.endsWith('/accounts'))return {accounts:structuredClone(previewAccounts)};
  if(path.endsWith('/auth-files/models')){const name=new URL(String(url),'https://preview.invalid').searchParams.get('name');const provider=previewAccounts.find(a=>a.id===name)?.provider||'codex';return {models:previewModels[provider].map(({id})=>({id}))}}
  if(path.includes('/model-definitions/'))return {models:structuredClone(previewModels[path.split('/').at(-1)]||[])};
+ if(path.endsWith('/history'))return previewHistoryPage(previewRuns,previewAccounts,data);
+ if(path.endsWith('/history-detail'))return structuredClone(previewRuns.find(r=>r.id===data.id));
+ if(path.endsWith('/account-timeline'))return {runs:structuredClone(previewRuns)};
  if(path.endsWith('/preview'))return {times:occurrences(data.task,5).map(at=>new Date(at).toISOString())};
  if(path.endsWith('/config')){Object.assign(previewConfig,structuredClone(data),{revision:previewConfig.revision+1});return previewSnapshot()}
+ if(path.endsWith('/delete-history')){
+  const accountMode=data.mode==='account';
+  const done=i=>!['queued','running'].includes(i.executionStatus||i.status);
+  const selected=accountMode?[...new Set(previewRuns.flatMap(r=>r.items.filter(i=>done(i)&&(data.all||data.executionIds?.includes(i.id)||data.filter&&previewHistoryPage(previewRuns,previewAccounts,{mode:'account',filter:data.filter,pageSize:100000}).rows.some(r=>r.id===i.id))).map(i=>i.id)))]:previewRuns.filter(r=>r.finished&&(data.all||data.ids?.includes(r.id)||data.filter&&(!data.filter.taskId||r.taskId===data.filter.taskId)&&(!data.filter.query||[r.name,r.model,r.id].join(' ').toLowerCase().includes(data.filter.query.toLowerCase()))&&(!data.filter.date||dateKey(r.started)===data.filter.date)&&(!data.filter.status||data.filter.status==='all'||runStatus(r)===data.filter.status))).map(r=>r.id);
+  if(!data.preview){const ids=new Set(selected);if(accountMode)previewRuns.forEach(r=>r.items=r.items.filter(i=>!ids.has(i.id)));previewRuns.splice(0,previewRuns.length,...previewRuns.filter(r=>accountMode?r.items.length:!ids.has(r.id)))}
+  return {count:selected.length};
+ }
  if(path.endsWith('/cancel'))return {ok:true};
  throw Error('静态预览，不执行服务端操作');
 }
 '''
-script=bootstrap+'\n'+js+'\n'+(root/'web/window-timeline.js').read_text()+'\n'+(Path(__file__).parent/'preview-ui.js').read_text()+'\n'+(Path(__file__).parent/'preview-actions.js').read_text()+'\n'+(Path(__file__).parent/'preview-controls.js').read_text()
+script=bootstrap+'\n'+(Path(__file__).parent/'preview-history.js').read_text()+'\n'+js+'\n'+(root/'web/window-timeline.js').read_text()+'\n'+(Path(__file__).parent/'preview-ui.js').read_text()+'\n'+(Path(__file__).parent/'preview-actions.js').read_text()+'\n'+(Path(__file__).parent/'preview-controls.js').read_text()+'\n'+(root/'web/history-data.js').read_text()+'\n'+(root/'web/history-ui.js').read_text()
 html=html.replace('<link rel="stylesheet" href="./style.css">','<style>'+css+'</style>')
 html=html.replace('<script src="./app.js" defer></script>','<script>'+script.replace('</script','<\\/script')+'</script>')
 out.parent.mkdir(parents=True,exist_ok=True);out.write_text(html)

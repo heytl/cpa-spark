@@ -338,8 +338,8 @@
     "en": "{v1}Duplicate task"
   },
   "message.dd90349320e7": {
-    "source": "{v1}清除筛选结果",
-    "en": "{v1}Clear filtered history"
+    "source": "{v1}删除筛选结果",
+    "en": "{v1}Delete filtered history"
   },
   "message.62393a556045": {
     "source": "{v27}更多操作",
@@ -3386,12 +3386,12 @@
     "ko": "시간 추가"
   },
   "message.55f1033fab69": {
-    "source": "清除全部",
-    "en": "Clear all"
+    "source": "删除全部",
+    "en": "Delete all"
   },
   "message.51f27de322b9": {
-    "source": "清除全部记录",
-    "en": "Clear all history"
+    "source": "删除全部记录",
+    "en": "Delete all history"
   },
   "message.b65cd0fddfa6": {
     "source": "清除本原型的编辑，重新加载示例",
@@ -3410,12 +3410,12 @@
     "ko": "필터 지우기"
   },
   "message.70ed2721f612": {
-    "source": "清除筛选结果",
-    "en": "Clear filtered history"
+    "source": "删除筛选结果",
+    "en": "Delete filtered history"
   },
   "message.d05224a246b1": {
-    "source": "清除筛选结果：按当前日期、关键词和执行结果筛选。清除全部：忽略筛选条件。执行中的记录会保留。",
-    "en": "Clear filtered history uses the current date, search and result filters. Clear all ignores filters. Active runs are retained."
+    "source": "删除筛选结果：按当前日期、关键词和执行结果筛选。删除全部：忽略筛选条件。执行中的记录会保留。",
+    "en": "Delete filtered history uses the current date, search and result filters. Delete all ignores filters. Active runs are retained."
   },
   "message.a646e009a119": {
     "source": "演示数据",
@@ -4748,5 +4748,201 @@
   "account.67433537a8e9": {
     "source": "未来 24 小时暂无计划",
     "en": "No plans for the next 24 hours"
+  },
+  "schedule.fromFirst": {
+    "source": "首项 +5h",
+    "en": "First +5h"
+  },
+  "history.mode": {
+    "source": "记录显示方式",
+    "en": "Record view"
+  },
+  "history.byAccount": {
+    "source": "按账号",
+    "en": "By account"
+  },
+  "history.byTask": {
+    "source": "按任务",
+    "en": "By task"
+  },
+  "history.search": {
+    "source": "搜索账号、任务、模型或编号…",
+    "en": "Search accounts, tasks, models or IDs…"
+  },
+  "history.date": {
+    "source": "记录日期",
+    "en": "Record date"
+  },
+  "history.status": {
+    "source": "执行结果",
+    "en": "Result"
+  },
+  "history.allStatus": {
+    "source": "全部结果",
+    "en": "All results"
+  },
+  "history.title": {
+    "source": "执行记录",
+    "en": "Execution history"
+  },
+  "history.account": {
+    "source": "账号",
+    "en": "Account"
+  },
+  "history.task": {
+    "source": "任务 / 批次",
+    "en": "Task / run"
+  },
+  "history.time": {
+    "source": "执行时间 / 模型",
+    "en": "Execution time / model"
+  },
+  "history.sources": {
+    "source": "来源任务",
+    "en": "Source tasks"
+  },
+  "history.results": {
+    "source": "账号结果",
+    "en": "Account results"
+  },
+  "history.actions": {
+    "source": "操作",
+    "en": "Actions"
+  },
+  "history.details": {
+    "source": "查看执行详情",
+    "en": "View execution details"
+  },
+  "history.delete": {
+    "source": "删除记录",
+    "en": "Delete record"
+  },
+  "history.clearFiltered": {
+    "source": "删除筛选结果",
+    "en": "Delete filtered"
+  },
+  "history.clearAll": {
+    "source": "删除全部",
+    "en": "Delete all"
+  },
+  "history.export": {
+    "source": "导出记录",
+    "en": "Export records"
+  },
+  "history.empty": {
+    "source": "暂无匹配的执行记录",
+    "en": "No matching execution records"
+  },
+  "history.taskFilter": {
+    "source": "任务：",
+    "en": "Task:"
+  },
+  "history.clearTask": {
+    "source": "取消任务筛选",
+    "en": "Clear task filter"
+  },
+  "history.accounts": {
+    "source": "{count} 个账号",
+    "en": "{count} accounts"
+  },
+  "history.accountCount": {
+    "source": "共 {count} 条账号记录",
+    "en": "{count} account records"
+  },
+  "history.taskCount": {
+    "source": "共 {count} 个任务批次",
+    "en": "{count} task runs"
+  },
+  "history.deleteAccountOnly": {
+    "source": "仅删除这条账号执行记录，保留其他账号结果。",
+    "en": "Delete only this account execution; keep results for other accounts."
+  },
+  "history.deleteTaskOnly": {
+    "source": "删除这个任务批次的记录。",
+    "en": "Delete the record for this task run."
+  },
+  "history.confirmDelete": {
+    "source": "将删除 {count} 条已结束的执行记录。",
+    "en": "Delete {count} completed execution records."
+  },
+  "history.keepActive": {
+    "source": "执行中的记录及防重复凭据保留，删除后无法恢复。",
+    "en": "Active executions and deduplication keys are retained. Deletion cannot be undone."
+  },
+  "history.backToAccount": {
+    "source": "返回账号时间线",
+    "en": "Back to account timeline"
+  },
+  "history.status.success": {
+    "source": "成功",
+    "en": "Success"
+  },
+  "history.status.failed": {
+    "source": "失败",
+    "en": "Failed"
+  },
+  "history.status.partial": {
+    "source": "部分跳过",
+    "en": "Partially skipped"
+  },
+  "history.status.skipped": {
+    "source": "跳过",
+    "en": "Skipped"
+  },
+  "history.status.unknown": {
+    "source": "结果未确认",
+    "en": "Unknown result"
+  },
+  "history.status.running": {
+    "source": "执行中",
+    "en": "Running"
+  },
+  "history.status.queued": {
+    "source": "待执行",
+    "en": "Queued"
+  },
+  "upcoming.requests": {
+    "source": "{count} 次请求",
+    "en": "{count} requests"
+  },
+  "history.loading": {
+    "source": "正在加载记录…",
+    "en": "Loading records…"
+  },
+  "history.loadFailed": {
+    "source": "记录加载失败：{error}",
+    "en": "Could not load records: {error}"
+  },
+  "history.invalidResponse": {
+    "source": "记录数据格式无效",
+    "en": "Invalid history response"
+  },
+  "history.retry": {
+    "source": "重试",
+    "en": "Retry"
+  },
+  "history.perPage": {
+    "source": "每页",
+    "en": "Per page"
+  },
+  "history.previous": {
+    "source": "上一页",
+    "en": "Previous"
+  },
+  "history.next": {
+    "source": "下一页",
+    "en": "Next"
+  },
+  "history.pageOf": {
+    "source": "第 {page} / {pages} 页",
+    "en": "Page {page} of {pages}"
+  },
+  "history.allPages": {
+    "source": "删除范围包括所有匹配页。",
+    "en": "Deletion includes every matching page."
+  },
+  "history.exporting": {
+    "source": "正在导出筛选记录…",
+    "en": "Exporting filtered records…"
   }
 }

@@ -1,12 +1,19 @@
-name: Verify published store packages
+name: Verify Release packages
 on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Exact draft or published stable version tag
+        required: true
+        type: string
   release:
     types: [published]
   workflow_dispatch:
     inputs:
       tag:
-        description: Stable release tag, for example v0.1.2
+        description: Stable release tag, for example v0.1.8
         required: true
+        type: string
 permissions:
   contents: read
 env:

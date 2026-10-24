@@ -20,4 +20,6 @@ make test
 
 版本号的唯一来源是 `internal/warmup/types.go` 的 `Version`。发布标签必须为 `vX.Y.Z` 并与该值一致。发布说明和商店流程见 [发布文档](docs/PLUGIN_STORE.md)。
 
+用户文档以 `README.md`（默认中文）和 `README.en.md`（英文）成对维护，顶部互相链接。更新说明在 `CHANGELOG.md` 和 `CHANGELOG.en.md` 的相同版本下同步更新；每个版本只能有一个非空条目。Release 从这两份文件生成中英文正文，缺少任一语言会阻止发布。CI 还会检查两份更新日志的版本集合是否一致。
+
 当前尚未指定项目源代码许可；依赖库的许可按各依赖原有条款执行。项目作者确定许可后再添加 LICENSE，并同步商店元数据。
