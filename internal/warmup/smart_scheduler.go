@@ -3,6 +3,7 @@ package warmup
 import (
     "database/sql"
     "encoding/json"
+    "sort"
     "strings"
     "time"
 )
@@ -116,4 +117,43 @@ func (e *Engine) saveNextRolling(x Execution, observed WindowObservation) error 
         })
     }
     return nil
+}
+
+type RollingAccountPreview struct {
+    AuthID string `json:"authId"`
+    NextDue time.Time `json:"nextDue"`
+    Source string `json:"source"`
+}
+
+// A rolling task has one wall-clock bootstrap, then an independent cursor for
+// each account. The subsequent five-hour intervals are estimates, not fixed
+// daily appointments or verified provider reset times.
+func (e *Engine) previewRolling(t Task, groups []Group, now time.Time) ([]time.Time, []RollingAccountPreview, error) {
+    first := Next(t,now,1)
+    if len(first)==0 {return []time.Time{},nil,nil}
+    plans:=make([]RollingAccountPreview,0)
+    for _,authID:=range Targets(t,groups) {
+        next:=first[0]
+        source:="estimated"
+        p,has,err:=e.store.Rolling(t.ID,authID)
+        if err!=nil {return nil,nil,err}
+        if has && p.NextDue>0 {
+            next=time.UnixMilli(p.NextDue)
+            source=p.Source
+            if next.Before(now) {next=now}
+        }
+        plans=append(plans,RollingAccountPreview{AuthID:authID,NextDue:next,Source:source})
+    }
+    sort.Slice(plans,func(i,j int) bool {
+        if plans[i].NextDue.Equal(plans[j].NextDue) {return plans[i].AuthID<plans[j].AuthID}
+        return plans[i].NextDue.Before(plans[j].NextDue)
+    })
+    next:=first[0]
+    if len(plans)>0 {next=plans[0].NextDue}
+    timeline:=make([]time.Time,0,5)
+    for i:=0;i<5;i++ {
+        timeline=append(timeline,next)
+        next=next.Add(5*time.Hour+windowSafetyMargin)
+    }
+    return timeline,plans,nil
 }
