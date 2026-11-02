@@ -111,3 +111,35 @@ func TestRollingSavesNextDue(t *testing.T){
  // rolling cycle; the first scheduled bootstrap will establish its cursor.
  if p,found,err:=s.Rolling("smart","a");err!=nil||!found||p.NextDue<=start.UnixMilli(){t.Fatalf("plan=%+v found=%v err=%v calls=%d",p,found,err,h.calls)}
 }
+
+func TestRollingPreviewUsesFiveHourIntervalsAndPerAccountCursor(t *testing.T) {
+    now:=time.Date(2026,11,2,14,35,0,0,time.UTC)
+    e,store,_,_:=smartEngine(t,"codex",now,now.Add(time.Hour),now.Add(5*time.Hour))
+    cfg,_:=store.Config()
+    task:=cfg.Tasks[0]
+    task.Strategy="rolling"
+    task.Times=[]string{"00:30"}
+    task.Days=[]int{0,1,2,3,4,5,6}
+    cfg.Tasks[0]=task
+    if err:=e.Save(cfg);err!=nil {t.Fatal(err)}
+    times,plans,err:=e.previewRolling(task,cfg.Groups,now)
+    if err!=nil||len(times)!=5||len(plans)!=1 {t.Fatalf("unexpected preview %v %v %v",times,plans,err)}
+    loc,_:=time.LoadLocation("Asia/Shanghai")
+    if first:=times[0].In(loc).Format("2006-01-02 15:04");first!="2026-11-03 00:30" {t.Fatalf("incorrect bootstrap: %s",first)}
+    for i:=1;i<5;i++ {
+        if gap:=times[i].Sub(times[i-1]);gap!=5*time.Hour+windowSafetyMargin {
+            t.Fatalf("gap[%d] was %s (daily repetition regression)",i,gap)
+        }
+    }
+    due:=now.Add(2*time.Hour).UnixMilli()
+    if err=store.SaveRolling(RollingPlan{TaskID:task.ID,AuthID:"a",NextDue:due,Source:"upstream"});err!=nil {t.Fatal(err)}
+    times,plans,err=e.previewRolling(task,cfg.Groups,now)
+    if err!=nil||times[0].UnixMilli()!=due||plans[0].Source!="upstream" {t.Fatalf("real per-account plan ignored: %v %v %v",times,plans,err)}
+    // Turning off scheduling deletes the saved continuous cursor, rather than
+    // allowing a stale queued occurrence to reappear on re-enable.
+    cfg,err=store.Config();if err!=nil {t.Fatal(err)}
+    cfg.Tasks[0].Enabled=false
+    cfg.Tasks[0].Revision++
+    if err=e.Save(cfg);err!=nil {t.Fatal(err)}
+    if p,exists,err:=store.Rolling(task.ID,"a");err!=nil||exists {t.Fatalf("disabled cursor retained: %+v %v %v",p,exists,err)}
+}

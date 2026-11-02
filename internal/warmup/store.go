@@ -162,6 +162,24 @@ func (s *Store) Save(c Config) error {
 	if _, e = tx.Exec("UPDATE config SET body=? WHERE id=1", marshal(c)); e != nil {
 		return e
 	}
+	// A rolling cursor belongs to one version of an enabled task. Disabling,
+	// editing, deleting or switching its strategy must not resurrect a stale
+	// quota plan on a later re-enable.
+	for _, prior := range old.Tasks {
+		stale := true
+		for _, current := range c.Tasks {
+			if current.ID == prior.ID {
+				stale = !current.Enabled || normalizedStrategy(current) != "rolling" || current.Revision != prior.Revision
+				break
+			}
+		}
+		if stale {
+			prefix := prior.ID + "\x00"
+			if _, e = tx.Exec("DELETE FROM rolling_plans WHERE substr(id,1,?)=?", len(prefix), prefix); e != nil {
+				return e
+			}
+		}
+	}
 	// Paused/deleted scheduled sources are withdrawn; manual runs are explicit independent actions.
 	rows, e := tx.Query("SELECT body FROM executions WHERE json_extract(body,'$.status') IN ('queued','waiting')")
 	if e != nil {
@@ -195,7 +213,7 @@ func (s *Store) Save(c Config) error {
 			reason = "Global pause"
 		} else if c.Overrides[x.AuthID] {
 			reason = "Account paused"
-		} else if x.Mode == "scheduled" {
+		} else if x.Mode == "scheduled" || x.Mode == "rolling" {
 			valid := false
 			for i := range x.Origins {
 				if !x.Origins[i].Active {

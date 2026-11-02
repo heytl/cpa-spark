@@ -87,8 +87,20 @@ func (e *Engine) enqueueRolling(c Config,now time.Time) error {
 }
 func (e *Engine) saveNextRolling(x Execution, observed WindowObservation) error {
     if normalizedStrategy(x.Task)!="rolling" {return nil}
+    current,err:=e.store.Config()
+    if err!=nil {return err}
     for _,o:=range x.Origins {
         if !o.Active {continue}
+        // A completed request must not re-create a cursor after the user
+        // disabled, deleted or edited the task while it was in flight.
+        stillEnabled:=false
+        for _,t:=range current.Tasks {
+            if t.ID==o.TaskID && t.Enabled && normalizedStrategy(t)=="rolling" && t.Revision==x.Task.Revision {
+                stillEnabled=true
+                break
+            }
+        }
+        if !stillEnabled {continue}
         next:=observed.ResetAt
         source:="upstream"
         if next<=e.now().UnixMilli() {

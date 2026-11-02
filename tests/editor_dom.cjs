@@ -103,5 +103,21 @@ const timelineCSS=fs.readFileSync(root+'/web/style.css','utf8');
 assert(timelineCSS.includes('.st-window{container-type:inline-size}'),'timeline uses pixel-width-aware labels');
 assert(timelineCSS.includes('@container (min-width: 74px)'),'48-hour windows retain readable start labels');
 assert(!w.eval('sparkTimelineLane').toString().includes("right-left<16"),'percentage-based label hiding must be removed');
+
+// Continuous mode shows an estimated five-hour sequence rather than five
+// identical daily times. Disabled tasks remain saved but are not dispatched.
+click('[data-action="nav"][data-id="tasks"]');
+click('[data-action="new-task"]');
+click('[data-action="target-mode"][data-id="accounts"]');
+click('[data-draft-select="accountIds"][value="qa-codex"]');
+click('[data-action="task-next"]');
+assert.equal(w.document.querySelector('#taskStrategy').value,'fixed');
+change('#taskStrategy','rolling');
+assert.equal(w.document.querySelector('#taskStrategy').value,'rolling');
+const projected=[...w.document.querySelectorAll('#taskDialog .preview-row .mono')].map(el=>el.textContent.trim());
+assert.equal(projected.length,5,'rolling task should display five estimated times');
+assert.equal(new Set(projected.map(t=>t.slice(0,5))).size,5,'rolling preview must not repeat the same clock time each day');
+assert(w.document.querySelector('#taskDialog .spark-rolling-preview-hint')?.textContent.includes('推算'),'rolling preview must label unverified estimates');
+click('[data-action="close"][data-id="taskDialog"]');
 assert(requests.some(url=>url.includes('/auth-files/models?name=qa-codex')));assert(requests.some(url=>url.includes('/model-definitions/codex')));assert.deepEqual(errors,[]);console.log(unavailable?'PASS: paused/unavailable targets still load catalogs and reasoning without executing requests':'PASS: complete page bootstrap, centered-dialog markup, time editing, 596 zones, catalog defaults, model switch, save/edit preservation, menu portal and Gemini zero-budget');
 }finally{w.dispatchEvent(new w.Event('pagehide'));await wait();d.window.close()}})().catch(e=>{console.error(e);process.exitCode=1});

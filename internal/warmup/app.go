@@ -312,7 +312,12 @@ func (a *App) Handle(r ManagementRequest) ManagementResponse {
 		if err = Validate(&c); err != nil {
 			return reply(400, map[string]string{"error": err.Error()})
 		}
-		return reply(200, map[string]any{"times": Next(v.Task, e.now(), 5), "targets": Targets(v.Task, c.Groups), "now": e.now()})
+		if normalizedStrategy(v.Task) == "rolling" {
+            times,plans,err:=e.previewRolling(v.Task,c.Groups,e.now())
+            if err!=nil {return reply(500,map[string]string{"error":err.Error()})}
+            return reply(200,map[string]any{"times":times,"targets":Targets(v.Task,c.Groups),"now":e.now(),"strategy":"rolling","accountPlans":plans,"estimated":true})
+        }
+        return reply(200, map[string]any{"times": Next(v.Task, e.now(), 5), "targets": Targets(v.Task, c.Groups), "now": e.now()})
 	}
 	return reply(404, map[string]string{"error": "route missing"})
 }

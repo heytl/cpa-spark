@@ -1,6 +1,27 @@
 // Smart quota scheduling controls. Legacy tasks remain fixed-time by default.
 (() => {
  const tr = (cn,en)=>typeof hostPreferences!=="undefined"&&String(hostPreferences.language).startsWith("zh")?cn:en;
+
+ // The task editor originally calculated the five upcoming daily clock times.
+ // Rolling mode has only one daily bootstrap; later occurrences are
+ // approximate 5-hour intervals and are not scheduled by the day selector.
+ const fixedTimePreview=renderTimePreview;
+ renderTimePreview=function(times,zone){
+  if(!draft||draft.strategy!=="rolling")return fixedTimePreview(times,zone);
+  let projected=times;
+  if(taskStep===1 || (taskStep===2 && (typeof taskPreview==='undefined'||taskPreview.status!=='ready'||taskPreview.key!==taskPreviewKey()))){
+   const first=occurrences(draft,1)[0];
+   projected=first?Array.from({length:5},(_,i)=>first+i*(5*60*60*1000+5000)):[];
+  }
+  let html=fixedTimePreview(projected,zone);
+  html=html.replace('未来 5 次触发',tr('未来 5 次预估','Next 5 estimated times'))
+    .replace('下一次</span>',tr('预计下一次','Estimated next')+'</span>');
+  const note='<div class="field-hint spark-rolling-preview-hint">'+tr(
+   '首轮之后为每隔约 5 小时的推算，不代表已查询到上游重置时间。启用后按各账号实际窗口独立安排；未来时间可能变化。',
+   'After the first run, times are approximate five-hour projections, not confirmed upstream resets. Each account will be scheduled independently.'
+  )+'</div>';
+  return html+note;
+ };
  const original=renderTaskDialog;
  renderTaskDialog=function(){
   if(!draft)return;
