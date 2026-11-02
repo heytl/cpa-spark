@@ -174,8 +174,7 @@ func (s *Store) Save(c Config) error {
 			}
 		}
 		if stale {
-			prefix := prior.ID + "\x00"
-			if _, e = tx.Exec("DELETE FROM rolling_plans WHERE substr(id,1,?)=?", len(prefix), prefix); e != nil {
+			if _, e = tx.Exec("DELETE FROM rolling_plans WHERE instr(id,char(0))>0 AND substr(id,1,instr(id,char(0))-1)=?", prior.ID); e != nil {
 				return e
 			}
 		}
