@@ -5052,5 +5052,9 @@
   "smart.027": {
     "source": "首次启动时间",
     "en": "First start time"
+  },
+  "smart.028": {
+    "source": "CPA 登录信息不可读取",
+    "en": "CPA login information is unavailable"
   }
 }
