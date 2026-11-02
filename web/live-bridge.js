@@ -15,7 +15,7 @@ async function authenticatedAPI(url,data){
  const response=await fetch(url,{method:data===undefined?'GET':'POST',cache:'no-store',credentials:'same-origin',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});
  const body=await response.json().catch(()=>({error:'Invalid CPA response'}));
  if(CPAPluginSession.activeConnection(window)?.managementKey!==key||managementKey!==key)throw Error('CPA 登录状态已变化，请重新连接');
- if(response.status===401||response.status===403){loginRejectedKey=key;CPAPluginSession.clearManualConnection(window);disconnectLive('',false);CPAConnectionPrompt.show('CPA 登录已失效，请手动输入管理密码');throw Error('CPA 登录已失效')}
+ if(response.status===401||response.status===403){loginRejectedKey=key;CPAPluginSession.clearManualConnection(window);disconnectLive('CPA 登录已失效',false);globalThis.CPAConnectionPrompt?.show?.('CPA 登录已失效，请手动输入管理密码');throw Error('CPA 登录已失效')}
  if(!response.ok)throw Error(body.error||'HTTP '+response.status);return body
 }
 function currentConfig(){return {revision:serverRevision,tasks:clone(state.tasks),groups:clone(state.groups),settings:clone(state.settings),overrides:clone(state.overrides)}}
@@ -24,9 +24,9 @@ async function refreshLive(force=false){if(!connected||polling||mutating)return;
 async function commitConfig(config){if(mutating)return;mutating=true;try{const snapshot=await api('config',config);settingsDraft=null;applySnapshot(snapshot);toast('Saved to CPA');return true}catch(error){toast(error.message,'alert');return false}finally{mutating=false}}
 async function connectLive(){
  const session=CPAPluginSession.activeConnection(window);observedKey=session?.managementKey||'';
- if(!session){disconnectLive('',false);CPAConnectionPrompt.show();return}
+ if(!session){disconnectLive('CPA 登录信息不可读取',false);globalThis.CPAConnectionPrompt?.show?.();return}
  disconnectLive('',false);connectionPending=true;nextConnectionRetryAt=Date.now()+10000;managementKey=session.managementKey;const attempt=connectionAttempt;
- try{const [snapshot,as]=await Promise.all([api('state'),api('accounts')]);if(attempt!==connectionAttempt)return;state.accounts=as.accounts.map(a=>({...a,plan:a.plan||'未识别',tone:a.provider==='codex'?'orange':'green',status:a.disabled?'disabled':a.unavailable||a.status==='error'?'expired':'active'}));connected=true;document.body.dataset.disconnected='false';lastConnectionError='';loginRejectedKey='';CPAConnectionPrompt.hide();applySnapshot(snapshot)}catch(error){if(attempt===connectionAttempt){disconnectLive('',false);CPAConnectionPrompt.show(error.message)}}finally{if(attempt===connectionAttempt)connectionPending=false}
+ try{const [snapshot,as]=await Promise.all([api('state'),api('accounts')]);if(attempt!==connectionAttempt)return;state.accounts=as.accounts.map(a=>({...a,plan:a.plan||'未识别',tone:a.provider==='codex'?'orange':'green',status:a.disabled?'disabled':a.unavailable||a.status==='error'?'expired':'active'}));connected=true;document.body.dataset.disconnected='false';lastConnectionError='';loginRejectedKey='';globalThis.CPAConnectionPrompt?.hide?.();applySnapshot(snapshot)}catch(error){if(attempt===connectionAttempt){disconnectLive(error.message,false);globalThis.CPAConnectionPrompt?.show?.(error.message)}}finally{if(attempt===connectionAttempt)connectionPending=false}
 }
 function synchronizeLogin(){const key=CPAPluginSession.activeConnection(window)?.managementKey||'';if(key!==observedKey||(key&&key!==loginRejectedKey&&!connected&&!connectionPending&&Date.now()>=nextConnectionRetryAt))void connectLive()}
 window.addEventListener('storage',synchronizeLogin);
