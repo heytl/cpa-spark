@@ -5072,5 +5072,17 @@
   "smart.032": {
     "source": "未来 5 次触发",
     "en": "Next 5 triggers"
+  },
+  "smart.033": {
+    "source": "此时段无后续计划",
+    "en": "No further scheduled windows in this view"
+  },
+  "smart.034": {
+    "source": "暂无预计窗口",
+    "en": "No estimated window in this view"
+  },
+  "smart.035": {
+    "source": "不代表真实额度已结束",
+    "en": "This does not imply the upstream quota window has ended"
   }
 }

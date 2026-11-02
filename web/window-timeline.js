@@ -8,7 +8,7 @@ function sparkTimelineSummary(row,lanes,bounds){
  const current=windows.filter(w=>w.start<=now&&w.end>now).sort((a,b)=>a.end-b.end)[0],next=windows.filter(w=>w.start>now).sort((a,b)=>a.start-b.start)[0];
  const at=current?.end??next?.start;
  if(at!=null)return `<span class="st-summary-label">${current?'预计到期':'下次预热'}</span><strong class="st-summary-time mono">${time(at,bounds.zone)}<small>${esc(timelineDaySuffix(at,bounds.start,bounds.zone).trim())}</small></strong><span class="st-summary-note" data-i18n="message.20172bbd7f4e">计划估算</span>`;
- const label=active.every(l=>l.policy.kind==='weekly')?'按周刷新':active.some(l=>l.unanchored)?'起点未确认':active.some(l=>l.policy.kind==='unknown')?'套餐未确认':'暂无窗口';return `<span class="st-summary-label" data-i18n="message.356d09ae3e53">窗口状态</span><strong class="st-summary-word">${label}</strong><span class="st-summary-note">${label==='按周刷新'?'仅展示预热时间':'仅展示已知计划'}</span>`
+ const label=active.every(l=>l.policy.kind==='weekly')?'按周刷新':active.some(l=>l.unanchored)?'起点未确认':active.some(l=>l.policy.kind==='unknown')?'套餐未确认':windows.length?'此时段无后续计划':'暂无预计窗口';return `<span class="st-summary-label" data-i18n="message.356d09ae3e53">窗口状态</span><strong class="st-summary-word">${label}</strong><span class="st-summary-note">${label==='按周刷新'?'仅展示预热时间':label==='此时段无后续计划'?'不代表真实额度已结束':'仅展示已知计划'}</span>`
 }
 function sparkTimelineLane(row,lane,b,pct,now){
  const windows=lane.windows.map(w=>{

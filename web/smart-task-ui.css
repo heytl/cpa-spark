@@ -22,14 +22,19 @@
 /* Official CPA notifications appear at the top center. */
 .toast-stack,.toast-stack:popover-open{position:fixed;inset:20px auto auto 50%;transform:translateX(-50%);margin:0;width:min(390px,calc(100vw - 36px));max-height:min(65vh,520px);z-index:100000}
 @media(max-width:650px){.toast-stack,.toast-stack:popover-open{inset:68px auto auto 50%;width:calc(100vw - 36px);transform:translateX(-50%)}}
-/* A window's visible pixel width, not the fraction of a day, determines its text.
-   On 48-hour views a full 5-hour window still has room for its start time. */
+/* Always display readable text by default. Container queries only hide
+   details when an individual bar is too narrow; unsupported browsers will
+   still show clipped labels instead of leaving every bar blank. */
 .st-window{container-type:inline-size}
-.st-window .st-window-time,.st-window .st-window-caption,.st-window .st-window-end{display:none!important}
-@container (min-width: 74px){
-  .st-window-time{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.st-window .st-window-time,
+.st-window .st-window-caption{display:block;min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-window .st-window-end{display:inline}
+@container (max-width: 164px){
+  .st-window .st-window-end{display:none}
 }
-@container (min-width: 166px){
-  .st-window-end{display:inline!important}
-  .st-window-caption{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@container (max-width: 82px){
+  .st-window .st-window-caption{display:none}
+}
+@container (max-width: 60px){
+  .st-window .st-window-time{display:none}
 }

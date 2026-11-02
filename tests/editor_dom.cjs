@@ -101,7 +101,11 @@ assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run de
 scrollDialog.close();
 const timelineCSS=fs.readFileSync(root+'/web/style.css','utf8');
 assert(timelineCSS.includes('.st-window{container-type:inline-size}'),'timeline uses pixel-width-aware labels');
-assert(timelineCSS.includes('@container (min-width: 74px)'),'48-hour windows retain readable start labels');
+assert(timelineCSS.includes('.st-window .st-window-time,\n.st-window .st-window-caption{display:block'), 'timeline defaults to visible text without container query support');
+assert(timelineCSS.includes('@container (max-width: 82px)'), 'timeline hides descriptions only in genuinely narrow windows');
+assert(timelineCSS.includes('@container (max-width: 60px)'), 'timeline hides start time only in cropped slivers');
+assert(!timelineCSS.includes('.st-window .st-window-time,.st-window .st-window-caption,.st-window .st-window-end{display:none!important}'), 'CSS specificity regression must not return');
+assert(w.eval('sparkTimelineSummary').toString().includes('此时段无后续计划'), 'past planned windows are not misreported as no upstream window');
 assert(!w.eval('sparkTimelineLane').toString().includes("right-left<16"),'percentage-based label hiding must be removed');
 
 // Continuous mode shows an estimated five-hour sequence rather than five
