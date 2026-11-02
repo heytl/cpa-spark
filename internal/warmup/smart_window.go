@@ -108,7 +108,7 @@ func (e *Engine) observeWindow(account Account, model string) (WindowObservation
         if project == "" { project = firstText(raw,"project_id","projectId") }
         if project == "" {
             var lookup ModelResponse
-            body := []byte("{"metadata":{"ideType":"ANTIGRAVITY","platform":"PLATFORM_UNSPECIFIED","pluginType":"GEMINI"}}")
+            body := []byte(`{"metadata":{"ideType":"ANTIGRAVITY","platform":"PLATFORM_UNSPECIFIED","pluginType":"GEMINI"}}`)
             if e.host.Call("host.http.do",map[string]any{"method":"POST","url":antigravityCodeAssistURL,"headers":headers,"body":body},&lookup)==nil && lookup.StatusCode>=200 && lookup.StatusCode<300 {
                 m:=readRawObject(lookup.Body)
                 project=firstText(obj(m["cloudaicompanionProject"]),"id")
