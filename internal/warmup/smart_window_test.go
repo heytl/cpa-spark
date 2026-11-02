@@ -102,7 +102,7 @@ func TestFixedSkipsFarFutureWindow(t *testing.T){
 }
 func TestRollingSavesNextDue(t *testing.T){
  start:=time.Date(2026,11,2,11,0,0,0,time.UTC)
- e,s,h,_:=smartEngine(t,"codex",start,start.Add(-time.Second),start.Add(5*time.Hour))
+ e,s,h,_:=smartEngine(t,"codex",start,start.Add(-10*time.Second),start.Add(5*time.Hour))
  c,_:=s.Config();c.Tasks[0].Strategy="rolling";if err:=e.Save(c);err!=nil{t.Fatal(err)}
  e.Run("smart","roll-now")
  e.Tick()

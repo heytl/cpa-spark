@@ -418,7 +418,7 @@ func (e *Engine) execute(x Execution) {
         x.Message="Prior confirmed quota window remains active; upstream verification unavailable"
         return
     }
-    if ck.LastAttempt>0 && now.UnixMilli()-ck.LastAttempt<2*60*1000 {
+    if x.Mode!="manual" && ck.LastAttempt>0 && now.UnixMilli()-ck.LastAttempt<2*60*1000 {
         x.Status="skipped";x.WindowStatus="existing"
         x.Message="Recent account warmup already dispatched; avoiding duplicate model request"
         return
