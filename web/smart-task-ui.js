@@ -45,6 +45,12 @@
  };
  const originalRunDetail=renderRunDetail;
  renderRunDetail=function(run){
+  // The dialog may be refreshed while a run is active. Replacing its innerHTML
+  // destroys the scroller, so restore its position after the new DOM is ready.
+  const dialog=document.querySelector("#detailDialog");
+  const oldContent=dialog?.open?dialog.querySelector(".drawer-content"):null;
+  const scrollTop=oldContent?.scrollTop||0;
+  const scrollLeft=oldContent?.scrollLeft||0;
   originalRunDetail(run);
   const area=document.querySelector("#detailDialog .drawer-content");
   if(!area||!Array.isArray(run?.items))return;
@@ -58,5 +64,6 @@
    return '<div class="smart-window-detail"><strong translate="no">'+esc(i.authId||"")+'</strong><span class="smart-window-outcome">'+esc(info||tr("未获取窗口信息","Window data unavailable"))+'</span><dl>'+rows.map(([label,at])=>'<dt>'+label+'</dt><dd>'+fmt(at)+'</dd>').join("")+'</dl></div>';
   }).filter(Boolean).join("");
   if(panels)area.insertAdjacentHTML("beforeend",'<section class="smart-window-details"><h3>'+tr("智能窗口检查","Smart window verification")+'</h3>'+panels+'</section>');
+  if(oldContent){area.scrollTop=scrollTop;area.scrollLeft=scrollLeft;}
  };
 })();

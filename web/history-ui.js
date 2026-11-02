@@ -65,8 +65,9 @@ document.addEventListener('click',async event=>{
   modal(title,`<p>${t('history.confirmDelete',{count:result.count})}</p><p class="history-delete-scope">${esc(summary)}</p><p class="small muted">${t('history.keepActive')}</p>`,title,async()=>{await previewRemoveRuns(scope);historyKey='';await requestHistory(true)},true);
  }catch(error){toast('无法读取删除范围：'+error.message,'alert')}
 },true);
+let lastDetailedRunID='',lastDetailedRunFinished=false;
 const historyRunDetailBase=renderRunDetail;
-renderRunDetail=function(run){historyRunDetailBase(run);if($('#accountDialog').open){$('#detailDialog .drawer-footer .flex').insertAdjacentHTML('afterbegin',`<button class="btn" data-action="close" data-id="detailDialog">${t('history.backToAccount')}</button>`)}};
+renderRunDetail=function(run){lastDetailedRunID=run?.id||'';lastDetailedRunFinished=!!run?.finished;historyRunDetailBase(run);if($('#accountDialog').open){$('#detailDialog .drawer-footer .flex').insertAdjacentHTML('afterbegin',`<button class="btn" data-action="close" data-id="detailDialog">${t('history.backToAccount')}</button>`)}};
 
 async function exportHistory(){
  const query={...historyQuery(),page:1,pageSize:100};const pending=toast(t('history.exporting'),'loader'),records=new Map();
@@ -96,6 +97,6 @@ $('#accountDialog').addEventListener('close',()=>{accountTimelineGeneration++;ac
 let historyRefreshBusy=false;
 setInterval(async()=>{
  if(!connected||historyRefreshBusy)return;historyRefreshBusy=true;
- try{if($('#detailDialog').open&&detailType==='run'){const id=detailId,generation=runDetailGeneration;const run=await api('history-detail',{id});if(connected&&generation===runDetailGeneration&&$('#detailDialog').open&&detailId===id)renderRunDetail(run)}}catch(error){}finally{historyRefreshBusy=false}
+ try{if($('#detailDialog').open&&detailType==='run'&&!(lastDetailedRunID===detailId&&lastDetailedRunFinished)){const id=detailId,generation=runDetailGeneration;const run=await api('history-detail',{id});if(connected&&generation===runDetailGeneration&&$('#detailDialog').open&&detailId===id)renderRunDetail(run)}}catch(error){}finally{historyRefreshBusy=false}
 },2500);
 render();

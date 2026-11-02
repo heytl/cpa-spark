@@ -91,5 +91,17 @@ click('[data-history-row="page-x-40"] [data-action="run-detail"]');await wait();
 // Obsolete page responses must not replace a new display mode.
 holdHistory=true;click('[data-history-page="4"]');change('#historyMode','task');assert.equal(historyResolves.length,2);historyResolves.shift()();await wait();assert.equal(w.document.querySelectorAll('[data-history-row]').length,0);holdHistory=false;historyResolves.shift()();await wait();await wait();assert.equal(w.document.querySelector('#historyMode').value,'task');assert.equal(w.document.querySelector('[data-history-row]').dataset.historyRow,'page-run-000');
 change('#historyMode','account');await wait();await wait();assert(w.document.querySelector('[data-clear-history="filtered"]').textContent.includes('125'));click('[data-clear-history="filtered"]');await wait();assert(w.document.querySelector('#modalDialog').textContent.includes('所有匹配页'));assert(w.document.querySelector('#modalDialog').textContent.includes('125'));click('[data-action="modal-confirm"]');await wait();await wait();assert.equal(qaRuns.length,0);assert.equal(w.document.querySelectorAll('[data-history-row]').length,0);
+// Regression: refreshing an open execution detail must retain its scroll position.
+const scrollFixture={id:'scroll-run',name:'scroll test',mode:'manual',model:'gpt-6-luna',started:Date.now(),finished:false,items:[{id:'scroll-x',authId:'qa-codex',status:'running',message:'Checking quota',scheduled:Date.now(),waitUntil:Date.now()+30000,windowStatus:'waiting'}]};
+const scrollDialog=w.document.querySelector('#detailDialog');
+w.eval('renderRunDetail')(scrollFixture);scrollDialog.showModal();
+scrollDialog.querySelector('.drawer-content').scrollTop=219;
+w.eval('renderRunDetail')({...scrollFixture,finished:true,items:[{...scrollFixture.items[0],status:'success',message:'Completed',windowStatus:'unconfirmed'}]});
+assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run detail auto-refresh must preserve user scroll');
+scrollDialog.close();
+const timelineCSS=fs.readFileSync(root+'/web/style.css','utf8');
+assert(timelineCSS.includes('.st-window{container-type:inline-size}'),'timeline uses pixel-width-aware labels');
+assert(timelineCSS.includes('@container (min-width: 74px)'),'48-hour windows retain readable start labels');
+assert(!w.eval('sparkTimelineLane').toString().includes("right-left<16"),'percentage-based label hiding must be removed');
 assert(requests.some(url=>url.includes('/auth-files/models?name=qa-codex')));assert(requests.some(url=>url.includes('/model-definitions/codex')));assert.deepEqual(errors,[]);console.log(unavailable?'PASS: paused/unavailable targets still load catalogs and reasoning without executing requests':'PASS: complete page bootstrap, centered-dialog markup, time editing, 596 zones, catalog defaults, model switch, save/edit preservation, menu portal and Gemini zero-budget');
 }finally{w.dispatchEvent(new w.Event('pagehide'));await wait();d.window.close()}})().catch(e=>{console.error(e);process.exitCode=1});
