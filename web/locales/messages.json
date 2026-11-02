@@ -4944,5 +4944,113 @@
   "history.exporting": {
     "source": "正在导出筛选记录…",
     "en": "Exporting filtered records…"
+  },
+  "smart.001": {
+    "source": "CPA 登录已失效，请手动输入管理密码",
+    "en": "CPA login expired. Enter the management key manually."
+  },
+  "smart.002": {
+    "source": "使用 CPA 已保存登录",
+    "en": "Use saved CPA login"
+  },
+  "smart.003": {
+    "source": "固定时间 · 智能避让（默认）",
+    "en": "Fixed times · Smart avoidance (default)"
+  },
+  "smart.004": {
+    "source": "实际发起请求",
+    "en": "Actual request sent"
+  },
+  "smart.005": {
+    "source": "已有有效窗口，未重复请求",
+    "en": "Existing active window; no duplicate request"
+  },
+  "smart.006": {
+    "source": "已确认开启新窗口",
+    "en": "New quota window confirmed"
+  },
+  "smart.007": {
+    "source": "延迟执行时间",
+    "en": "Deferred execution time"
+  },
+  "smart.008": {
+    "source": "执行前窗口到期",
+    "en": "Previous window reset"
+  },
+  "smart.009": {
+    "source": "执行后窗口到期",
+    "en": "Next window reset"
+  },
+  "smart.010": {
+    "source": "无法自动读取 CPA 登录凭据，请手动输入管理密码。仅本次页面有效，不会保存。",
+    "en": "The remembered CPA login could not be read. Enter the management key for this page only. It will not be stored."
+  },
+  "smart.011": {
+    "source": "智能窗口检查",
+    "en": "Smart quota window verification"
+  },
+  "smart.012": {
+    "source": "未获取窗口信息",
+    "en": "Quota window data unavailable"
+  },
+  "smart.013": {
+    "source": "等待窗口结束",
+    "en": "Waiting for window reset"
+  },
+  "smart.014": {
+    "source": "等待窗口重置",
+    "en": "Waiting for window reset"
+  },
+  "smart.015": {
+    "source": "管理密码",
+    "en": "Management key"
+  },
+  "smart.016": {
+    "source": "计划时间",
+    "en": "Scheduled time"
+  },
+  "smart.017": {
+    "source": "认证失败，请检查管理密码。",
+    "en": "Authentication failed. Check the management key."
+  },
+  "smart.018": {
+    "source": "设置首次启动时间。后续按每个账号真实的额度重置时间滚动。",
+    "en": "Choose the first start time. Later runs follow each account's real quota reset."
+  },
+  "smart.019": {
+    "source": "请求前检查真实窗口；未到期时最多等待 10 分钟，否则跳过本次，不影响下次计划。",
+    "en": "Check the real quota before warmup. Wait up to 10 minutes; otherwise skip this occurrence."
+  },
+  "smart.020": {
+    "source": "请求成功 · 窗口未确认",
+    "en": "Request succeeded · window unconfirmed"
+  },
+  "smart.021": {
+    "source": "请输入管理密码",
+    "en": "Enter the management key"
+  },
+  "smart.022": {
+    "source": "调度策略",
+    "en": "Scheduling strategy"
+  },
+  "smart.023": {
+    "source": "连接",
+    "en": "Connect"
+  },
+  "smart.024": {
+    "source": "连接 CPA",
+    "en": "Connect CPA"
+  },
+  "smart.025": {
+    "source": "连续模式可能在凌晨运行；日期与时间仅用于首次启动。",
+    "en": "Continuous mode may run overnight. The chosen day and time apply only to first activation."
+  },
+  "smart.026": {
+    "source": "连续窗口 · 智能滚动",
+    "en": "Continuous windows · Smart rolling"
+  },
+  "smart.027": {
+    "source": "首次启动时间",
+    "en": "First start time"
   }
 }
