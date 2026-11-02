@@ -149,3 +149,7 @@ dialog#taskDialog.drawer .drawer-header h2,dialog#groupDialog.drawer .drawer-hea
 .upcoming-title{cursor:default}
 
 .history-pagination{gap:12px;flex-wrap:wrap}.history-pager{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.history-pager .spark-select{width:76px}.history-pager select{width:76px}.history-pager .btn{min-height:36px}.history-load-error{padding:24px;display:flex;gap:12px;align-items:center;color:var(--red)}
+
+/* History actions: align icon controls to the left under their header. */
+.history-table th:last-child,.history-table td:last-child{text-align:left!important;padding-left:12px}
+.history-table td:last-child .iconbtn{display:inline-flex;vertical-align:middle}

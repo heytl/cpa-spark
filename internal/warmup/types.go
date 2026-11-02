@@ -81,6 +81,7 @@ type Settings struct {
 	Timezone    string `json:"timezone"`
 	Concurrency int    `json:"concurrency"`
 	Late        int    `json:"late"`
+	LatePolicyVersion int `json:"latePolicyVersion,omitempty"`
 	Retention   int    `json:"retention"`
 	Paused      bool   `json:"paused"`
 }
@@ -93,7 +94,7 @@ type Config struct {
 }
 
 func DefaultConfig() Config {
-	return Config{Tasks: []Task{}, Groups: []Group{}, Overrides: map[string]bool{}, Settings: Settings{Timezone: "Asia/Shanghai", Concurrency: 4, Late: 120, Retention: 30}}
+	return Config{Tasks: []Task{}, Groups: []Group{}, Overrides: map[string]bool{}, Settings: Settings{Timezone: "Asia/Shanghai", Concurrency: 4, Late: 600, LatePolicyVersion: 1, Retention: 30}}
 }
 func newID() string {
 	b := make([]byte, 16)
@@ -107,7 +108,7 @@ func providerOK(p string) bool { return p == "codex" || p == "antigravity" }
 var hhmm = regexp.MustCompile(`^([01][0-9]|2[0-3]):[0-5][0-9]$`)
 
 func Validate(c *Config) error {
-	if c.Settings.Concurrency < 1 || c.Settings.Concurrency > 8 || c.Settings.Late < 60 || c.Settings.Late > 300 || c.Settings.Retention < 1 || c.Settings.Retention > 365 {
+	if c.Settings.Concurrency < 1 || c.Settings.Concurrency > 8 || c.Settings.Late < 60 || c.Settings.Late > 1800 || c.Settings.Retention < 1 || c.Settings.Retention > 365 {
 		return errors.New("invalid scheduler limits")
 	}
 	if _, e := time.LoadLocation(c.Settings.Timezone); e != nil {

@@ -91,6 +91,20 @@ func Open(dir string) (*Store, error) {
 		s.Close()
 		return nil, e
 	}
+	// v0.1.8 used 120 seconds as the default, while smart window
+	// avoidance uses a ten-minute default. Upgrade only that legacy
+	// default once; preserve customized 1- and 5-minute selections.
+	if config.Settings.LatePolicyVersion == 0 {
+		if config.Settings.Late == 120 {
+			config.Settings.Late = 600
+		}
+		config.Settings.LatePolicyVersion = 1
+		config.Revision++
+		if _, e = db.Exec("UPDATE config SET body=? WHERE id=1", marshal(config)); e != nil {
+			s.Close()
+			return nil, e
+		}
+	}
 	if e = Validate(&config); e != nil {
 		s.Close()
 		return nil, e

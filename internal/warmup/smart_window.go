@@ -10,7 +10,6 @@ import (
 )
 
 const (
-    fixedWindowMaxDelay = 10 * time.Minute
     windowSafetyMargin = 5 * time.Second
     codexUsageURL = "https://chatgpt.com/backend-api/wham/usage"
     antigravityUsageURL = "https://daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary"

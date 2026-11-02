@@ -291,7 +291,7 @@ func (e *Engine) Tick() {
 			reason = "Account paused"
 		} else if x.Mode == "scheduled" && x.WaitUntil==0 && now.Sub(time.UnixMilli(x.Scheduled)) > time.Duration(c.Settings.Late)*time.Second {
 			reason = "Queue deadline exceeded"
-		} else if x.WaitUntil>0 && normalizedStrategy(x.Task)=="fixed" && now.UnixMilli()>x.Scheduled+fixedWindowMaxDelay.Milliseconds()+60000 {
+		} else if x.WaitUntil>0 && normalizedStrategy(x.Task)=="fixed" && now.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000+60000 {
             reason = "Smart wait deadline exceeded"
         }
 		if reason != "" {
@@ -401,9 +401,9 @@ func (e *Engine) execute(x Execution) {
                 x.Message="Quota window advanced externally; another request has already covered this cycle"
                 return
             }
-            if normalizedStrategy(x.Task)=="fixed" && delayUntil.UnixMilli()>x.Scheduled+fixedWindowMaxDelay.Milliseconds() {
+            if normalizedStrategy(x.Task)=="fixed" && delayUntil.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000 {
                 x.Status="skipped";x.WindowStatus="existing"
-                x.Message="Existing quota window continues past the ten-minute smart delay limit"
+                x.Message="Existing quota window continues past the configured smart delay limit"
                 return
             }
             x.Status="waiting"
