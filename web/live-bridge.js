@@ -3,19 +3,19 @@ let managementKey='',observedKey='',connectionAttempt=0,serverRevision=0,serverS
 const mount=CPAPluginSession.resourcePrefix(window);
 const apiBase=mount+'/v0/management/plugins/cpa-spark/';
 // Connect silently. Connection errors use the shared feedback component.
-let connectionStatus='',lastConnectionError='',connectionPending=false,nextConnectionRetryAt=0;
+let connectionStatus='',lastConnectionError='',connectionPending=false,nextConnectionRetryAt=0,loginRejectedKey='';
 document.body.dataset.disconnected='true';
 function reportConnectionError(message){connectionStatus=message;if(message&&message!==lastConnectionError){lastConnectionError=message;toast(message,'alert')}}
 function disconnectLive(message='',notify=true){connected=false;connectionPending=false;managementKey='';connectionAttempt++;serverState=null;serverRevision=0;state.accounts=[];state.tasks=[];state.groups=[];state.runs=[];activeRuns.clear();selected.clear();settingsDraft=null;document.querySelectorAll('dialog[open]').forEach(d=>d.close());document.body.dataset.disconnected='true';render();connectionStatus=message;if(notify)reportConnectionError(message)}
 function api(endpoint,data){return authenticatedAPI(apiBase+endpoint,data)}
 function cpaAPI(path){return authenticatedAPI(mount+'/v0/management/'+path)}
 async function authenticatedAPI(url,data){
- const key=CPAPluginSession.savedConnection(window)?.managementKey;
+ const key=CPAPluginSession.activeConnection(window)?.managementKey;
  if(!key||key!==managementKey)throw Error('CPA 登录状态已变化，请重新连接');
  const response=await fetch(url,{method:data===undefined?'GET':'POST',cache:'no-store',credentials:'same-origin',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});
  const body=await response.json().catch(()=>({error:'Invalid CPA response'}));
- if(CPAPluginSession.savedConnection(window)?.managementKey!==key||managementKey!==key)throw Error('CPA 登录状态已变化，请重新连接');
- if(response.status===401||response.status===403){disconnectLive('CPA 登录已失效，请返回 CPA 重新登录');throw Error('CPA 登录已失效')}
+ if(CPAPluginSession.activeConnection(window)?.managementKey!==key||managementKey!==key)throw Error('CPA 登录状态已变化，请重新连接');
+ if(response.status===401||response.status===403){loginRejectedKey=key;CPAPluginSession.clearManualConnection(window);disconnectLive('',false);CPAConnectionPrompt.show('CPA 登录已失效，请手动输入管理密码');throw Error('CPA 登录已失效')}
  if(!response.ok)throw Error(body.error||'HTTP '+response.status);return body
 }
 function currentConfig(){return {revision:serverRevision,tasks:clone(state.tasks),groups:clone(state.groups),settings:clone(state.settings),overrides:clone(state.overrides)}}
@@ -23,12 +23,12 @@ function applySnapshot(snapshot,redraw=true){const badge=document.querySelector(
 async function refreshLive(force=false){if(!connected||polling||mutating)return;polling=true;try{const snap=await api('state');const editing=!!document.querySelector('dialog[open]')||$('#main').contains(document.activeElement);if(snap.config.revision!==serverRevision&&editing&&!force){connectionStatus='Server configuration changed · save will check for conflict';return}applySnapshot(snap,force||!editing||detailType==='run')}catch(error){connectionStatus=error.message}finally{polling=false}}
 async function commitConfig(config){if(mutating)return;mutating=true;try{const snapshot=await api('config',config);settingsDraft=null;applySnapshot(snapshot);toast('Saved to CPA');return true}catch(error){toast(error.message,'alert');return false}finally{mutating=false}}
 async function connectLive(){
- const session=CPAPluginSession.savedConnection(window);observedKey=session?.managementKey||'';
- if(!session){disconnectLive('请先在 CPA 登录并勾选“记住密码”，再返回插件');return}
+ const session=CPAPluginSession.activeConnection(window);observedKey=session?.managementKey||'';
+ if(!session){disconnectLive('',false);CPAConnectionPrompt.show();return}
  disconnectLive('',false);connectionPending=true;nextConnectionRetryAt=Date.now()+10000;managementKey=session.managementKey;const attempt=connectionAttempt;
- try{const [snapshot,as]=await Promise.all([api('state'),api('accounts')]);if(attempt!==connectionAttempt)return;state.accounts=as.accounts.map(a=>({...a,plan:a.plan||'未识别',tone:a.provider==='codex'?'orange':'green',status:a.disabled?'disabled':a.unavailable||a.status==='error'?'expired':'active'}));connected=true;document.body.dataset.disconnected='false';lastConnectionError='';applySnapshot(snapshot)}catch(error){if(attempt===connectionAttempt)disconnectLive(error.message)}finally{if(attempt===connectionAttempt)connectionPending=false}
+ try{const [snapshot,as]=await Promise.all([api('state'),api('accounts')]);if(attempt!==connectionAttempt)return;state.accounts=as.accounts.map(a=>({...a,plan:a.plan||'未识别',tone:a.provider==='codex'?'orange':'green',status:a.disabled?'disabled':a.unavailable||a.status==='error'?'expired':'active'}));connected=true;document.body.dataset.disconnected='false';lastConnectionError='';loginRejectedKey='';CPAConnectionPrompt.hide();applySnapshot(snapshot)}catch(error){if(attempt===connectionAttempt){disconnectLive('',false);CPAConnectionPrompt.show(error.message)}}finally{if(attempt===connectionAttempt)connectionPending=false}
 }
-function synchronizeLogin(){const key=CPAPluginSession.savedConnection(window)?.managementKey||'';if(key!==observedKey||(key&&!connected&&!connectionPending&&Date.now()>=nextConnectionRetryAt))void connectLive()}
+function synchronizeLogin(){const key=CPAPluginSession.activeConnection(window)?.managementKey||'';if(key!==observedKey||(key&&key!==loginRejectedKey&&!connected&&!connectionPending&&Date.now()>=nextConnectionRetryAt))void connectLive()}
 window.addEventListener('storage',synchronizeLogin);
 window.addEventListener('focus',synchronizeLogin);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)synchronizeLogin()});

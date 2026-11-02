@@ -50,6 +50,7 @@ type Account struct {
 	Tier            string `json:"tier,omitempty"`
 	ChatGPTPlanType string `json:"chatgpt_plan_type,omitempty"`
 	AuthIndex       string `json:"auth_index,omitempty"`
+	ProjectID       string `json:"project_id,omitempty"`
 	Plan            string `json:"plan,omitempty"`
 }
 type Group struct {
@@ -73,6 +74,7 @@ type Task struct {
 	Model      string   `json:"model"`
 	Effort     string   `json:"effort"`
 	Enabled    bool     `json:"enabled"`
+	Strategy   string   `json:"strategy,omitempty"`
 	Revision   int      `json:"revision"`
 }
 type Settings struct {
@@ -142,6 +144,8 @@ func Validate(c *Config) error {
 				return errors.New("invalid HH:MM")
 			}
 		}
+		if t.Strategy != "" && t.Strategy != "fixed" && t.Strategy != "rolling" { return errors.New("invalid warmup strategy") }
+		if t.Strategy == "rolling" && len(t.Times) != 1 { return errors.New("rolling strategy needs one initial time") }
 		if !validEffort(t.Effort) {
 			return errors.New("unsupported reasoning effort")
 		}
@@ -266,6 +270,13 @@ type Execution struct {
 	Status     string   `json:"status"`
 	Message    string   `json:"message"`
 	Scheduled  int64    `json:"scheduled"`
+	WaitUntil  int64    `json:"waitUntil,omitempty"`
+	Dispatched int64   `json:"dispatched,omitempty"`
+	WindowResetAt int64 `json:"windowResetAt,omitempty"`
+	WindowCheckAt int64 `json:"windowCheckAt,omitempty"`
+	NextWindowAt int64 `json:"nextWindowAt,omitempty"`
+	WindowStatus string `json:"windowStatus,omitempty"`
+	WindowBucket string `json:"windowBucket,omitempty"`
 	Started    int64    `json:"started"`
 	Finished   int64    `json:"finished"`
 	Latency    int64    `json:"latency"`

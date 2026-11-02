@@ -15,7 +15,7 @@ type HistoryQuery struct {
 }
 
 const historyTaskSQL = `SELECT r.id,r.task_id taskId,r.name,r.model,r.provider,r.mode,r.started,count(x.id) accountCount,
- CASE WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status') IN ('queued','running') THEN 1 ELSE 0 END)>0 THEN 'running'
+ CASE WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status') IN ('queued','running','waiting') THEN 1 ELSE 0 END)>0 THEN 'running'
  WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status')='unknown' THEN 1 ELSE 0 END)>0 THEN 'unknown'
  WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status')='failed' THEN 1 ELSE 0 END)>0 THEN 'failed'
  WHEN count(x.id)=0 OR sum(CASE WHEN NOT o.active OR json_extract(x.body,'$.status')='skipped' THEN 1 ELSE 0 END)=count(x.id) THEN 'skipped'
@@ -34,7 +34,7 @@ func historyWhere(mode string, f HistoryFilter) (string, []any, error) {
 		return "", nil, errors.New("history filter too large")
 	}
 	switch f.Status {
-	case "", "all", "success", "failed", "partial", "skipped", "unknown", "running", "queued":
+	case "", "all", "success", "failed", "partial", "skipped", "unknown", "running", "queued", "waiting":
 	default:
 		return "", nil, errors.New("invalid history status")
 	}
@@ -115,10 +115,10 @@ func (e *Engine) History(q HistoryQuery) (map[string]any, error) {
 	}
 	base := "WITH h AS (" + historyBase(q.Mode) + ") "
 	var total, deletable, all int
-	if err = e.store.db.QueryRow(base+"SELECT count(*),coalesce(sum(status NOT IN ('queued','running')),0) FROM h WHERE "+where, args...).Scan(&total, &deletable); err != nil {
+	if err = e.store.db.QueryRow(base+"SELECT count(*),coalesce(sum(status NOT IN ('queued','running','waiting')),0) FROM h WHERE "+where, args...).Scan(&total, &deletable); err != nil {
 		return nil, err
 	}
-	if err = e.store.db.QueryRow(base + "SELECT count(*) FROM h WHERE status NOT IN ('queued','running')").Scan(&all); err != nil {
+	if err = e.store.db.QueryRow(base + "SELECT count(*) FROM h WHERE status NOT IN ('queued','running','waiting')").Scan(&all); err != nil {
 		return nil, err
 	}
 	pages := (total + q.PageSize - 1) / q.PageSize
@@ -156,7 +156,7 @@ func (e *Engine) History(q HistoryQuery) (map[string]any, error) {
 			}
 			record[key] = value
 		}
-		record["finished"] = record["status"] != "running" && record["status"] != "queued"
+		record["finished"] = record["status"] != "running" && record["status"] != "queued" && record["status"] != "waiting"
 		records = append(records, record)
 	}
 	err = rows.Err()
@@ -228,7 +228,7 @@ func (s *Store) runDetail(id string, accountID ...string) (map[string]any, error
 			status = "skipped"
 			message = "Source cancelled before dispatch"
 		}
-		if status == "queued" || status == "running" {
+		if status == "queued" || status == "running" || status == "waiting" {
 			finished = false
 		}
 		names := []string{}
@@ -237,7 +237,7 @@ func (s *Store) runDetail(id string, accountID ...string) (map[string]any, error
 				names = append(names, o.Name)
 			}
 		}
-		items = append(items, map[string]any{"id": x.ID, "authId": x.AuthID, "executionStatus": x.Status, "status": status, "message": message, "latency": x.Latency, "tokens": x.Tokens, "sources": names, "httpStatus": x.HTTPStatus, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled})
+		items = append(items, map[string]any{"id": x.ID, "authId": x.AuthID, "executionStatus": x.Status, "status": status, "message": message, "latency": x.Latency, "tokens": x.Tokens, "sources": names, "httpStatus": x.HTTPStatus, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled,"waitUntil":x.WaitUntil,"dispatched":x.Dispatched,"windowResetAt":x.WindowResetAt,"windowCheckAt":x.WindowCheckAt,"nextWindowAt":x.NextWindowAt,"windowStatus":x.WindowStatus,"windowBucket":x.WindowBucket})
 	}
 	return map[string]any{"id": id, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": at, "finished": finished, "items": items}, rows.Err()
 }
@@ -270,8 +270,8 @@ func (e *Engine) AccountTimeline(id string) (map[string]any, error) {
 		if err = json.Unmarshal(raw, &x); err != nil {
 			return nil, err
 		}
-		item := map[string]any{"id": x.ID, "authId": x.AuthID, "status": x.Status, "executionStatus": x.Status, "message": x.Message, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled}
-		runs = append(runs, map[string]any{"id": rid, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": at, "finished": x.Status != "queued" && x.Status != "running", "items": []map[string]any{item}})
+		item := map[string]any{"id": x.ID, "authId": x.AuthID, "status": x.Status, "executionStatus": x.Status, "message": x.Message, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled,"waitUntil":x.WaitUntil,"dispatched":x.Dispatched,"windowResetAt":x.WindowResetAt,"windowCheckAt":x.WindowCheckAt,"nextWindowAt":x.NextWindowAt,"windowStatus":x.WindowStatus,"windowBucket":x.WindowBucket}
+		runs = append(runs, map[string]any{"id": rid, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": at, "finished": x.Status != "queued" && x.Status != "running" && x.Status != "waiting", "items": []map[string]any{item}})
 	}
 	return map[string]any{"runs": runs}, rows.Err()
 }
@@ -305,7 +305,7 @@ func (e *Engine) deleteHistorySQL(req HistoryDelete) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	where += " AND h.status NOT IN ('running','queued')"
+	where += " AND h.status NOT IN ('running','queued','waiting')"
 	ids := req.IDs
 	if mode == "account" {
 		ids = req.ExecutionIDs

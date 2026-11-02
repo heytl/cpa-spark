@@ -67,6 +67,8 @@ func Open(dir string) (*Store, error) {
  CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY, task_id TEXT NOT NULL, name TEXT NOT NULL, model TEXT NOT NULL, provider TEXT NOT NULL, mode TEXT NOT NULL, started INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS execution_keys(dedup TEXT PRIMARY KEY);
  CREATE TABLE IF NOT EXISTS claims(key TEXT PRIMARY KEY, run_id TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS window_checkpoints(id TEXT PRIMARY KEY, body BLOB NOT NULL);
+ CREATE TABLE IF NOT EXISTS rolling_plans(id TEXT PRIMARY KEY, body BLOB NOT NULL);
  PRAGMA user_version=1;`)
 	if e != nil {
 		db.Close()
@@ -161,7 +163,7 @@ func (s *Store) Save(c Config) error {
 		return e
 	}
 	// Paused/deleted scheduled sources are withdrawn; manual runs are explicit independent actions.
-	rows, e := tx.Query("SELECT body FROM executions WHERE json_extract(body,'$.status')='queued'")
+	rows, e := tx.Query("SELECT body FROM executions WHERE json_extract(body,'$.status') IN ('queued','waiting')")
 	if e != nil {
 		return e
 	}
@@ -185,7 +187,7 @@ func (s *Store) Save(c Config) error {
 		return e
 	}
 	for _, x := range xs {
-		if x.Status != "queued" {
+		if x.Status != "queued" && x.Status != "waiting" {
 			continue
 		}
 		reason := ""
@@ -230,7 +232,7 @@ func (s *Store) Executions() ([]Execution, error) {
 	return s.executionQuery("SELECT body FROM executions ORDER BY rowid")
 }
 func (s *Store) QueuedExecutions() ([]Execution, error) {
-	return s.executionQuery("SELECT body FROM executions WHERE json_extract(body,'$.status')='queued' ORDER BY rowid")
+	return s.executionQuery("SELECT body FROM executions WHERE json_extract(body,'$.status') IN ('queued','waiting') ORDER BY rowid")
 }
 func (s *Store) executionQuery(query string) ([]Execution, error) {
 	rows, e := s.db.Query(query)

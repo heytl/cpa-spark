@@ -1,0 +1,26 @@
+
+/* Smart scheduling policies and quota confirmation */
+.spark-strategy-field .field-hint{max-width:56rem;line-height:1.6}
+.smart-window-details{margin-top:24px;border-top:1px solid var(--line);padding-top:18px}
+.smart-window-details h3{font-size:14px;margin-bottom:12px}
+.smart-window-detail{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.smart-window-detail strong{font-size:13px}
+.smart-window-outcome{display:block;margin:7px 0;font-size:13px;color:var(--muted)}
+.smart-window-detail dl{display:grid;grid-template-columns:minmax(92px,40%) minmax(0,1fr);gap:6px 14px;margin:0;font-size:12px}
+.smart-window-detail dt{color:var(--muted)}
+.smart-window-detail dd{margin:0;overflow-wrap:anywhere}
+.spark-connection-dialog{inset:0;margin:auto;width:min(450px,calc(100vw - 32px));max-height:calc(100dvh - 36px);border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--text);padding:0;box-shadow:0 20px 70px #0003}
+.spark-connection-dialog::backdrop{background:#0007}
+.spark-connection-form{padding:24px;display:grid;gap:16px}
+.spark-connection-form h2{margin:0;font-size:20px}
+.spark-connection-form p{margin:0;color:var(--muted);line-height:1.6}
+.spark-connection-form label{display:grid;gap:8px}
+.spark-connection-form label input{box-sizing:border-box;width:100%;border:1px solid var(--line);border-radius:8px;background:var(--background);color:var(--text);padding:12px;font:inherit}
+.spark-connection-actions{display:flex;justify-content:flex-end;gap:9px}
+.spark-auth-error{color:var(--red);font-size:13px;min-height:0}
+.spark-retry-login{background:none;border:0;text-decoration:underline;color:var(--muted);cursor:pointer;justify-self:center;padding:6px;font:inherit;font-size:12px}
+/* Official CPA notifications appear at the top center. */
+.toast-stack,.toast-stack:popover-open{position:fixed;inset:20px auto auto 50%;transform:translateX(-50%);margin:0;width:min(390px,calc(100vw - 36px));max-height:min(65vh,520px);z-index:100000}
+@media(max-width:650px){.toast-stack,.toast-stack:popover-open{inset:68px auto auto 50%;width:calc(100vw - 36px);transform:translateX(-50%)}}
+.st-window.compact .st-window-time,.st-window.compact .st-window-caption{display:none!important}
+.st-window:not(.compact) .st-window-time,.st-window:not(.compact) .st-window-caption{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block}
