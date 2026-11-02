@@ -82,7 +82,9 @@ jobs:
           'CGO_ENABLED=1' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - run: npm ci --ignore-scripts
       - name: Check generated frontend and run tests
-        run: |\n          python scripts/build_web.py\n          python scripts/ci.py
+        run: |
+          python scripts/build_web.py
+          python scripts/ci.py
       - name: Build on matching architecture and load C ABI
         run: python scripts/build_native.py --target '${{ matrix.target }}'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
