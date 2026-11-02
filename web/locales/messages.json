@@ -5068,5 +5068,9 @@
   "smart.031": {
     "source": "首轮之后为每隔约 5 小时的推算，不代表已查询到上游重置时间。启用后按各账号实际窗口独立安排；未来时间可能变化。",
     "en": "After the first run, times are approximate five-hour projections, not confirmed upstream resets. Each account is scheduled independently; actual times may change."
+  },
+  "smart.032": {
+    "source": "未来 5 次触发",
+    "en": "Next 5 triggers"
   }
 }
