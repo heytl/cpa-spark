@@ -22,9 +22,32 @@ if(url.endsWith('/history'))body=w.eval('previewHistoryPage')(qaRuns,accounts,JS
 const wait=()=>new Promise(resolve=>setImmediate(resolve));
 const click=sel=>{const el=w.document.querySelector(sel);assert(el,'missing '+sel);el.click()};
 const change=(sel,value)=>{const el=w.document.querySelector(sel);assert(el,'missing '+sel);el.value=value;el.dispatchEvent(new w.Event('change',{bubbles:true}))};
+function checkTimelineDates(){
+ const realNow=w.Date.now,schedule=w.eval('timelineRows')()[0].tasks[0],dailyDays=schedule.days;
+ try{
+  // Replay the old green Saturday, the failing Sunday, and Shanghai midnight boundaries.
+  for(const [at,weekdayWindows] of [
+   ['2026-10-24T11:01:48Z',1],
+   ['2026-10-31T16:00:00Z',0],
+   ['2026-11-01T13:59:00Z',0],
+   ['2026-11-01T15:59:59Z',0],
+   ['2026-11-01T16:00:00Z',4],
+  ]){
+   w.Date.now=()=>Date.parse(at);
+   schedule.days=[1,2,3,4,5];w.eval('render()');
+   assert.equal(w.document.querySelectorAll('.st-window').length,weekdayWindows,'weekday windows at '+at);
+   schedule.days=dailyDays;w.eval('render()');
+   assert.equal(w.document.querySelectorAll('.st-window').length,5,'daily windows at '+at);
+  }
+ }finally{
+  w.Date.now=realNow;schedule.days=dailyDays;w.eval('render()');
+ }
+}
 (async()=>{try{
 w.eval(fs.readFileSync(root+'/design/readable-preview/preview-history.js','utf8')+'\n'+code);await wait();await wait();assert.equal(w.document.body.dataset.disconnected,'false');assert.equal(w.document.querySelector('.plugin-tools'),null);assert.equal(w.document.querySelector('#connectionBanner'),null);
 click('[data-action="new-task"]');let el=w.document.querySelector('#taskName');el.value='QA task';click('[data-action="target-mode"][data-id="accounts"]');click('[data-draft-select="accountIds"][value="qa-codex"]');click('[data-action="task-next"]');assert.equal(w.document.querySelector('#taskZone').value,'Asia/Shanghai');assert(w.document.querySelector('#taskZone').options.length>500);
+// The nonempty timeline assertion needs a schedule that also runs on Sundays.
+click('[data-action="days-preset"][data-id="daily"]');
 change('[data-clock-hour="0"]','07');change('[data-clock-minute="0"]','35');assert.equal(w.document.querySelector('[data-time-index="0"]').value,'07:35');click('[data-editor-five-hour]');assert.deepEqual(Array.from(w.document.querySelectorAll('[data-time-index]'),e=>e.value),['07:35','12:35','17:35','22:35']);click('[data-action="add-time"]');assert.equal(w.document.querySelectorAll('[data-clock-hour]').length,5);
 click('[data-action="task-next"]');await wait();await wait();assert.equal(w.document.querySelector('#taskModel').tagName,'SELECT');assert.equal(w.document.querySelector('#taskModel').value,'gpt-6-luna');assert.equal(w.document.querySelector('#taskEffort').value,'none');assert.equal(w.document.querySelector('[data-action="save-task"]').disabled,false);
 holdCatalog=true;holdPreviews=true;click('[data-refresh-models]');assert(w.document.querySelector('[data-action="save-task"]').disabled);assert(w.document.querySelector('#taskEffort').disabled);holdCatalog=false;catalogResolves.splice(0).forEach(resolve=>resolve());await wait();await wait();assert.equal(w.document.querySelector('#taskModel').value,'gpt-6-luna');assert.equal(w.document.querySelector('#taskEffort').value,'none');assert.equal(previewResolves.length,1);change('#taskModel','gpt-6-sol');assert.equal(previewResolves.length,2);previewResolves.shift()();await wait();assert(w.document.querySelector('[data-action="save-task"]').disabled);holdPreviews=false;previewResolves.shift()();await wait();await wait();assert.equal(w.document.querySelector('[data-action="save-task"]').disabled,false);
@@ -32,8 +55,10 @@ failPreview=true;click('[data-refresh-models]');await wait();await wait();assert
 change('#taskModel','gpt-6-sol');assert.equal(w.document.querySelector('#taskModel').value,'gpt-6-sol');assert.equal(w.document.querySelector('#taskEffort').value,'low');
 await wait();await wait();click('[data-action="save-task"]');await wait();await wait();assert.equal(config.tasks.length,1);assert.equal(config.tasks[0].model,'gpt-6-sol');assert.equal(config.tasks[0].effort,'low');
 click('[data-action="edit-task"]');click('[data-action="task-next"]');click('[data-action="task-next"]');await wait();assert.equal(w.document.querySelector('#taskModel').value,'gpt-6-sol');assert.equal(w.document.querySelector('#taskEffort').value,'low');click('[data-action="close"][data-id="taskDialog"]');
+assert.deepEqual(config.tasks[0].days,[0,1,2,3,4,5,6]);
 click('[data-action="menu"]');assert(w.document.querySelector('body > .row-menu'));assert(w.document.querySelector('body > .row-menu [data-action="delete-task"]'));w.document.body.click();assert.equal(w.document.querySelector('body > .row-menu'),null);
 assert(w.document.querySelector('.spark-timeline'));assert.equal(w.document.querySelectorAll('.st-day-label,.st-lane-meta,.st-now-pill').length,0);assert(w.document.querySelector('.st-current-time time'));assert.equal(w.document.querySelectorAll('.st-guide').length,1);assert(w.document.querySelectorAll('.st-window').length>0);click('[data-action="timeline-hours"][data-id="48"]');assert.equal(w.document.querySelectorAll('.st-tick small').length,0);const midnightDates=[...w.document.querySelectorAll('.st-tick-date:not([aria-hidden])')];assert.equal(midnightDates.length,3);assert(midnightDates.every(el=>/^\d{4}-\d{2}-\d{2}$/.test(el.textContent)));assert.equal(new Set(midnightDates.map(el=>el.textContent)).size,3);assert.equal(w.document.querySelectorAll('.st-tick-time').length,9);assert.equal(w.document.querySelectorAll('.wt-trigger-time').length,0);click('[data-action="timeline-detail"]');assert(w.document.querySelector('#modalDialog').open);click('[data-action="close"][data-id="modalDialog"]');click('[data-action="timeline-hours"][data-id="24"]');
+checkTimelineDates();
 click('[data-action="new-task"]');w.document.querySelector('#taskName').value='Gemini QA';change('#taskProvider','antigravity');click('[data-action="target-mode"][data-id="accounts"]');click('[data-draft-select="accountIds"][value="qa-ag"]');click('[data-action="task-next"]');click('[data-action="task-next"]');await wait();await wait();assert.equal(w.document.querySelector('#taskModel').value,'gemini-3-flash');assert.equal(w.document.querySelector('#taskEffort').value,'budget:0');assert.equal(w.document.querySelector('[data-action="save-task"]').disabled,false);
 click('[data-action="close"][data-id="taskDialog"]');
 click('[data-action="nav"][data-id="settings"]');await wait();assert(w.document.querySelector('#settingZone').closest('.spark-select').classList.contains('spark-zone-select'));
