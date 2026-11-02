@@ -70,7 +70,7 @@ assert.equal(split[0].end,localMidnight);
 const whole=w.eval('sparkTimelinePieces')({start:localMidnight+6*3600000,end:localMidnight+11*3600000},clipBounds);
 assert.equal(whole.length,1);
 assert.equal(whole[0].showLabel,true,'a complete five-hour window must always have labels');
-const firstTask=w.eval('state.tasks[0]'),savedStrategy=firstTask.strategy,savedTimes=[...firstTask.times];
+const firstTask=w.eval('timelineRows()')[0].tasks[0],savedStrategy=firstTask.strategy,savedTimes=[...firstTask.times];
 firstTask.strategy='rolling';firstTask.times=['00:30'];
 const nextDue=Date.parse('2026-11-04T03:15:00Z');
 w.CPASparkRollingPlans={[firstTask.id]:[{taskId:firstTask.id,authId:'qa-codex',nextDue,source:'upstream'}]};
