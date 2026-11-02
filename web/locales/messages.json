@@ -5084,5 +5084,17 @@
   "smart.035": {
     "source": "不代表真实额度已结束",
     "en": "This does not imply the upstream quota window has ended"
+  },
+  "smart.36": {
+    "source": "10 分钟（默认）",
+    "en": "10 minutes (default)"
+  },
+  "smart.37": {
+    "source": "15 分钟",
+    "en": "15 minutes"
+  },
+  "smart.38": {
+    "source": "30 分钟",
+    "en": "30 minutes"
   }
 }
