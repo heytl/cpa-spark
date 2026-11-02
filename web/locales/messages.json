@@ -5096,5 +5096,57 @@
   "smart.38": {
     "source": "30 分钟",
     "en": "30 minutes"
+  },
+  "smart.ui.01": {
+    "source": "{v17}定时开关",
+    "en": "{v17} schedule toggle"
+  },
+  "smart.ui.02": {
+    "source": "{v28}更多操作",
+    "en": "{v28} more actions"
+  },
+  "smart.ui.03": {
+    "source": "{v9} 个可用{v10}",
+    "en": "{v9} available{v10}"
+  },
+  "smart.ui.04": {
+    "source": "上游重置推算",
+    "en": "Upstream reset estimate"
+  },
+  "smart.ui.05": {
+    "source": "下次触发：",
+    "en": "Next trigger: "
+  },
+  "smart.ui.06": {
+    "source": "个账号独立排程",
+    "en": "accounts scheduled independently"
+  },
+  "smart.ui.07": {
+    "source": "待安排",
+    "en": "Not scheduled"
+  },
+  "smart.ui.08": {
+    "source": "窗口时间估算",
+    "en": "Estimated window time"
+  },
+  "smart.ui.09": {
+    "source": "立即执行 {v22}",
+    "en": "Run {v22} now"
+  },
+  "smart.ui.10": {
+    "source": "编辑 {v25}",
+    "en": "Edit {v25}"
+  },
+  "smart.ui.11": {
+    "source": "连续窗口 ·",
+    "en": "Continuous windows ·"
+  },
+  "smart.ui.12": {
+    "source": "连续窗口 · 已暂停",
+    "en": "Continuous windows · Paused"
+  },
+  "smart.ui.13": {
+    "source": "首次启动计划",
+    "en": "Initial start schedule"
   }
 }
