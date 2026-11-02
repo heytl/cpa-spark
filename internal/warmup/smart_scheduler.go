@@ -157,3 +157,19 @@ func (e *Engine) previewRolling(t Task, groups []Group, now time.Time) ([]time.T
     }
     return timeline,plans,nil
 }
+
+
+ // RollingSummaries exposes only safe next-fire metadata to the web UI. Each
+ // target is independent: do not collapse a group into one imaginary cycle.
+func (s *Store) RollingSummaries(c Config) (map[string][]RollingPlan,error) {
+ result:=make(map[string][]RollingPlan)
+ for _,t:=range c.Tasks {
+  if normalizedStrategy(t)!="rolling" || !t.Enabled {continue}
+  for _,id:=range Targets(t,c.Groups) {
+   plan,ok,err:=s.Rolling(t.ID,id)
+   if err!=nil {return nil,err}
+   if ok && plan.NextDue>0 {result[t.ID]=append(result[t.ID],plan)}
+  }
+ }
+ return result,nil
+}

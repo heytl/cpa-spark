@@ -143,3 +143,19 @@ func TestRollingPreviewUsesFiveHourIntervalsAndPerAccountCursor(t *testing.T) {
     if err=e.Save(cfg);err!=nil {t.Fatal(err)}
     if p,exists,err:=store.Rolling(task.ID,"a");err!=nil||exists {t.Fatalf("disabled cursor retained: %+v %v %v",p,exists,err)}
 }
+
+func TestSnapshotIncludesPerAccountRollingSchedule(t *testing.T){
+ now:=time.Date(2026,11,2,11,0,0,0,time.UTC)
+ e,store,_,_:=smartEngine(t,"codex",now,now.Add(time.Hour),now.Add(5*time.Hour))
+ cfg,err:=store.Config()
+ if err!=nil {t.Fatal(err)}
+ cfg.Tasks[0].Strategy="rolling"
+ cfg.Tasks[0].Revision++
+ if err=e.Save(cfg);err!=nil {t.Fatal(err)}
+ next:=now.Add(5*time.Hour+5*time.Second).UnixMilli()
+ if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:next,Source:"upstream"});err!=nil{t.Fatal(err)}
+ snap,err:=e.Snapshot()
+ if err!=nil{t.Fatal(err)}
+ plans,ok:=snap["rollingPlans"].(map[string][]RollingPlan)
+ if !ok||len(plans["smart"])!=1||plans["smart"][0].NextDue!=next {t.Fatalf("incorrect snapshot: %+v",snap["rollingPlans"])}
+}

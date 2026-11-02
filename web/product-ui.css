@@ -153,3 +153,20 @@ dialog#taskDialog.drawer .drawer-header h2,dialog#groupDialog.drawer .drawer-hea
 /* History actions: align icon controls to the left under their header. */
 .history-table th:last-child,.history-table td:last-child{text-align:left!important;padding-left:12px}
 .history-table td:last-child .iconbtn{display:inline-flex;vertical-align:middle}
+
+/* Give a single account sufficient width before truncating long identifiers.
+   Keep the full original label in the element's title attribute. */
+@media(min-width:651px){
+ .tasks-table th:nth-child(3),.tasks-table td:nth-child(3){width:240px;min-width:225px}
+ .tasks-table .target-label{max-width:100%;min-width:0}
+ .tasks-table .target-label .ellipsis{display:block;flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+ .tasks-table .schedule-main{font-size:12px;line-height:1.7;letter-spacing:-.12px}
+ .tasks-table .schedule-main.schedule-rolling{font-size:13px;font-weight:550}
+ .tasks-table .schedule-sub{font-size:12px;line-height:1.5}
+}
+@media(max-width:650px){
+ .tasks-table .target-label{max-width:min(100%,360px)}
+ .tasks-table .target-label .ellipsis{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .tasks-table .schedule-main{font-size:12px;line-height:1.6}
+ .tasks-table .schedule-sub{font-size:11px}
+}

@@ -35,9 +35,9 @@ function checkTimelineDates(){
   ]){
    w.Date.now=()=>Date.parse(at);
    schedule.days=[1,2,3,4,5];w.eval('render()');
-   assert.equal(w.document.querySelectorAll('.st-window').length,weekdayWindows,'weekday windows at '+at);
+   assert.equal(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size,weekdayWindows,'weekday windows at '+at);
    schedule.days=dailyDays;w.eval('render()');
-   assert.equal(w.document.querySelectorAll('.st-window').length,5,'daily windows at '+at);
+   assert.equal(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size,5,'daily windows at '+at);
   }
  }finally{
   w.Date.now=realNow;schedule.days=dailyDays;w.eval('render()');
@@ -57,8 +57,33 @@ await wait();await wait();click('[data-action="save-task"]');await wait();await 
 click('[data-action="edit-task"]');click('[data-action="task-next"]');click('[data-action="task-next"]');await wait();assert.equal(w.document.querySelector('#taskModel').value,'gpt-6-sol');assert.equal(w.document.querySelector('#taskEffort').value,'low');click('[data-action="close"][data-id="taskDialog"]');
 assert.deepEqual(config.tasks[0].days,[0,1,2,3,4,5,6]);
 click('[data-action="menu"]');assert(w.document.querySelector('body > .row-menu'));assert(w.document.querySelector('body > .row-menu [data-action="delete-task"]'));w.document.body.click();assert.equal(w.document.querySelector('body > .row-menu'),null);
-assert(w.document.querySelector('.spark-timeline'));assert.equal(w.document.querySelectorAll('.st-day-label,.st-lane-meta,.st-now-pill').length,0);assert(w.document.querySelector('.st-current-time time'));assert.equal(w.document.querySelectorAll('.st-guide').length,1);assert(w.document.querySelectorAll('.st-window').length>0);click('[data-action="timeline-hours"][data-id="48"]');assert.equal(w.document.querySelectorAll('.st-tick small').length,0);const midnightDates=[...w.document.querySelectorAll('.st-tick-date:not([aria-hidden])')];assert.equal(midnightDates.length,3);assert(midnightDates.every(el=>/^\d{4}-\d{2}-\d{2}$/.test(el.textContent)));assert.equal(new Set(midnightDates.map(el=>el.textContent)).size,3);assert.equal(w.document.querySelectorAll('.st-tick-time').length,9);assert.equal(w.document.querySelectorAll('.wt-trigger-time').length,0);click('[data-action="timeline-detail"]');assert(w.document.querySelector('#modalDialog').open);click('[data-action="close"][data-id="modalDialog"]');click('[data-action="timeline-hours"][data-id="24"]');
+assert(w.document.querySelector('.spark-timeline'));assert.equal(w.document.querySelectorAll('.st-day-label,.st-lane-meta,.st-now-pill').length,0);assert(w.document.querySelector('.st-current-time time'));assert.equal(w.document.querySelectorAll('.st-guide').length,1);assert(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size>0);click('[data-action="timeline-hours"][data-id="48"]');assert.equal(w.document.querySelectorAll('.st-tick small').length,0);const midnightDates=[...w.document.querySelectorAll('.st-tick-date:not([aria-hidden])')];assert.equal(midnightDates.length,3);assert(midnightDates.every(el=>/^\d{4}-\d{2}-\d{2}$/.test(el.textContent)));assert.equal(new Set(midnightDates.map(el=>el.textContent)).size,3);assert.equal(w.document.querySelectorAll('.st-tick-time').length,9);assert.equal(w.document.querySelectorAll('.wt-trigger-time').length,0);click('[data-action="timeline-detail"]');assert(w.document.querySelector('#modalDialog').open);click('[data-action="close"][data-id="modalDialog"]');click('[data-action="timeline-hours"][data-id="24"]');
 checkTimelineDates();
+
+const localMidnight=Date.parse('2026-11-02T16:00:00Z'); // Shanghai 00:00 Nov 3
+const clipBounds={start:Date.parse('2026-11-02T00:00:00Z'),end:Date.parse('2026-11-04T00:00:00Z'),zone:'Asia/Shanghai'};
+const split=w.eval('sparkTimelinePieces')({start:localMidnight-3*3600000,end:localMidnight+2*3600000},clipBounds);
+assert.equal(split.length,2,'cross-midnight window should be two pieces');
+assert.equal(split[0].showLabel,true,'longer cross-day segment keeps full label');
+assert.equal(split[1].showLabel,false,'shorter cross-day segment omits label');
+assert.equal(split[0].end,localMidnight);
+const whole=w.eval('sparkTimelinePieces')({start:localMidnight+6*3600000,end:localMidnight+11*3600000},clipBounds);
+assert.equal(whole.length,1);
+assert.equal(whole[0].showLabel,true,'a complete five-hour window must always have labels');
+const firstTask=w.eval('state.tasks[0]'),savedStrategy=firstTask.strategy,savedTimes=[...firstTask.times];
+firstTask.strategy='rolling';firstTask.times=['00:30'];
+const nextDue=Date.parse('2026-11-04T03:15:00Z');
+w.CPASparkRollingPlans={[firstTask.id]:[{taskId:firstTask.id,authId:'qa-codex',nextDue,source:'upstream'}]};
+w.eval('render()');
+let display=w.document.querySelector('.tasks-table .schedule-rolling');
+assert(display,'rolling task should use next-trigger schedule formatting');
+assert(display.textContent.includes('下次触发：'),'next trigger label is required');
+assert(display.textContent.includes('2026-11-04 11:15'),'render time in task time zone, not bootstrap');
+assert(w.document.querySelector('.tasks-table td:nth-child(3) .target-label')?.getAttribute('title'),'account label must provide complete hover text');
+assert(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent.includes('连续窗口'),'daily label must be replaced by continuous strategy');
+firstTask.strategy=savedStrategy;firstTask.times=savedTimes;
+w.CPASparkRollingPlans={};w.eval('render()');
+
 click('[data-action="new-task"]');w.document.querySelector('#taskName').value='Gemini QA';change('#taskProvider','antigravity');click('[data-action="target-mode"][data-id="accounts"]');click('[data-draft-select="accountIds"][value="qa-ag"]');click('[data-action="task-next"]');click('[data-action="task-next"]');await wait();await wait();assert.equal(w.document.querySelector('#taskModel').value,'gemini-3-flash');assert.equal(w.document.querySelector('#taskEffort').value,'budget:0');assert.equal(w.document.querySelector('[data-action="save-task"]').disabled,false);
 click('[data-action="close"][data-id="taskDialog"]');
 click('[data-action="nav"][data-id="settings"]');await wait();assert(w.document.querySelector('#settingZone').closest('.spark-select').classList.contains('spark-zone-select'));
@@ -102,10 +127,10 @@ w.eval('renderRunDetail')({...scrollFixture,finished:true,items:[{...scrollFixtu
 assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run detail auto-refresh must preserve user scroll');
 scrollDialog.close();
 const timelineCSS=fs.readFileSync(root+'/web/style.css','utf8');
-assert(timelineCSS.includes('.st-window{container-type:inline-size}'),'timeline uses pixel-width-aware labels');
-assert(timelineCSS.includes('.st-window .st-window-time,\n.st-window .st-window-caption{display:block'), 'timeline defaults to visible text without container query support');
-assert(timelineCSS.includes('@container (max-width: 82px)'), 'timeline hides descriptions only in genuinely narrow windows');
-assert(timelineCSS.includes('@container (max-width: 60px)'), 'timeline hides start time only in cropped slivers');
+assert(timelineCSS.includes('.st-table.st-hours-48{--st-plot-min:1536px}'),'48h timeline keeps five-hour bars readable');
+assert(timelineCSS.includes('.st-table.st-hours-24{--st-plot-min:768px}'),'24h timeline keeps five-hour bars readable');
+assert(timelineCSS.includes('.st-window--no-label .st-window-time'),'only shorter cross-day fragments hide labels');
+assert(!timelineCSS.includes('.st-window{container-type:inline-size}'),'remove fragile container query hiding rules');
 assert(!timelineCSS.includes('.st-window .st-window-time,.st-window .st-window-caption,.st-window .st-window-end{display:none!important}'), 'CSS specificity regression must not return');
 assert(w.eval('sparkTimelineSummary').toString().includes('此时段无后续计划'), 'past planned windows are not misreported as no upstream window');
 assert(!w.eval('sparkTimelineLane').toString().includes("right-left<16"),'percentage-based label hiding must be removed');

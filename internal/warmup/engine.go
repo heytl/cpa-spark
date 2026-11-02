@@ -555,5 +555,9 @@ func (e *Engine) Snapshot() (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"config": c, "runs": runs, "todayStats": map[string]int{"attempted": attempted, "success": success}, "now": e.now().UnixMilli(), "lastError": e.lastError, "version": Version, "active": len(e.active)}, nil
+	rollingPlans, err := e.store.RollingSummaries(c)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"config": c, "runs": runs, "rollingPlans": rollingPlans, "todayStats": map[string]int{"attempted": attempted, "success": success}, "now": e.now().UnixMilli(), "lastError": e.lastError, "version": Version, "active": len(e.active)}, nil
 }

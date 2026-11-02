@@ -83,3 +83,22 @@
 .st-tick{top:0;gap:4px}
 .st-tick-date{display:block;height:14px;font-size:10px;line-height:14px;color:var(--muted)}
 .st-tick-time{display:block;font-size:12px;line-height:16px}
+
+/* Each real five-hour interval must have enough horizontal pixels for both
+   the time and caption, independent of the selected 24/48-hour range.
+   Overflow stays inside the timeline; target and summary columns stay fixed. */
+.spark-timeline{--st-label:270px;--st-summary:174px}
+.st-table.st-hours-24{--st-plot-min:768px}
+.st-table.st-hours-48{--st-plot-min:1536px}
+.st-table{min-width:calc(var(--st-label) + var(--st-summary) + var(--st-plot-min,768px))}
+.st-axis,.st-row{grid-template-columns:var(--st-label) minmax(var(--st-plot-min,768px),1fr) var(--st-summary)}
+.st-window{padding:3px 7px;gap:1px}
+.st-window .st-window-time,.st-window .st-window-caption{display:block;min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-window .st-window-end{display:inline}
+.st-window--split{padding:2px 5px}
+.st-window--split .st-window-time{font-size:10px;letter-spacing:-.2px}
+.st-window--split .st-window-caption{font-size:9px}
+.st-window--no-label .st-window-time,.st-window--no-label .st-window-caption{display:none}
+@media(max-width:650px){
+  .spark-timeline{--st-label:186px;--st-summary:148px}
+}
