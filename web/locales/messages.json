@@ -5612,5 +5612,13 @@
     "ru": "Аккаунт недоступен или срок его действия истёк в CPA",
     "vi": "Tài khoản không khả dụng hoặc đã hết hạn trong CPA",
     "ko": "CPA 계정을 사용할 수 없거나 만료되었습니다"
+  },
+  "execution.message.waitUntil": {
+    "source": "等待至 {date} {time}（{zone}）后检查窗口",
+    "en": "Check the quota window after {date} {time} ({zone})",
+    "zh-TW": "等待至 {date} {time}（{zone}）後檢查額度視窗",
+    "ru": "Проверить окно квоты после {date} {time} ({zone})",
+    "vi": "Kiểm tra cửa sổ hạn mức sau {date} {time} ({zone})",
+    "ko": "{date} {time} ({zone}) 이후 할당량 창을 확인합니다"
   }
 }

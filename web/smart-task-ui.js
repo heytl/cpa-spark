@@ -106,7 +106,12 @@
   // Do not translate user-controlled account names or execution IDs.
   area.querySelectorAll(".run-item .subline").forEach((line,index)=>{
    const item=run.items[index];
-   if(!item||item.status==="waiting"&&item.waitUntil)return;
+   if(!item)return;
+   if(item.status==="waiting"&&item.waitUntil){
+    const zone=task(run.taskId)?.timezone||state.settings.timezone;
+    line.textContent=t("execution.message.waitUntil",{date:dateKey(item.waitUntil,zone),time:time(item.waitUntil,zone),zone});
+    return;
+   }
    line.textContent=localizedExecutionReason(item.message);
   });
   const panels=run.items.map(i=>{

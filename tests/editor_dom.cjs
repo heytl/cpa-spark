@@ -225,6 +225,13 @@ assert.equal(scrollDialog.querySelector('.progressbar span').style.width,'0%','w
 assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('等待至'),'pending window time is shown in the configured local timezone');
 assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('后检查窗口'),'waiting message should not show raw UTC protocol string');
 assert(!scrollDialog.querySelector('.run-item .subline').textContent.includes('Waiting for quota window'),'raw UTC provider message must not be displayed');
+const waitingLanguageBefore=w.eval('hostPreferences.language');
+w.eval('hostPreferences.language="en"');
+w.eval('renderRunDetail')(waitingRun);
+assert(scrollDialog.querySelector('.run-item .subline').textContent.startsWith('Check the quota window after'),'waiting message uses current CPA English locale');
+w.eval('hostPreferences.language='+JSON.stringify(waitingLanguageBefore));
+w.eval('renderRunDetail')(waitingRun);
+
 
 const waitingWindow={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',waitUntil:Date.now()+2*60*60*1000,message:'Waiting for quota window'}]};
 const signature=w.eval('runDetailFingerprint'),delay=w.eval('runDetailPollDelay');
