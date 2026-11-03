@@ -31,6 +31,7 @@ type smartTestHost struct {
  provider string
  resetBefore int64
  resetAfter int64
+ quotaHTTPStatus int
  calls int
 }
 func (h *smartTestHost) Call(method string,in any,out any) error {
@@ -49,7 +50,9 @@ func (h *smartTestHost) Call(method string,in any,out any) error {
   url:=request["url"].(string)
   reset:=h.resetBefore
   if h.calls>0 {reset=h.resetAfter}
-  if strings.Contains(url,"wham/usage") {
+  if h.quotaHTTPStatus>0 {
+   payload=QuotaHTTPResponse{StatusCode:h.quotaHTTPStatus}
+  }else if strings.Contains(url,"wham/usage") {
    payload=QuotaHTTPResponse{StatusCode:200,Body:marshal(map[string]any{"rate_limit":map[string]any{"primary_window":map[string]any{"limit_window_seconds":18000,"reset_at":reset/1000}}})}
   }else if strings.Contains(url,"retrieveUserQuotaSummary") {
    payload=QuotaHTTPResponse{StatusCode:200,Body:marshal(map[string]any{"groups":[]any{map[string]any{"displayName":"Gemini Models","buckets":[]any{map[string]any{"window":"5h","bucketId":"gemini","resetTime":time.UnixMilli(reset).UTC().Format(time.RFC3339),"remainingFraction":0.5}}}}})}
@@ -259,4 +262,109 @@ func TestWaitingRunIsNotReportedAsRunningOrCompleted(t *testing.T) {
     detail,err:=engine.HistoryDetail(rows[0]["id"].(string))
     if err!=nil{t.Fatal(err)}
     if detail["finished"]!=false{t.Fatalf("waiting run falsely marked complete: %+v",detail)}
+}
+
+func TestRollingSnapshotNeverPublishesPastNextDue(t *testing.T) {
+    start:=time.Date(2026,11,3,13,0,0,0,time.UTC)
+    reset:=start.Add(90*time.Minute)
+    laterReset:=start.Add(6*time.Hour+30*time.Minute)
+    e,store,host,clock:=smartEngine(t,"codex",start,reset,laterReset)
+    cfg,err:=store.Config()
+    if err!=nil{t.Fatal(err)}
+    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Revision++
+    if err=e.Save(cfg);err!=nil{t.Fatal(err)}
+    get:=func()RollingPlan {
+        t.Helper()
+        snapshot,err:=e.Snapshot()
+        if err!=nil{t.Fatal(err)}
+        value,ok:=snapshot["rollingPlans"].(map[string][]RollingPlan)
+        if !ok||len(value["smart"])!=1{t.Fatalf("missing rolling account state: %+v",snapshot["rollingPlans"])}
+        return value["smart"][0]
+    }
+    if p:=get();p.Status!="initial"||p.NextDue<=start.UnixMilli(){
+        t.Fatalf("first-time bootstrap not represented: %+v",p)
+    }
+    stale:=start.Add(-time.Hour).UnixMilli()
+    if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:stale,Source:"upstream"});err!=nil{t.Fatal(err)}
+    if p:=get();p.Status!="due"||p.NextDue!=0 {
+        t.Fatalf("expired server cursor leaked as future time: %+v",p)
+    }
+    e.Tick()
+    waitFor(t,func()bool{
+        items,err:=store.Executions()
+        return err==nil&&len(items)==1&&items[0].Status=="waiting"
+    })
+    xs,err:=store.Executions()
+    if err!=nil{t.Fatal(err)}
+    waitingUntil:=xs[0].WaitUntil
+    // Even if a persisted cursor is stale during the wait, the in-flight
+    // execution is the authoritative plan shown to the UI.
+    if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:stale,Source:"upstream"});err!=nil{t.Fatal(err)}
+    if p:=get();p.Status!="waiting"||p.NextDue!=waitingUntil{
+        t.Fatalf("waiting execution did not override stale cursor: %+v",p)
+    }
+    host.mu.Lock()
+    host.resetBefore=laterReset.UnixMilli()
+    host.mu.Unlock()
+    clock.Store(reset.Add(10*time.Second).UnixMilli())
+    e.Tick()
+    waitFor(t,func()bool{
+        items,err:=store.Executions()
+        return err==nil&&len(items)==1&&items[0].Status=="skipped"
+    })
+    if p:=get();p.Status!="scheduled"||p.NextDue!=laterReset.Add(windowSafetyMargin).UnixMilli(){
+        t.Fatalf("next rolling time not refreshed after external quota reset: %+v",p)
+    }
+}
+
+func TestRollingCheckpointAdvancesAfterSkippedQuotaProbe(t *testing.T){
+    now:=time.Date(2026,11,3,13,0,0,0,time.UTC)
+    reset:=now.Add(4*time.Hour)
+    e,store,host,_:=smartEngine(t,"codex",now,reset,reset)
+    cfg,err:=store.Config()
+    if err!=nil{t.Fatal(err)}
+    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Revision++
+    if err=e.Save(cfg);err!=nil{t.Fatal(err)}
+    if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:now.Add(-time.Minute).UnixMilli(),Source:"upstream"});err!=nil{t.Fatal(err)}
+    if err=store.SaveCheckpoint("a","codex",cfg.Tasks[0].Model,WindowCheckpoint{LastResetAt:reset.UnixMilli(),LastConfirmed:now.Add(-time.Minute).UnixMilli()});err!=nil{t.Fatal(err)}
+    host.mu.Lock()
+    host.quotaHTTPStatus=503
+    host.mu.Unlock()
+    e.Tick()
+    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="skipped"})
+    p,ok,err:=store.Rolling("smart","a")
+    if err!=nil||!ok||p.NextDue!=reset.Add(windowSafetyMargin).UnixMilli()||p.Source!="checkpoint"{
+        t.Fatalf("quota checkpoint was lost after skip: %+v %v %v",p,ok,err)
+    }
+    host.mu.Lock()
+    calls:=host.calls
+    host.mu.Unlock()
+    if calls!=0{t.Fatalf("quota checkpoint skip dispatched model tokens: %d",calls)}
+}
+func TestRollingRecentDispatchUsesExplicitEstimatedCursor(t *testing.T){
+    now:=time.Date(2026,11,3,13,0,0,0,time.UTC)
+    e,store,host,_:=smartEngine(t,"codex",now,now.Add(5*time.Hour),now.Add(10*time.Hour))
+    cfg,err:=store.Config()
+    if err!=nil{t.Fatal(err)}
+    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Revision++
+    if err=e.Save(cfg);err!=nil{t.Fatal(err)}
+    if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:now.Add(-time.Minute).UnixMilli(),Source:"upstream"});err!=nil{t.Fatal(err)}
+    lastAttempt:=now.Add(-30*time.Second)
+    if err=store.SaveCheckpoint("a","codex",cfg.Tasks[0].Model,WindowCheckpoint{LastAttempt:lastAttempt.UnixMilli()});err!=nil{t.Fatal(err)}
+    host.mu.Lock()
+    host.quotaHTTPStatus=503
+    host.mu.Unlock()
+    e.Tick()
+    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="skipped"})
+    p,ok,err:=store.Rolling("smart","a")
+    if err!=nil||!ok||p.NextDue!=lastAttempt.Add(5*time.Hour+windowSafetyMargin).UnixMilli()||p.Source!="estimated"{
+        t.Fatalf("recent dispatch estimate not persisted: %+v %v %v",p,ok,err)
+    }
+    host.mu.Lock()
+    calls:=host.calls
+    host.mu.Unlock()
+    if calls!=0{t.Fatalf("dedupe guard dispatched duplicate model tokens: %d",calls)}
 }

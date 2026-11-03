@@ -438,11 +438,25 @@ func (e *Engine) execute(x Execution) {
         x.Status="skipped";x.WindowStatus="existing"
         x.WindowResetAt=ck.LastResetAt
         x.Message="Prior confirmed quota window remains active; upstream verification unavailable"
+        // The checkpoint is a real observed reset. Use it to advance the
+        // rolling cursor rather than leaving an already-claimed due time.
+        if err=e.saveNextRolling(x,WindowObservation{ResetAt:ck.LastResetAt,Source:"checkpoint"});err!=nil{
+            x.Message+="; next trigger checkpoint unavailable"
+        }
         return
     }
     if x.Mode!="manual" && ck.LastAttempt>0 && now.UnixMilli()-ck.LastAttempt<2*60*1000 {
         x.Status="skipped";x.WindowStatus="existing"
         x.Message="Recent account warmup already dispatched; avoiding duplicate model request"
+        // Only Codex has an explicit five-hour fallback in this plugin.
+        // This is estimated from a real dispatch timestamp, not verified
+        // quota data, and remains labelled as an estimate in state.
+        if normalizedStrategy(x.Task)=="rolling" && x.Provider=="codex"{
+            estimate:=ck.LastAttempt+int64(5*time.Hour/time.Millisecond)
+            if err=e.saveNextRolling(x,WindowObservation{ResetAt:estimate,Source:"estimated"});err!=nil {
+                x.Message+="; next trigger estimate unavailable"
+            }
+        }
         return
     }
     ck.LastAttempt=now.UnixMilli()
@@ -578,7 +592,7 @@ func (e *Engine) Snapshot() (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	rollingPlans, err := e.store.RollingSummaries(c)
+	rollingPlans, err := e.store.RollingSummaries(c,e.now())
 	if err != nil {
 		return nil, err
 	}

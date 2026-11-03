@@ -5184,5 +5184,49 @@
   "smart.build.wait.3": {
     "source": "等待至",
     "en": "Wait until"
+  },
+  "smart.live.01": {
+    "source": "待调度",
+    "en": "Awaiting scheduler"
+  },
+  "smart.live.02": {
+    "source": "等待执行",
+    "en": "Queued for execution"
+  },
+  "smart.live.03": {
+    "source": "等待同步",
+    "en": "Awaiting live schedule"
+  },
+  "smart.live.04": {
+    "source": "等待额度窗口重置 · 将于该时间重新检查额度",
+    "en": "Waiting for the quota reset; the quota will be checked again at this time"
+  },
+  "smart.live.05": {
+    "source": "按服务端记录的调度时间",
+    "en": "Scheduled time from CPA server"
+  },
+  "smart.live.06": {
+    "source": "计划已过期，等待服务端重新核查",
+    "en": "Previous schedule elapsed; awaiting CPA verification"
+  },
+  "smart.live.07": {
+    "source": "正在执行",
+    "en": "Running"
+  },
+  "smart.live.ext.01": {
+    "source": "调度已停止",
+    "en": "Scheduler stopped"
+  },
+  "smart.live.ext.02": {
+    "source": "请检查 CPA 服务端插件日志",
+    "en": "Check the CPA server plugin logs"
+  },
+  "smart.live.ext.03": {
+    "source": "基于历史请求时间估算，尚未确认上游窗口",
+    "en": "Estimated from a previous dispatch; upstream quota reset is unconfirmed"
+  },
+  "smart.live.ext.04": {
+    "source": "基于上次确认的额度窗口记录",
+    "en": "Based on the last confirmed quota window"
   }
 }

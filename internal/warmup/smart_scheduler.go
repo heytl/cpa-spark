@@ -19,6 +19,7 @@ type RollingPlan struct {
     NextDue int64 `json:"nextDue"`
     Source string `json:"source"`
     LastExecution string `json:"lastExecution"`
+    Status string `json:"status,omitempty"`
 }
 func normalizedStrategy(t Task) string {
     if t.Strategy == "rolling" { return "rolling" }
@@ -125,6 +126,7 @@ func (e *Engine) saveNextRolling(x Execution, observed WindowObservation) error 
         if !stillEnabled {continue}
         next:=observed.ResetAt
         source:="upstream"
+        if observed.Source=="estimated" || observed.Source=="checkpoint" {source=observed.Source}
         if next<=e.now().UnixMilli() {
             // No upper-bound or model group information is available. Do not
             // pretend to have a verified Antigravity cycle.
@@ -180,16 +182,74 @@ func (e *Engine) previewRolling(t Task, groups []Group, now time.Time) ([]time.T
 }
 
 
- // RollingSummaries exposes only safe next-fire metadata to the web UI. Each
- // target is independent: do not collapse a group into one imaginary cycle.
-func (s *Store) RollingSummaries(c Config) (map[string][]RollingPlan,error) {
+// RollingSummaries reconciles persisted rolling cursors with in-flight
+// executions at the moment of each CPA state read. A pending execution is
+// more authoritative than a stored NextDue. Never publish an elapsed
+// timestamp as a future trigger.
+func (s *Store) RollingSummaries(c Config,now time.Time) (map[string][]RollingPlan,error) {
  result:=make(map[string][]RollingPlan)
+ active,err:=s.executionQuery("SELECT body FROM executions WHERE json_extract(body,'$.status') IN ('queued','waiting','running')")
+ if err!=nil{return nil,err}
+ pending:=make(map[string]Execution)
+ for _,x:=range active {
+  if normalizedStrategy(x.Task)!="rolling"{continue}
+  for _,o:=range x.Origins {
+   if !o.Active {continue}
+   key:=rollingKey(o.TaskID,x.AuthID)
+   prior,exists:=pending[key]
+   if !exists || x.Started>prior.Started || (x.Started==prior.Started && x.Scheduled>prior.Scheduled) {
+    pending[key]=x
+   }
+  }
+ }
+ current:=now.UnixMilli()
  for _,t:=range c.Tasks {
   if normalizedStrategy(t)!="rolling" || !t.Enabled {continue}
   for _,id:=range Targets(t,c.Groups) {
-   plan,ok,err:=s.Rolling(t.ID,id)
-   if err!=nil {return nil,err}
-   if ok && plan.NextDue>0 {result[t.ID]=append(result[t.ID],plan)}
+   p,ok,err:=s.Rolling(t.ID,id)
+   if err!=nil{return nil,err}
+   if !ok {p=RollingPlan{TaskID:t.ID,AuthID:id}}
+   if c.Settings.Paused || c.Overrides[id] {
+    p.Status="paused"
+    p.NextDue=0
+   }else if x,exists:=pending[rollingKey(t.ID,id)];exists && x.Task.Revision==t.Revision {
+    p.LastExecution=x.ID
+    switch x.Status{
+    case "waiting":
+     if x.WaitUntil>current {
+      p.NextDue=x.WaitUntil
+      p.Source="upstream"
+      p.Status="waiting"
+     }else{
+      p.NextDue=0
+      p.Status="due"
+     }
+    case "running":
+     p.NextDue=0
+     p.Status="running"
+    default:
+     p.NextDue=0
+     p.Status="queued"
+    }
+   }else if ok && p.NextDue>current {
+    p.Status="scheduled"
+   }else if ok {
+    p.Status="due"
+    p.NextDue=0
+   }else{
+    // Only the initial bootstrap is wall-clock based; later attempts
+    // must be driven by a persisted cursor or current execution.
+    first:=Next(t,now,1)
+    if len(first)>0 {
+     p.NextDue=first[0].UnixMilli()
+     p.Source="initial"
+     p.Status="initial"
+    }else{
+     p.NextDue=0
+     p.Status="unavailable"
+    }
+   }
+   result[t.ID]=append(result[t.ID],p)
   }
  }
  return result,nil

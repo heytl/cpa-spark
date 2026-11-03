@@ -93,16 +93,58 @@ assert.equal(whole.length,1);
 assert.equal(whole[0].showLabel,true,'an entirely visible five-hour window must always have labels');
 const firstTask=w.eval('timelineRows()')[0].tasks[0],savedStrategy=firstTask.strategy,savedTimes=[...firstTask.times];
 firstTask.strategy='rolling';firstTask.times=['00:30'];
-const nextDue=Date.parse('2026-11-04T03:15:00Z');
-w.CPASparkRollingPlans={[firstTask.id]:[{taskId:firstTask.id,authId:'qa-codex',nextDue,source:'upstream'}]};
+const nextDue=Date.now()+24*60*60*1000;
+w.CPASparkRollingPlans={[firstTask.id]:[{taskId:firstTask.id,authId:'qa-codex',nextDue,source:'upstream',status:'scheduled'}]};
 w.eval('render()');
 let display=w.document.querySelector('.tasks-table .schedule-rolling');
 assert(display,'rolling task should use next-trigger schedule formatting');
 assert(display.textContent.includes('下次触发：'),'next trigger label is required');
-assert(display.textContent.includes('2026-11-04 11:15'),'render time in task time zone, not bootstrap');
+assert(display.textContent.includes(w.eval('dateKey')(nextDue,firstTask.timezone)+' '+w.eval('time')(nextDue,firstTask.timezone)),'render live server time in task time zone, not bootstrap');
 assert(w.document.querySelector('.tasks-table td:nth-child(3) .target-label')?.getAttribute('title'),'account label must provide complete hover text');
 assert(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent.includes('连续窗口'),'daily label must be replaced by continuous strategy');
 assert(!/窗口时间估算|上游重置推算|首次启动计划/.test(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent||''),'rolling task subtitle should remain concise');
+
+const main=w.document.querySelector('.tasks-table .schedule-rolling');
+const taskID=firstTask.id;
+const accountID='qa-codex';
+const futureDue=Date.now()+4*60*60*1000;
+const missedDue=Date.now()-3*60*60*1000;
+const futureLabel=w.eval('dateKey')(futureDue,firstTask.timezone)+' '+w.eval('time')(futureDue,firstTask.timezone);
+// A snapshot may contain a cursor that has already elapsed. Never display it
+// as a future appointment even if a browser input keeps focus.
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:missedDue,source:'upstream',status:'scheduled'}]};
+main.tabIndex=0;main.focus();
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'待调度','expired rolling cursor must not be labelled as the next trigger');
+assert(!main.textContent.includes('2026-11-03'),'expired clock time must disappear');
+assert.equal(w.document.activeElement,main,'live updates should not lose task table focus');
+// When the CPA server enters a waiting state, show its current waitUntil.
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:futureDue,status:'waiting',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert(main.textContent.includes(futureLabel),'actual server waiting deadline must replace old cursor in the task list');
+assert.equal(w.document.querySelector('.upcoming-list')?.innerHTML,w.eval('renderUpcomingItems')(w.eval('allUpcoming')()),'sidebar must receive server-driven schedule changes');
+assert(w.eval('allUpcoming')().some(entry=>Math.abs(entry.at-futureDue)<1000),'next triggers must include the real rolling time');
+const timelineEvents=w.eval('timelineRangeOccurrences')(firstTask,Date.now(),Date.now()+48*3600000,[accountID]);
+assert.deepEqual(timelineEvents,[futureDue],'timeline must follow one server rolling event, not repeat daily bootstrap');
+// A later CPA snapshot must update text in place without repainting the
+// focused table, including both the main row and next-trigger summary.
+const movedDue=futureDue+2*60*60*1000;
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:movedDue,status:'scheduled',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert(main.textContent.includes(w.eval('dateKey')(movedDue,firstTask.timezone)),'changed server due replaces previous waiting deadline');
+assert.equal(w.document.activeElement,main,'focused row persists after server due time moves');
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:missedDue,status:'running',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'正在执行','a running task cannot claim a stale future trigger');
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:0,status:'due',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'待调度','due cursor shows scheduling state rather than a stale time');
+w.CPASparkSchedulerError='Persistent storage is unavailable';
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'调度已停止','a halted server must not pretend the overdue task is about to run');
+w.CPASparkSchedulerError='';
+main.blur();
+
 firstTask.strategy=savedStrategy;firstTask.times=savedTimes;
 w.CPASparkRollingPlans={};w.eval('render()');
 
