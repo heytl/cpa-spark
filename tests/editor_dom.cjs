@@ -147,6 +147,15 @@ w.eval('renderRunDetail')(scrollFixture);scrollDialog.showModal();
 scrollDialog.querySelector('.drawer-content').scrollTop=219;
 w.eval('renderRunDetail')({...scrollFixture,finished:true,items:[{...scrollFixture.items[0],status:'success',message:'Completed',windowStatus:'unconfirmed'}]});
 assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run detail auto-refresh must preserve user scroll');
+const waitingWindow={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',waitUntil:Date.now()+2*60*60*1000,message:'Waiting for quota window'}]};
+const signature=w.eval('runDetailFingerprint'),delay=w.eval('runDetailPollDelay');
+assert.equal(signature(waitingWindow),signature({...waitingWindow,now:Date.now()+2500,serverNow:Date.now()+2500}),'changing server clock must not redraw waiting details');
+assert.notEqual(signature(waitingWindow),signature({...waitingWindow,items:[{...waitingWindow.items[0],status:'running'}]}),'a genuine status change must redraw');
+assert.equal(delay(waitingWindow,Date.now()),30000,'hours-long quota wait polls infrequently');
+const almostDue={...waitingWindow,items:[{...waitingWindow.items[0],waitUntil:Date.now()+15000}]};
+assert.equal(delay(almostDue,Date.now()),2500,'quota wait close to reset restores fast polling');
+assert.equal(delay(scrollFixture,Date.now()),2500,'active requests continue fast polling');
+
 scrollDialog.close();
 const timelineCSS=fs.readFileSync(root+'/web/style.css','utf8');
 assert(timelineCSS.includes('.st-table.st-hours-48{--st-plot-min:1536px}'),'48h timeline keeps five-hour bars readable');

@@ -65,9 +65,23 @@ document.addEventListener('click',async event=>{
   modal(title,`<p>${t('history.confirmDelete',{count:result.count})}</p><p class="history-delete-scope">${esc(summary)}</p><p class="small muted">${t('history.keepActive')}</p>`,title,async()=>{await previewRemoveRuns(scope);historyKey='';await requestHistory(true)},true);
  }catch(error){toast('无法读取删除范围：'+error.message,'alert')}
 },true);
-let lastDetailedRunID='',lastDetailedRunFinished=false;
+// A waiting task may remain unchanged for hours. Compare the render-relevant
+// data before rebuilding an open dialog; a fresh fetch is not a UI change.
+let lastDetailedRunID='',lastDetailedRunFinished=false,lastDetailedRunData=null,lastDetailedRunSignature='',lastDetailPollAt=0;
+function runDetailFingerprint(run){
+ if(!run)return '';
+ const {now,serverNow,fetchedAt,refreshedAt,...persistent}=run;
+ return JSON.stringify(persistent);
+}
 const historyRunDetailBase=renderRunDetail;
-renderRunDetail=function(run){lastDetailedRunID=run?.id||'';lastDetailedRunFinished=!!run?.finished;historyRunDetailBase(run);if($('#accountDialog').open){$('#detailDialog .drawer-footer .flex').insertAdjacentHTML('afterbegin',`<button class="btn" data-action="close" data-id="detailDialog">${t('history.backToAccount')}</button>`)}};
+renderRunDetail=function(run){
+ lastDetailedRunID=run?.id||'';
+ lastDetailedRunFinished=!!run?.finished;
+ lastDetailedRunData=run;
+ lastDetailedRunSignature=runDetailFingerprint(run);
+ historyRunDetailBase(run);
+ if($('#accountDialog').open){$('#detailDialog .drawer-footer .flex').insertAdjacentHTML('afterbegin',`<button class="btn" data-action="close" data-id="detailDialog">${t('history.backToAccount')}</button>`)}
+};
 
 async function exportHistory(){
  const query={...historyQuery(),page:1,pageSize:100};const pending=toast(t('history.exporting'),'loader'),records=new Map();
@@ -76,6 +90,7 @@ async function exportHistory(){
 }
 const pagedShowRunBase=showRun;
 showRun=async function(id){
+ lastDetailPollAt=0;
  const local=state.runs.find(r=>r.id===id);if(local&&!local.summary){pagedShowRunBase(id);return}
  const generation=++runDetailGeneration;
  try{const run=await api('history-detail',{id});if(generation!==runDetailGeneration||!connected)return;detailType='run';detailId=id;renderRunDetail(run);if(!$('#detailDialog').open)showDialog('detailDialog')}
@@ -92,11 +107,27 @@ const pagedSnapshotBase=applySnapshot;
 applySnapshot=function(...args){pagedSnapshotBase(...args);if(view==='history'&&historyPage===1)void requestHistory(true)};
 const pagedDisconnectBase=disconnectLive;
 disconnectLive=function(...args){historyGeneration++;runDetailGeneration++;accountTimelineGeneration++;historyPage=1;historyKey='';historyPendingKey='';historyError='';historyData={rows:[],total:0,deletable:0,allDeletable:0,page:1,pages:1};accountTimelineRuns=null;pagedDisconnectBase(...args)};
-$('#detailDialog').addEventListener('close',()=>runDetailGeneration++);
+$('#detailDialog').addEventListener('close',()=>{runDetailGeneration++;lastDetailPollAt=0;lastDetailedRunData=null});
 $('#accountDialog').addEventListener('close',()=>{accountTimelineGeneration++;accountTimelineRuns=null});
+// Far from a known reset, one read every 30 seconds is sufficient. Start
+// polling every 2.5 seconds in the final 30 seconds or during active work.
+function runDetailPollDelay(run,now=Date.now()){
+ const items=run?.items||[];
+ const allWaiting=items.length>0&&items.every(item=>item.status==='waiting');
+ const earliestDue=allWaiting?Math.min(...items.map(item=>Number(item.waitUntil)||Infinity)):Infinity;
+ return allWaiting&&earliestDue>now+30000?30000:2500;
+}
 let historyRefreshBusy=false;
 setInterval(async()=>{
- if(!connected||historyRefreshBusy)return;historyRefreshBusy=true;
- try{if($('#detailDialog').open&&detailType==='run'&&!(lastDetailedRunID===detailId&&lastDetailedRunFinished)){const id=detailId,generation=runDetailGeneration;const run=await api('history-detail',{id});if(connected&&generation===runDetailGeneration&&$('#detailDialog').open&&detailId===id)renderRunDetail(run)}}catch(error){}finally{historyRefreshBusy=false}
+ if(!connected||historyRefreshBusy||!$('#detailDialog').open||detailType!=='run')return;
+ if(lastDetailedRunID===detailId&&lastDetailedRunFinished)return;
+ const now=Date.now(),interval=runDetailPollDelay(lastDetailedRunData,now);
+ if(now-lastDetailPollAt<interval)return;
+ lastDetailPollAt=now;historyRefreshBusy=true;
+ try{
+  const id=detailId,generation=runDetailGeneration;
+  const run=await api('history-detail',{id});
+  if(connected&&generation===runDetailGeneration&&$('#detailDialog').open&&detailId===id&&runDetailFingerprint(run)!==lastDetailedRunSignature)renderRunDetail(run);
+ }catch(error){}finally{historyRefreshBusy=false}
 },2500);
 render();
