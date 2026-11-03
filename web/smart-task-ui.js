@@ -82,7 +82,11 @@
    const fmt=n=>n?esc(new Date(n).toLocaleString()):"—";
    let rows=[[tr("计划时间","Scheduled"),i.scheduled],[tr("实际发起请求","Model request sent"),i.dispatched],[tr("执行前窗口到期","Previous reset"),i.windowResetAt],[tr("执行后窗口到期","Next reset"),i.nextWindowAt]];
    if(i.waitUntil)rows.push([tr("延迟执行时间","Deferred until"),i.waitUntil]);
-   return '<div class="smart-window-detail"><strong translate="no">'+esc(i.authId||"")+'</strong><span class="smart-window-outcome">'+esc(info||tr("未获取窗口信息","Window data unavailable"))+'</span><dl>'+rows.map(([label,at])=>'<dt>'+label+'</dt><dd>'+fmt(at)+'</dd>').join("")+'</dl></div>';
+   const errors=[];
+   if(i.windowBeforeError)errors.push([tr("执行前额度检查","Pre-request quota check"),i.windowBeforeError]);
+   if(i.windowAfterError)errors.push([tr("执行后额度检查","Post-request quota check"),i.windowAfterError]);
+   const errorHtml=errors.map(([label,value])=>'<dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd>').join('');
+   return '<div class="smart-window-detail"><strong translate="no">'+esc(i.authId||"")+'</strong><span class="smart-window-outcome">'+esc(info||tr("未获取窗口信息","Window data unavailable"))+'</span><dl>'+rows.map(([label,at])=>'<dt>'+label+'</dt><dd>'+fmt(at)+'</dd>').join("")+errorHtml+'</dl></div>';
   }).filter(Boolean).join("");
   if(panels)area.insertAdjacentHTML("beforeend",'<section class="smart-window-details"><h3>'+tr("智能窗口检查","Smart window verification")+'</h3>'+panels+'</section>');
   if(oldContent){area.scrollTop=scrollTop;area.scrollLeft=scrollLeft;}

@@ -278,6 +278,8 @@ type Execution struct {
 	NextWindowAt int64 `json:"nextWindowAt,omitempty"`
 	WindowStatus string `json:"windowStatus,omitempty"`
 	WindowBucket string `json:"windowBucket,omitempty"`
+	WindowBeforeError string `json:"windowBeforeError,omitempty"`
+	WindowAfterError string `json:"windowAfterError,omitempty"`
 	Started    int64    `json:"started"`
 	Finished   int64    `json:"finished"`
 	Latency    int64    `json:"latency"`

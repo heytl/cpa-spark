@@ -3,6 +3,7 @@ package warmup
 import (
     "encoding/json"
     "errors"
+    "fmt"
     "net/http"
     "strconv"
     "strings"
@@ -17,6 +18,17 @@ const (
 )
 
 var errQuotaUnknown = errors.New("upstream quota window unavailable")
+
+// CPA's host.http.do callback serializes pluginapi.HTTPResponse, whose JSON
+// fields are PascalCase ("StatusCode", "Headers", "Body"). It does NOT use
+// the snake_case body used by host.model.execute. Keep a separate wire type,
+// otherwise Go's decoder silently leaves StatusCode at zero for all quota
+// probes even when the upstream HTTP request returned 200.
+type QuotaHTTPResponse struct {
+    StatusCode int
+    Headers http.Header
+    Body []byte
+}
 
 // WindowObservation is an observation, not a promise that sending a model
 // request will activate a fresh quota window. Never store auth material here.
@@ -82,17 +94,17 @@ func findCredentialValue(value any, key string, depth int) string {
 }
 
 func (e *Engine) observeWindow(account Account, model string) (WindowObservation, error) {
-    if account.AuthIndex == "" { return WindowObservation{}, errQuotaUnknown }
+    if account.AuthIndex == "" { return WindowObservation{}, errors.New("quota check: auth_index unavailable") }
     var credential struct { JSON json.RawMessage `json:"json"` }
     if err := e.host.Call("host.auth.get", map[string]string{"auth_index": account.AuthIndex}, &credential); err != nil {
-        return WindowObservation{}, errQuotaUnknown
+        return WindowObservation{}, errors.New("quota check: host.auth.get failed")
     }
     raw := readRawObject(credential.JSON)
     token := findCredentialValue(raw,"access_token",0)
-    if token == "" { return WindowObservation{}, errQuotaUnknown }
+    if token == "" { return WindowObservation{}, errors.New("quota check: access token unavailable in auth file") }
     headers := http.Header{"Authorization": {"Bearer "+token}}
     now := e.now()
-    var response ModelResponse
+    var response QuotaHTTPResponse
     var err error
     switch account.Provider {
     case "codex":
@@ -106,7 +118,7 @@ func (e *Engine) observeWindow(account Account, model string) (WindowObservation
         project := account.ProjectID
         if project == "" { project = firstText(raw,"project_id","projectId") }
         if project == "" {
-            var lookup ModelResponse
+            var lookup QuotaHTTPResponse
             body := []byte(`{"metadata":{"ideType":"ANTIGRAVITY","platform":"PLATFORM_UNSPECIFIED","pluginType":"GEMINI"}}`)
             if e.host.Call("host.http.do",map[string]any{"method":"POST","url":antigravityCodeAssistURL,"headers":headers,"body":body},&lookup)==nil && lookup.StatusCode>=200 && lookup.StatusCode<300 {
                 m:=readRawObject(lookup.Body)
@@ -117,12 +129,15 @@ func (e *Engine) observeWindow(account Account, model string) (WindowObservation
         body,_ := json.Marshal(map[string]string{"project":project})
         err = e.host.Call("host.http.do",map[string]any{"method":"POST","url":antigravityUsageURL,"headers":headers,"body":body},&response)
     default:
-        return WindowObservation{}, errQuotaUnknown
+        return WindowObservation{}, errors.New("quota check: unsupported provider")
     }
-    // Tokens and headers are scoped to this call and never persisted or logged.
-    if err != nil || response.StatusCode < 200 || response.StatusCode >= 300 || len(response.Body) == 0 || len(response.Body) > 1024*1024 {
-        return WindowObservation{}, errQuotaUnknown
+    // Never record raw upstream bodies, authorization headers, or tokens.
+    if err != nil { return WindowObservation{}, errors.New("quota check: host.http.do failed") }
+    if response.StatusCode < 200 || response.StatusCode >= 300 {
+        return WindowObservation{}, fmt.Errorf("quota check: upstream HTTP %d", response.StatusCode)
     }
+    if len(response.Body) == 0 { return WindowObservation{}, errors.New("quota check: upstream response empty") }
+    if len(response.Body) > 1024*1024 { return WindowObservation{}, errors.New("quota check: upstream response too large") }
     var result WindowObservation
     switch account.Provider {
     case "codex":
@@ -130,7 +145,7 @@ func (e *Engine) observeWindow(account Account, model string) (WindowObservation
     case "antigravity":
         result,err = parseAntigravityWindow(response.Body,model,now)
     }
-    if err != nil || result.ResetAt <= 0 { return WindowObservation{}, errQuotaUnknown }
+    if err != nil || result.ResetAt <= 0 { return WindowObservation{}, errors.New("quota check: no recognized five-hour window in upstream response") }
     result.CheckedAt=now.UnixMilli()
     result.Provider=account.Provider
     result.Source="upstream"

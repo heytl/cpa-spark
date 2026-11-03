@@ -237,7 +237,7 @@ func (s *Store) runDetail(id string, accountID ...string) (map[string]any, error
 				names = append(names, o.Name)
 			}
 		}
-		items = append(items, map[string]any{"id": x.ID, "authId": x.AuthID, "executionStatus": x.Status, "status": status, "message": message, "latency": x.Latency, "tokens": x.Tokens, "sources": names, "httpStatus": x.HTTPStatus, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled,"waitUntil":x.WaitUntil,"dispatched":x.Dispatched,"windowResetAt":x.WindowResetAt,"windowCheckAt":x.WindowCheckAt,"nextWindowAt":x.NextWindowAt,"windowStatus":x.WindowStatus,"windowBucket":x.WindowBucket})
+		items = append(items, map[string]any{"id": x.ID, "authId": x.AuthID, "executionStatus": x.Status, "status": status, "message": message, "latency": x.Latency, "tokens": x.Tokens, "sources": names, "httpStatus": x.HTTPStatus, "started": x.Started, "finished": x.Finished, "scheduled": x.Scheduled,"waitUntil":x.WaitUntil,"dispatched":x.Dispatched,"windowResetAt":x.WindowResetAt,"windowCheckAt":x.WindowCheckAt,"nextWindowAt":x.NextWindowAt,"windowStatus":x.WindowStatus,"windowBucket":x.WindowBucket,"windowBeforeError":x.WindowBeforeError,"windowAfterError":x.WindowAfterError})
 	}
 	return map[string]any{"id": id, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": at, "finished": finished, "items": items}, rows.Err()
 }

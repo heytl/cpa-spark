@@ -390,6 +390,7 @@ func (e *Engine) execute(x Execution) {
         x.Status="unknown"; x.Message="Window checkpoint storage unavailable; request not sent";return
     }
     observation,quotaErr:=e.observeWindow(*account,x.Model)
+    if quotaErr != nil {x.WindowBeforeError=quotaErr.Error()}
     if quotaErr==nil {
         x.WindowResetAt=observation.ResetAt
         x.WindowCheckAt=observation.CheckedAt
@@ -476,6 +477,7 @@ func (e *Engine) execute(x Execution) {
 	x.Message = "Model replied successfully; actual quota reset remains unconfirmed"
 	x.Tokens = body.Usage.TotalTokens
     after,afterErr:=e.observeWindow(*account,x.Model)
+    if afterErr != nil {x.WindowAfterError=afterErr.Error()}
     if afterErr==nil {
         x.NextWindowAt=after.ResetAt
         x.WindowCheckAt=after.CheckedAt

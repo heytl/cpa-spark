@@ -50,10 +50,10 @@ func (h *smartTestHost) Call(method string,in any,out any) error {
   reset:=h.resetBefore
   if h.calls>0 {reset=h.resetAfter}
   if strings.Contains(url,"wham/usage") {
-   payload=ModelResponse{StatusCode:200,Body:marshal(map[string]any{"rate_limit":map[string]any{"primary_window":map[string]any{"limit_window_seconds":18000,"reset_at":reset/1000}}})}
+   payload=QuotaHTTPResponse{StatusCode:200,Body:marshal(map[string]any{"rate_limit":map[string]any{"primary_window":map[string]any{"limit_window_seconds":18000,"reset_at":reset/1000}}})}
   }else if strings.Contains(url,"retrieveUserQuotaSummary") {
-   payload=ModelResponse{StatusCode:200,Body:marshal(map[string]any{"groups":[]any{map[string]any{"displayName":"Gemini Models","buckets":[]any{map[string]any{"window":"5h","bucketId":"gemini","resetTime":time.UnixMilli(reset).UTC().Format(time.RFC3339),"remainingFraction":0.5}}}}})}
-  }else {payload=ModelResponse{StatusCode:404}}
+   payload=QuotaHTTPResponse{StatusCode:200,Body:marshal(map[string]any{"groups":[]any{map[string]any{"displayName":"Gemini Models","buckets":[]any{map[string]any{"window":"5h","bucketId":"gemini","resetTime":time.UnixMilli(reset).UTC().Format(time.RFC3339),"remainingFraction":0.5}}}}})}
+  }else {payload=QuotaHTTPResponse{StatusCode:404}}
  case "host.model.execute":
   h.calls++
   payload=ModelResponse{StatusCode:200,Body:[]byte(`{"choices":[{"message":{"content":"OK"}}]}`)}
@@ -158,4 +158,23 @@ func TestSnapshotIncludesPerAccountRollingSchedule(t *testing.T){
  if err!=nil{t.Fatal(err)}
  plans,ok:=snap["rollingPlans"].(map[string][]RollingPlan)
  if !ok||len(plans["smart"])!=1||plans["smart"][0].NextDue!=next {t.Fatalf("incorrect snapshot: %+v",snap["rollingPlans"])}
+}
+
+func TestQuotaHTTPResponseUsesOfficialPascalCaseWireFormat(t *testing.T) {
+    // host.http.do marshals pluginapi.HTTPResponse with Go exported field
+    // names, unlike host.model.execute's snake_case RPC response.
+    original:=QuotaHTTPResponse{StatusCode:200,Body:[]byte(`{"rate_limit":{}}`)}
+    raw:=marshal(original)
+    if !strings.Contains(string(raw),`"StatusCode":200`) {
+        t.Fatalf("unexpected host.http.do JSON: %s",raw)
+    }
+    var quota QuotaHTTPResponse
+    if err:=json.Unmarshal(raw,&quota);err!=nil||quota.StatusCode!=200||len(quota.Body)==0 {
+        t.Fatalf("valid host HTTP response misread: %+v, %v",quota,err)
+    }
+    var old ModelResponse
+    if err:=json.Unmarshal(raw,&old);err!=nil {
+        t.Fatal(err)
+    }
+    if old.StatusCode!=0 { t.Fatalf("regression assertion needs old snake_case to remain incompatible: %+v",old) }
 }
