@@ -64,6 +64,32 @@
   if(status==="waiting")return '<span class="badge orange">'+tr("等待窗口重置","Waiting for reset")+'</span>';
   return oldStatusBadge(status,label);
  };
+ // API history is intentionally stored in stable English so that changing
+ // CPA's interface language does not mutate execution/audit records. Only the
+ // presentation is translated, including runs created by older plugin builds.
+ function localizedExecutionReason(value){
+  const raw=String(value??"");
+  const direct=uiText(raw);
+  if(direct!==raw)return direct;
+  // A few server records append a non-sensitive checkpoint warning to an
+  // already known reason. Translate both clauses without touching any raw
+  // provider error payloads or stored history.
+  const suffixes=[
+   "; cannot persist next rolling trigger",
+   "; next trigger checkpoint unavailable",
+   "; next trigger estimate unavailable",
+   "; continuous scheduler checkpoint unavailable"
+  ];
+  for(const suffix of suffixes){
+   if(!raw.endsWith(suffix))continue;
+   const prefix=raw.slice(0,-suffix.length),translatedPrefix=uiText(prefix);
+   const rest=suffix.slice(2),translatedSuffix=uiText(rest);
+   if(translatedPrefix===prefix && translatedSuffix===rest)break;
+   const sep=hostPreferences.language.startsWith("zh")?"；":"; ";
+   return translatedPrefix+sep+translatedSuffix;
+  }
+  return raw;
+ }
  const originalRunDetail=renderRunDetail;
  renderRunDetail=function(run){
   // The dialog may be refreshed while a run is active. Replacing its innerHTML
@@ -75,16 +101,24 @@
   originalRunDetail(run);
   const area=document.querySelector("#detailDialog .drawer-content");
   if(!area||!Array.isArray(run?.items))return;
+  // The base renderer escapes raw server messages. Rewrite only the
+  // corresponding reason text nodes using the active CPA language.
+  // Do not translate user-controlled account names or execution IDs.
+  area.querySelectorAll(".run-item .subline").forEach((line,index)=>{
+   const item=run.items[index];
+   if(!item||item.status==="waiting"&&item.waitUntil)return;
+   line.textContent=localizedExecutionReason(item.message);
+  });
   const panels=run.items.map(i=>{
    const translations={confirmed:tr("已确认开启新窗口","New window confirmed"),unconfirmed:tr("请求成功 · 窗口未确认","Request succeeded · window unconfirmed"),waiting:tr("等待窗口结束","Waiting for window reset"),existing:tr("已有有效窗口，未重复请求","Existing window · no request")};
    const info=translations[i.windowStatus];
-   if(!info&&!i.dispatched&&!i.windowResetAt&&!i.nextWindowAt)return "";
+   if(!info&&!i.dispatched&&!i.windowResetAt&&!i.nextWindowAt&&!i.windowBeforeError&&!i.windowAfterError)return "";
    const fmt=n=>n?esc(new Date(n).toLocaleString()):"—";
    let rows=[[tr("计划时间","Scheduled"),i.scheduled],[tr("实际发起请求","Model request sent"),i.dispatched],[tr("执行前窗口到期","Previous reset"),i.windowResetAt],[tr("执行后窗口到期","Next reset"),i.nextWindowAt]];
    if(i.waitUntil)rows.push([tr("延迟执行时间","Deferred until"),i.waitUntil]);
    const errors=[];
-   if(i.windowBeforeError)errors.push([tr("执行前额度检查","Pre-request quota check"),i.windowBeforeError]);
-   if(i.windowAfterError)errors.push([tr("执行后额度检查","Post-request quota check"),i.windowAfterError]);
+   if(i.windowBeforeError)errors.push([tr("执行前额度检查","Pre-request quota check"),localizedExecutionReason(i.windowBeforeError)]);
+   if(i.windowAfterError)errors.push([tr("执行后额度检查","Post-request quota check"),localizedExecutionReason(i.windowAfterError)]);
    const errorHtml=errors.map(([label,value])=>'<dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd>').join('');
    return '<div class="smart-window-detail"><strong translate="no">'+esc(i.authId||"")+'</strong><span class="smart-window-outcome">'+esc(info||tr("未获取窗口信息","Window data unavailable"))+'</span><dl>'+rows.map(([label,at])=>'<dt>'+label+'</dt><dd>'+fmt(at)+'</dd>').join("")+errorHtml+'</dl></div>';
   }).filter(Boolean).join("");

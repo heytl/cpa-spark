@@ -283,7 +283,7 @@ func (e *Engine) Tick() {
 	}
 	for _, x := range xs {
 		if x.Status != "queued" && x.Status != "waiting" { continue }
-        if x.Status == "waiting" && x.WaitUntil > now.UnixMilli() { continue }
+        if x.Status == "waiting" && x.Mode != "manual" && x.WaitUntil > now.UnixMilli() { continue }
 		reason := ""
 		if c.Settings.Paused {
 			reason = "Global pause"
@@ -291,7 +291,7 @@ func (e *Engine) Tick() {
 			reason = "Account paused"
 		} else if x.Mode == "scheduled" && x.WaitUntil==0 && now.Sub(time.UnixMilli(x.Scheduled)) > time.Duration(c.Settings.Late)*time.Second {
 			reason = "Queue deadline exceeded"
-		} else if x.WaitUntil>0 && normalizedStrategy(x.Task)=="fixed" && now.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000+60000 {
+		} else if x.Mode!="manual" && x.WaitUntil>0 && normalizedStrategy(x.Task)=="fixed" && now.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000+60000 {
             reason = "Smart wait deadline exceeded"
         }
 		if reason != "" {
@@ -307,6 +307,7 @@ func (e *Engine) Tick() {
 		if len(e.active) >= c.Settings.Concurrency || e.active[x.AuthID] != "" || e.providerActive[x.Provider] >= 2 {
 			continue
 		}
+		if x.Mode=="manual" { x.WaitUntil=0 } // Upgrade old waiting manual runs to immediate dispatch.
 		x.Status = "running"
 		x.Started = now.UnixMilli()
 		x.Message = "Request submitted; waiting for result"
@@ -355,9 +356,24 @@ func (e *Engine) execute(x Execution) {
 			break
 		}
 	}
-	if account == nil || account.Provider != x.Provider || account.Disabled || account.Unavailable || account.Status == "disabled" || account.Status == "error" || account.Status == "expired" {
+	if account == nil {
 		x.Status = "skipped"
-		x.Message = "Account missing, unavailable, disabled or provider mismatch"
+		x.Message = "Account is missing from CPA"
+		return
+	}
+	if account.Provider != x.Provider {
+		x.Status = "skipped"
+		x.Message = "Account provider does not match task provider"
+		return
+	}
+	if account.Disabled || account.Status == "disabled" {
+		x.Status = "skipped"
+		x.Message = "Account is disabled in CPA"
+		return
+	}
+	if account.Unavailable || account.Status == "error" || account.Status == "expired" {
+		x.Status = "skipped"
+		x.Message = "Account is unavailable or expired in CPA"
 		return
 	}
 	// Recheck local pause after the read-only host lookup, then mark the dispatch boundary.
@@ -396,7 +412,11 @@ func (e *Engine) execute(x Execution) {
         x.WindowCheckAt=observation.CheckedAt
         x.WindowBucket=observation.Bucket
         delayUntil:=time.UnixMilli(observation.ResetAt).Add(windowSafetyMargin)
-        if delayUntil.After(now) {
+        // Manual "Run now" is an explicit user request: inspect quota but
+        // never wait for a reset or skip a healthy account just because the
+        // current quota window is still active. Automated runs retain the
+        // five-hour smart-avoidance policy.
+        if x.Mode!="manual" && delayUntil.After(now) {
             if x.WaitUntil>0 && observation.ResetAt>x.WaitUntil+60000 {
                 // At the previous due time the provider has already opened a
                 // later quota window. It may have been triggered by another
@@ -410,7 +430,7 @@ func (e *Engine) execute(x Execution) {
                 }
                 return
             }
-            if (x.Mode=="manual" || normalizedStrategy(x.Task)=="fixed") && delayUntil.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000 {
+            if normalizedStrategy(x.Task)=="fixed" && delayUntil.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000 {
                 // "Run now" must not remain active for hours. A manual
                 // request uses the same short grace as fixed scheduling.
                 x.Status="skipped";x.WindowStatus="existing"
@@ -434,7 +454,7 @@ func (e *Engine) execute(x Execution) {
             x.Message=fmt.Sprintf("Waiting for quota window to reset at %s",delayUntil.UTC().Format(time.RFC3339))
             return
         }
-    } else if ck.LastResetAt>now.UnixMilli()+windowSafetyMargin.Milliseconds() {
+    } else if x.Mode!="manual" && ck.LastResetAt>now.UnixMilli()+windowSafetyMargin.Milliseconds() {
         x.Status="skipped";x.WindowStatus="existing"
         x.WindowResetAt=ck.LastResetAt
         x.Message="Prior confirmed quota window remains active; upstream verification unavailable"

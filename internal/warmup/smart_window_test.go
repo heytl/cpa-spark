@@ -32,6 +32,7 @@ type smartTestHost struct {
  resetBefore int64
  resetAfter int64
  quotaHTTPStatus int
+ extraAccounts []Account
  calls int
 }
 func (h *smartTestHost) Call(method string,in any,out any) error {
@@ -40,7 +41,7 @@ func (h *smartTestHost) Call(method string,in any,out any) error {
  var payload any
  switch method {
  case "host.auth.list":
-  payload=map[string]any{"files":[]Account{{ID:"a",AuthIndex:"idx",Provider:h.provider,Status:"active",ProjectID:"project-123"}}}
+  payload=map[string]any{"files":append([]Account{{ID:"a",AuthIndex:"idx",Provider:h.provider,Status:"active",ProjectID:"project-123"}},h.extraAccounts...)}
  case "host.auth.get_runtime":
   payload=map[string]any{"auth":map[string]any{"id":"a","auth_index":"idx","provider":h.provider}}
  case "host.auth.get":
@@ -82,7 +83,8 @@ func TestFixedWaitsUntilRealResetAndVerifies(t *testing.T){
  for _,provider:=range []string{"codex","antigravity"} {
   t.Run(provider,func(t *testing.T){
    e,s,h,clock:=smartEngine(t,provider,start,start.Add(30*time.Second),start.Add(5*time.Hour+30*time.Second))
-   if _,err:=e.Run("smart","test-wait-123");err!=nil {t.Fatal(err)}
+   cfg,err:=s.Config();if err!=nil{t.Fatal(err)}
+   if _,err=e.enqueue(cfg.Tasks,cfg,start,"scheduled","smart-wait-test");err!=nil {t.Fatal(err)}
    e.Tick()
    waitFor(t,func()bool{xs,_:=s.Executions();return len(xs)==1&&xs[0].Status=="waiting"})
    h.mu.Lock();sent:=h.calls;h.mu.Unlock();if sent!=0 {t.Fatalf("sent early: %d",sent)}
@@ -97,7 +99,8 @@ func TestFixedWaitsUntilRealResetAndVerifies(t *testing.T){
 func TestFixedSkipsFarFutureWindow(t *testing.T){
  start:=time.Date(2026,11,2,11,0,0,0,time.UTC)
  e,s,h,_:=smartEngine(t,"codex",start,start.Add(45*time.Minute),start.Add(5*time.Hour))
- e.Run("smart","far-future")
+ cfg,err:=s.Config();if err!=nil{t.Fatal(err)}
+ if _,err=e.enqueue(cfg.Tasks,cfg,start,"scheduled","smart-skip-test");err!=nil {t.Fatal(err)}
  e.Tick()
  waitFor(t,func()bool{xs,_:=s.Executions();return xs[0].Status=="skipped"})
  xs,_:=s.Executions()
@@ -224,25 +227,126 @@ func TestRollingWaitDoesNotDuplicateOrStayOnStaleDue(t *testing.T) {
     host.mu.Unlock()
     if calls!=0{t.Fatalf("duplicate token-consuming model request: %d",calls)}
 }
-func TestManualRollingDoesNotWaitFiveHours(t *testing.T) {
-    start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+// "Run now" is explicit permission to send one model request. The model
+// response can succeed even if the existing five-hour quota window does not
+// reset. Scheduled smart avoidance must not apply to manual requests.
+func TestManualExecutesImmediatelyInsideAnActiveWindow(t *testing.T) {
+ start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+ for _,provider:=range []string{"codex","antigravity"} {
+  for _,strategy:=range []string{"fixed","rolling"} {
+   t.Run(provider+"-"+strategy,func(t *testing.T){
     reset:=start.Add(5*time.Hour)
-    engine,store,host,_:=smartEngine(t,"codex",start,reset,reset)
+    engine,store,host,_:=smartEngine(t,provider,start,reset,reset)
     cfg,err:=store.Config()
     if err!=nil{t.Fatal(err)}
-    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Strategy=strategy
     cfg.Tasks[0].Revision++
     if err=engine.Save(cfg);err!=nil{t.Fatal(err)}
     if _,err=engine.Run("smart","manual-long-wait-guard");err!=nil{t.Fatal(err)}
     engine.Tick()
-    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="skipped"})
+    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="success"})
     xs,err:=store.Executions()
     if err!=nil{t.Fatal(err)}
-    if xs[0].WindowStatus!="existing"||xs[0].WaitUntil!=0{t.Fatalf("manual request left waiting for hours: %+v",xs[0])}
+    if xs[0].WaitUntil!=0||xs[0].Dispatched<=0{
+     t.Fatalf("manual task should dispatch, not wait: %+v",xs[0])
+    }
+    if xs[0].WindowStatus=="confirmed"{
+     t.Fatalf("model success does not establish a new window without quota change: %+v",xs[0])
+    }
     host.mu.Lock()
     calls:=host.calls
     host.mu.Unlock()
-    if calls!=0{t.Fatalf("manual action consumed tokens inside active window: %d",calls)}
+    if calls!=1{t.Fatalf("user-initiated request must dispatch once, got %d",calls)}
+   })
+  }
+ }
+}
+func TestManualCanRunWithUnverifiableActiveQuotaCheckpoint(t *testing.T) {
+ start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+ reset:=start.Add(5*time.Hour)
+ engine,store,host,_:=smartEngine(t,"codex",start,reset,reset)
+ if err:=store.SaveCheckpoint("a","codex","gpt-5.6-codex",WindowCheckpoint{LastResetAt:reset.UnixMilli()});err!=nil{t.Fatal(err)}
+ host.mu.Lock()
+ host.quotaHTTPStatus=503
+ host.mu.Unlock()
+ if _,err:=engine.Run("smart","manual-quota-guard");err!=nil{t.Fatal(err)}
+ engine.Tick()
+ waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="success"})
+ xs,err:=store.Executions()
+ if err!=nil{t.Fatal(err)}
+ if xs[0].WindowBeforeError==""||xs[0].WindowStatus=="confirmed"{t.Fatalf("quota uncertainty must be retained: %+v",xs[0])}
+ host.mu.Lock()
+ calls:=host.calls
+ host.mu.Unlock()
+ if calls!=1{t.Fatalf("manual request should send even if upstream quota query fails: %d",calls)}
+}
+func TestRunOnceDispatchesDespiteActiveQuota(t *testing.T) {
+ start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+ e,store,host,_:=smartEngine(t,"codex",start,start.Add(5*time.Hour),start.Add(5*time.Hour))
+ cfg,err:=store.Config()
+ if err!=nil{t.Fatal(err)}
+ task:=cfg.Tasks[0]
+ if _,err=e.RunOnce(task,"run-once-manual-quota");err!=nil{t.Fatal(err)}
+ e.Tick()
+ waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="success"})
+ xs,err:=store.Executions()
+ if err!=nil{t.Fatal(err)}
+ if xs[0].Mode!="manual"||xs[0].WaitUntil>0 {t.Fatalf("RunOnce was delayed: %+v",xs[0])}
+ host.mu.Lock()
+ sent:=host.calls
+ host.mu.Unlock()
+ if sent!=1{t.Fatalf("immediate account/group warmup request not sent: %d",sent)}
+}
+func TestManualMixedAccountBatchDoesNotSkipRunnableAccount(t *testing.T) {
+ start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+ e,store,host,_:=smartEngine(t,"codex",start,start.Add(5*time.Hour),start.Add(5*time.Hour))
+ host.mu.Lock()
+ host.extraAccounts=[]Account{{ID:"b",AuthIndex:"idx-b",Provider:"codex",Disabled:true,Status:"disabled"}}
+ host.mu.Unlock()
+ cfg,err:=store.Config()
+ if err!=nil{t.Fatal(err)}
+ cfg.Tasks[0].AccountIDs=[]string{"a","b"}
+ cfg.Tasks[0].Revision++
+ if err=e.Save(cfg);err!=nil{t.Fatal(err)}
+ if _,err=e.Run("smart","mixed-manual-accounts");err!=nil{t.Fatal(err)}
+ e.Tick()
+ waitFor(t,func()bool{
+  xs,err:=store.Executions()
+  if err!=nil||len(xs)!=2{return false}
+  success,skipped:=0,0
+  for _,x:=range xs{if x.Status=="success"{success++};if x.Status=="skipped"{skipped++}}
+  return success==1&&skipped==1
+ })
+ xs,err:=store.Executions()
+ if err!=nil{t.Fatal(err)}
+ for _,x:=range xs{
+  if x.AuthID=="a"&&(x.Status!="success"||x.Dispatched==0){t.Fatalf("eligible account was skipped: %+v",x)}
+  if x.AuthID=="b"&&(x.Status!="skipped"||x.Dispatched!=0||x.Message!="Account is disabled in CPA"){t.Fatalf("disabled account was invoked: %+v",x)}
+ }
+ host.mu.Lock()
+ sent:=host.calls
+ host.mu.Unlock()
+ if sent!=1{t.Fatalf("only healthy account should be sent, got %d",sent)}
+}
+func TestExistingManualWaitIsDispatchedAfterUpgrade(t *testing.T) {
+ start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+ e,store,host,_:=smartEngine(t,"codex",start,start.Add(5*time.Hour),start.Add(5*time.Hour))
+ if _,err:=e.Run("smart","legacy-manual-wait");err!=nil{t.Fatal(err)}
+ xs,err:=store.Executions()
+ if err!=nil||len(xs)!=1{t.Fatal(err,xs)}
+ x:=xs[0]
+ x.Status="waiting"
+ x.WaitUntil=start.Add(5*time.Hour).UnixMilli()
+ if err=store.Put(x);err!=nil{t.Fatal(err)}
+ e.Tick()
+ waitFor(t,func()bool{items,_:=store.Executions();return len(items)==1&&items[0].Status=="success"})
+ result,err:=store.Executions()
+ if err!=nil{t.Fatal(err)}
+ if result[0].WaitUntil!=0{t.Fatalf("obsolete manual waiting deadline not cleared: %+v",result[0])}
+ host.mu.Lock()
+ sent:=host.calls
+ host.mu.Unlock()
+ if sent!=1{t.Fatalf("legacy manual wait not dispatched: %d",sent)}
 }
 func TestWaitingRunIsNotReportedAsRunningOrCompleted(t *testing.T) {
     start:=time.Date(2026,11,3,7,30,0,0,time.UTC)

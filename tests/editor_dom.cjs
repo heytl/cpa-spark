@@ -190,6 +190,33 @@ scrollDialog.querySelector('.drawer-content').scrollTop=219;
 w.eval('renderRunDetail')({...scrollFixture,finished:true,items:[{...scrollFixture.items[0],status:'success',message:'Completed',windowStatus:'unconfirmed'}]});
 assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run detail auto-refresh must preserve user scroll');
 
+const localeFixture={...scrollFixture,finished:true,items:[
+ {...scrollFixture.items[0],id:'locale-1',status:'skipped',message:'Account missing, unavailable, disabled or provider mismatch',windowBeforeError:'quota check: upstream HTTP 403',waitUntil:0},
+ {...scrollFixture.items[0],id:'locale-2',authId:'qa-ag',status:'skipped',message:'Existing quota window continues past the configured smart delay limit; no model request sent',waitUntil:0},
+ {...scrollFixture.items[0],id:'locale-3',status:'success',message:'Model replied successfully; actual quota reset remains unconfirmed',windowStatus:'unconfirmed',waitUntil:0},
+ {...scrollFixture.items[0],id:'locale-4',status:'skipped',message:'Account is unavailable or expired in CPA',waitUntil:0}
+]};
+const languageBefore=w.eval('hostPreferences.language');
+const localizedReasons=(language)=>{
+ w.eval('hostPreferences.language='+JSON.stringify(language));
+ w.eval('renderRunDetail')(localeFixture);
+ return [...scrollDialog.querySelectorAll('.run-item .subline')].map(el=>el.textContent);
+};
+const cnReasons=localizedReasons('zh-CN');
+assert(cnReasons[0].includes('账号不存在、不可用、已禁用或提供商不匹配'),'existing English audit reasons are translated to Chinese');
+assert(cnReasons[1].includes('超过允许的智能等待时间'),'old smart-window skip reasons are translated');
+assert(cnReasons[2].includes('实际额度重置尚未确认'),'quota uncertainty is preserved in translated success messages');
+assert(cnReasons[3].includes('账号在 CPA 中不可用或已过期'),'new specific account status is translated');
+assert(scrollDialog.querySelector('.smart-window-detail')?.textContent.includes('额度检查失败：上游返回 HTTP 403'),'quota check errors are translated in detail panels');
+const enReasons=localizedReasons('en');
+assert.equal(enReasons[0],'Account missing, unavailable, disabled or provider mismatch','English interface retains English stored reason');
+assert(enReasons[1].includes('Existing quota window continues'),'English interface retains the upstream reason');
+const twReasons=localizedReasons('zh-TW');
+assert(twReasons[0].includes('帳號不存在'),'Traditional Chinese follows CPA language');
+assert(twReasons[1].includes('智慧等待時間'),'Traditional Chinese smart-window reason exists');
+w.eval('hostPreferences.language='+JSON.stringify(languageBefore));
+
+
 const waitingRun={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',windowStatus:'waiting',windowResetAt:Date.now()+3600000,waitUntil:Date.now()+3605000,message:'Waiting for quota window to reset'}]};
 w.eval('renderRunDetail')(waitingRun);
 assert.equal(w.eval('runStatus')(waitingRun),'waiting','a waiting batch is not actively executing model requests');

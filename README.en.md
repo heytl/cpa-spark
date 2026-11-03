@@ -22,7 +22,7 @@ The current development version is **0.1.8**. The plugin is not yet listed in th
 - Search bundled IANA timezones; default to `Asia/Shanghai`.
 - Merge identical account/request configurations at the same scheduled instant. Serialize each account, with global concurrency of 1–8 and a maximum of 2 per provider.
 - Persist configuration, execution results and idempotency claims in SQLite. Skip disabled, expired or unavailable accounts at execution.
-- Run one-off account/group warmup without creating a scheduled task.
+- Run one-off account/group warmup without creating a scheduled task. Explicit **Run now** bypasses the automated quota-window waiting and lateness policy: eligible accounts receive one model request even inside an existing window. Global pause, unavailable/disabled accounts and concurrency limits still apply. A successful model response does not confirm a new quota window.
 - Visualize 24/48-hour planned windows; account details show the past 24 hours of executions and the next 24 hours of plans.
 - Delete individual records, filtered history or all history while retaining active executions.
 - Follow CPA's language and theme. Preserve user-defined names/descriptions; missing translations fall back to complete English messages.

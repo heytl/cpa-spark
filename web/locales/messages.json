@@ -5228,5 +5228,389 @@
   "smart.live.ext.04": {
     "source": "基于上次确认的额度窗口记录",
     "en": "Based on the last confirmed quota window"
+  },
+  "execution.message.001": {
+    "source": "账号不存在、不可用、已禁用或提供商不匹配",
+    "en": "Account missing, unavailable, disabled or provider mismatch",
+    "zh-TW": "帳號不存在、無法使用、已停用或提供商不相符",
+    "ru": "Аккаунт отсутствует, недоступен, отключён или не соответствует провайдеру",
+    "vi": "Tài khoản không tồn tại, không khả dụng, bị vô hiệu hóa hoặc sai nhà cung cấp",
+    "ko": "계정이 없거나 사용 불가, 비활성화 또는 공급자 불일치"
+  },
+  "execution.message.002": {
+    "source": "现有额度窗口超过允许的智能等待时间，未发送模型请求",
+    "en": "Existing quota window continues past the configured smart delay limit; no model request sent",
+    "zh-TW": "現有額度視窗超過允許的智慧等待時間，未傳送模型請求",
+    "ru": "Текущее окно квоты превышает допустимое время ожидания; запрос к модели не отправлен",
+    "vi": "Cửa sổ hạn mức hiện tại vượt thời gian chờ thông minh cho phép; chưa gửi yêu cầu mô hình",
+    "ko": "현재 할당량 창이 허용된 대기 시간을 초과해 모델 요청을 보내지 않았습니다"
+  },
+  "execution.message.003": {
+    "source": "模型已成功回复，但实际额度重置尚未确认",
+    "en": "Model replied successfully; actual quota reset remains unconfirmed",
+    "zh-TW": "模型已成功回覆，但實際額度重設尚未確認",
+    "ru": "Модель ответила успешно; сброс квоты пока не подтверждён",
+    "vi": "Mô hình phản hồi thành công; việc đặt lại hạn mức chưa được xác nhận",
+    "ko": "모델 응답은 성공했지만 할당량 초기화는 확인되지 않았습니다"
+  },
+  "execution.message.004": {
+    "source": "模型已回复，五小时额度窗口已推进，确认开启新窗口",
+    "en": "Model replied and the five-hour quota window advanced; new window confirmed",
+    "zh-TW": "模型已回覆，五小時額度視窗已推進，確認開啟新視窗",
+    "ru": "Модель ответила; пятичасовое окно квоты сдвинулось, новое окно подтверждено",
+    "vi": "Mô hình đã phản hồi và cửa sổ hạn mức 5 giờ đã chuyển tiếp; đã xác nhận cửa sổ mới",
+    "ko": "모델 응답 후 5시간 할당량 창이 이동하여 새 창이 확인되었습니다"
+  },
+  "execution.message.005": {
+    "source": "等待账号锁或并发执行名额",
+    "en": "Waiting for account lock / concurrency slot",
+    "zh-TW": "等待帳號鎖定解除或並行執行名額",
+    "ru": "Ожидание блокировки аккаунта или свободного слота параллельного выполнения",
+    "vi": "Đang chờ khóa tài khoản hoặc lượt thực thi đồng thời",
+    "ko": "계정 잠금 또는 동시 실행 슬롯 대기 중"
+  },
+  "execution.message.006": {
+    "source": "请求已提交，等待结果",
+    "en": "Request submitted; waiting for result",
+    "zh-TW": "請求已提交，等待結果",
+    "ru": "Запрос отправлен, ожидание результата",
+    "vi": "Đã gửi yêu cầu, đang chờ kết quả",
+    "ko": "요청이 제출되어 결과를 기다리는 중입니다"
+  },
+  "execution.message.007": {
+    "source": "无法验证目标账号，未发送请求",
+    "en": "Cannot verify target account; request not sent",
+    "zh-TW": "無法驗證目標帳號，未傳送請求",
+    "ru": "Не удалось проверить целевой аккаунт; запрос не отправлен",
+    "vi": "Không thể xác minh tài khoản đích; chưa gửi yêu cầu",
+    "ko": "대상 계정을 확인할 수 없어 요청하지 않았습니다"
+  },
+  "execution.message.008": {
+    "source": "模型请求前已暂停",
+    "en": "Paused before model dispatch",
+    "zh-TW": "模型請求前已暫停",
+    "ru": "Приостановлено до отправки запроса модели",
+    "vi": "Đã tạm dừng trước khi gửi yêu cầu mô hình",
+    "ko": "모델 요청 전에 일시 중지되었습니다"
+  },
+  "execution.message.009": {
+    "source": "上游额度窗口已由其他请求刷新，本轮无需重复请求",
+    "en": "Quota window advanced externally; another request has already covered this cycle",
+    "zh-TW": "上游額度視窗已由其他請求刷新，本輪無須重複請求",
+    "ru": "Окно квоты уже обновлено другим запросом; повторный запрос в этом цикле не нужен",
+    "vi": "Cửa sổ hạn mức đã được yêu cầu khác làm mới; không cần gửi lại trong chu kỳ này",
+    "ko": "다른 요청이 이미 할당량 창을 갱신해 이 주기의 중복 요청을 생략합니다"
+  },
+  "execution.message.010": {
+    "source": "最近已发送账号预热请求，避免重复调用模型",
+    "en": "Recent account warmup already dispatched; avoiding duplicate model request",
+    "zh-TW": "最近已傳送帳號預熱請求，避免重複呼叫模型",
+    "ru": "Недавно уже выполнен прогрев аккаунта; повторный запрос модели предотвращён",
+    "vi": "Tài khoản vừa được làm nóng; tránh gửi yêu cầu mô hình trùng lặp",
+    "ko": "최근 계정 예열 요청이 실행되어 중복 모델 요청을 방지합니다"
+  },
+  "execution.message.011": {
+    "source": "等待额度窗口在 {v0} 重置",
+    "en": "Waiting for quota window to reset at {v0}",
+    "zh-TW": "等待額度視窗於 {v0} 重設",
+    "ru": "Ожидание сброса окна квоты в {v0}",
+    "vi": "Đang chờ đặt lại cửa sổ hạn mức lúc {v0}",
+    "ko": "{v0}에 할당량 창이 초기화되기를 기다리는 중"
+  },
+  "execution.message.012": {
+    "source": "请求发送前已取消",
+    "en": "Cancelled before dispatch",
+    "zh-TW": "請求傳送前已取消",
+    "ru": "Отменено до отправки запроса",
+    "vi": "Đã hủy trước khi gửi yêu cầu",
+    "ko": "요청 전송 전에 취소되었습니다"
+  },
+  "execution.message.013": {
+    "source": "执行前窗口检查点不可用，未发送请求",
+    "en": "Window checkpoint storage unavailable; request not sent",
+    "zh-TW": "執行前視窗檢查點無法使用，未傳送請求",
+    "ru": "Хранилище контрольной точки окна недоступно; запрос не отправлен",
+    "vi": "Không thể truy cập điểm kiểm tra cửa sổ; chưa gửi yêu cầu",
+    "ko": "창 체크포인트 저장소를 사용할 수 없어 요청하지 않았습니다"
+  },
+  "execution.message.014": {
+    "source": "当前已确认的额度窗口仍有效，但无法进行上游核验",
+    "en": "Prior confirmed quota window remains active; upstream verification unavailable",
+    "zh-TW": "先前已確認的額度視窗仍有效，但無法進行上游驗證",
+    "ru": "Ранее подтверждённое окно квоты ещё активно; проверка у провайдера недоступна",
+    "vi": "Cửa sổ hạn mức đã xác nhận vẫn hoạt động; không thể xác minh với nhà cung cấp",
+    "ko": "이전에 확인된 할당량 창이 아직 유효하지만 상위 제공자 검증은 불가능합니다"
+  },
+  "execution.message.015": {
+    "source": "模型回复成功，但无法保存额度窗口检查点",
+    "en": "Model replied; quota checkpoint could not be persisted",
+    "zh-TW": "模型回覆成功，但無法儲存額度視窗檢查點",
+    "ru": "Модель ответила, но контрольную точку квоты сохранить не удалось",
+    "vi": "Mô hình đã phản hồi nhưng không thể lưu điểm kiểm tra hạn mức",
+    "ko": "모델은 응답했지만 할당량 체크포인트를 저장하지 못했습니다"
+  },
+  "execution.message.016": {
+    "source": "模型返回成功 HTTP 状态，但没有有效的回复内容；不重试",
+    "en": "Successful HTTP response without valid model content; no retry",
+    "zh-TW": "模型回傳成功的 HTTP 狀態，但沒有有效的回覆內容；不重試",
+    "ru": "HTTP-ответ успешен, но содержимое модели недействительно; повторов нет",
+    "vi": "HTTP thành công nhưng nội dung phản hồi mô hình không hợp lệ; không thử lại",
+    "ko": "HTTP는 성공했지만 유효한 모델 응답이 없어 재시도하지 않습니다"
+  },
+  "execution.message.875": {
+    "source": "全局调度已暂停",
+    "en": "Global pause",
+    "zh-TW": "全域排程已暫停",
+    "ru": "Глобальное расписание приостановлено",
+    "vi": "Lịch chạy toàn cục đã tạm dừng",
+    "ko": "전체 스케줄이 일시 중지되었습니다"
+  },
+  "execution.message.876": {
+    "source": "账号已暂停预热",
+    "en": "Account paused",
+    "zh-TW": "帳號預熱已暫停",
+    "ru": "Прогрев аккаунта приостановлен",
+    "vi": "Đã tạm dừng làm nóng tài khoản",
+    "ko": "계정 예열이 일시 중지되었습니다"
+  },
+  "execution.message.877": {
+    "source": "队列执行时限已过",
+    "en": "Queue deadline exceeded",
+    "zh-TW": "佇列執行時限已過",
+    "ru": "Превышено время ожидания в очереди",
+    "vi": "Đã quá hạn chờ trong hàng đợi",
+    "ko": "대기열 실행 기한이 지났습니다"
+  },
+  "execution.message.878": {
+    "source": "智能等待已超过截止时间",
+    "en": "Smart wait deadline exceeded",
+    "zh-TW": "智慧等待已超過截止時間",
+    "ru": "Превышен срок интеллектуального ожидания",
+    "vi": "Đã quá hạn chờ thông minh",
+    "ko": "스마트 대기 기한이 지났습니다"
+  },
+  "execution.message.879": {
+    "source": "所有定时任务来源均已暂停或移除",
+    "en": "All scheduled task sources paused or removed",
+    "zh-TW": "所有排程任務來源均已暫停或移除",
+    "ru": "Все источники расписания приостановлены или удалены",
+    "vi": "Tất cả nguồn lịch chạy đã tạm dừng hoặc bị xóa",
+    "ko": "모든 예약 작업 원본이 일시 중지되거나 삭제되었습니다"
+  },
+  "execution.message.880": {
+    "source": "主机回调发生异常，结果未知",
+    "en": "Host callback panicked; result unknown",
+    "zh-TW": "主機回呼發生異常，結果未知",
+    "ru": "Сбой обратного вызова хоста; результат неизвестен",
+    "vi": "Lỗi callback của máy chủ; kết quả chưa xác định",
+    "ko": "호스트 콜백 오류로 결과를 알 수 없습니다"
+  },
+  "execution.message.881": {
+    "source": "主机回调失败，结果未知，不自动重试",
+    "en": "Host callback failed; result unknown. No retry.",
+    "zh-TW": "主機回呼失敗，結果未知，不自動重試",
+    "ru": "Ошибка обратного вызова хоста, результат неизвестен. Без повтора.",
+    "vi": "Callback máy chủ thất bại, kết quả chưa xác định; không thử lại.",
+    "ko": "호스트 콜백 실패로 결과를 알 수 없으며 재시도하지 않습니다."
+  },
+  "execution.message.882": {
+    "source": "CPA 返回 HTTP {v0}，不重试",
+    "en": "CPA error HTTP {v0}; no retry",
+    "zh-TW": "CPA 回傳 HTTP {v0}，不重試",
+    "ru": "Ошибка CPA HTTP {v0}; без повтора",
+    "vi": "CPA trả về HTTP {v0}; không thử lại",
+    "ko": "CPA HTTP {v0} 오류, 재시도하지 않습니다"
+  },
+  "execution.message.883": {
+    "source": "HTTP {v0}，不自动重试",
+    "en": "HTTP {v0}; no automatic retry",
+    "zh-TW": "HTTP {v0}，不自動重試",
+    "ru": "HTTP {v0}, без автоматического повтора",
+    "vi": "HTTP {v0}; không tự thử lại",
+    "ko": "HTTP {v0}, 자동 재시도하지 않습니다"
+  },
+  "execution.message.884": {
+    "source": "无法保存发送前的防重复记录，未发送请求",
+    "en": "Cannot save pre-dispatch guard; request not sent",
+    "zh-TW": "無法儲存傳送前的防重複紀錄，未傳送請求",
+    "ru": "Не удалось сохранить защиту от повтора; запрос не отправлен",
+    "vi": "Không thể lưu bộ bảo vệ chống gửi trùng; chưa gửi yêu cầu",
+    "ko": "중복 방지 기록을 저장할 수 없어 요청하지 않았습니다"
+  },
+  "execution.message.885": {
+    "source": "无法保存滚动等待检查点，未发送请求",
+    "en": "Cannot persist rolling wait checkpoint; request not sent",
+    "zh-TW": "無法儲存滾動等待檢查點，未傳送請求",
+    "ru": "Не удалось сохранить контрольную точку ожидания; запрос не отправлен",
+    "vi": "Không thể lưu điểm kiểm tra chờ liên tục; chưa gửi yêu cầu",
+    "ko": "연속 대기 체크포인트를 저장하지 못해 요청하지 않았습니다"
+  },
+  "execution.message.886": {
+    "source": "进程中断，结果未知，不自动重试",
+    "en": "Process interrupted; result unknown. No retry.",
+    "zh-TW": "程序中斷，結果未知，不自動重試",
+    "ru": "Процесс прерван; результат неизвестен. Без повтора.",
+    "vi": "Tiến trình bị gián đoạn; kết quả chưa xác định; không thử lại.",
+    "ko": "프로세스 중단으로 결과를 알 수 없으며 재시도하지 않습니다."
+  },
+  "execution.message.887": {
+    "source": "服务重启后未重放待处理的请求",
+    "en": "Restart: pending requests were not replayed.",
+    "zh-TW": "服務重新啟動後未重送待處理請求",
+    "ru": "Перезапуск: ожидающие запросы не воспроизводились.",
+    "vi": "Khởi động lại: các yêu cầu đang chờ không được gửi lại.",
+    "ko": "재시작 후 대기 중이던 요청을 다시 실행하지 않았습니다."
+  },
+  "execution.message.888": {
+    "source": "额度检查失败：账号缺少认证索引",
+    "en": "quota check: auth_index unavailable",
+    "zh-TW": "額度檢查失敗：帳號缺少認證索引",
+    "ru": "Проверка квоты: отсутствует индекс авторизации",
+    "vi": "Kiểm tra hạn mức: thiếu chỉ mục xác thực",
+    "ko": "할당량 확인: 인증 인덱스가 없습니다"
+  },
+  "execution.message.889": {
+    "source": "额度检查失败：无法读取认证文件",
+    "en": "quota check: host.auth.get failed",
+    "zh-TW": "額度檢查失敗：無法讀取認證檔案",
+    "ru": "Проверка квоты: не удалось получить файл авторизации",
+    "vi": "Kiểm tra hạn mức: không thể đọc tệp xác thực",
+    "ko": "할당량 확인: 인증 파일을 읽을 수 없습니다"
+  },
+  "execution.message.890": {
+    "source": "额度检查失败：认证文件中没有访问令牌",
+    "en": "quota check: access token unavailable in auth file",
+    "zh-TW": "額度檢查失敗：認證檔案中沒有存取權杖",
+    "ru": "Проверка квоты: токен доступа отсутствует в файле авторизации",
+    "vi": "Kiểm tra hạn mức: thiếu token truy cập trong tệp xác thực",
+    "ko": "할당량 확인: 인증 파일에 액세스 토큰이 없습니다"
+  },
+  "execution.message.891": {
+    "source": "额度检查失败：不支持此提供商",
+    "en": "quota check: unsupported provider",
+    "zh-TW": "額度檢查失敗：不支援此提供商",
+    "ru": "Проверка квоты: неподдерживаемый провайдер",
+    "vi": "Kiểm tra hạn mức: nhà cung cấp không được hỗ trợ",
+    "ko": "할당량 확인: 지원되지 않는 공급자입니다"
+  },
+  "execution.message.892": {
+    "source": "额度检查失败：上游 HTTP 请求失败",
+    "en": "quota check: host.http.do failed",
+    "zh-TW": "額度檢查失敗：上游 HTTP 請求失敗",
+    "ru": "Проверка квоты: ошибка HTTP-запроса к провайдеру",
+    "vi": "Kiểm tra hạn mức: yêu cầu HTTP đến nhà cung cấp thất bại",
+    "ko": "할당량 확인: 상위 HTTP 요청이 실패했습니다"
+  },
+  "execution.message.893": {
+    "source": "额度检查失败：上游返回 HTTP {v0}",
+    "en": "quota check: upstream HTTP {v0}",
+    "zh-TW": "額度檢查失敗：上游回傳 HTTP {v0}",
+    "ru": "Проверка квоты: ответ провайдера HTTP {v0}",
+    "vi": "Kiểm tra hạn mức: nhà cung cấp trả về HTTP {v0}",
+    "ko": "할당량 확인: 상위 공급자가 HTTP {v0}을(를) 반환했습니다"
+  },
+  "execution.message.894": {
+    "source": "额度检查失败：上游响应为空",
+    "en": "quota check: upstream response empty",
+    "zh-TW": "額度檢查失敗：上游回應為空",
+    "ru": "Проверка квоты: пустой ответ провайдера",
+    "vi": "Kiểm tra hạn mức: phản hồi từ nhà cung cấp trống",
+    "ko": "할당량 확인: 상위 응답이 비어 있습니다"
+  },
+  "execution.message.895": {
+    "source": "额度检查失败：上游响应过大",
+    "en": "quota check: upstream response too large",
+    "zh-TW": "額度檢查失敗：上游回應過大",
+    "ru": "Проверка квоты: ответ провайдера слишком велик",
+    "vi": "Kiểm tra hạn mức: phản hồi từ nhà cung cấp quá lớn",
+    "ko": "할당량 확인: 상위 응답이 너무 큽니다"
+  },
+  "execution.message.896": {
+    "source": "额度检查失败：未识别到上游的五小时窗口",
+    "en": "quota check: no recognized five-hour window in upstream response",
+    "zh-TW": "額度檢查失敗：未識別到上游的五小時視窗",
+    "ru": "Проверка квоты: в ответе не найдено пятичасовое окно",
+    "vi": "Kiểm tra hạn mức: không tìm thấy cửa sổ 5 giờ trong phản hồi",
+    "ko": "할당량 확인: 상위 응답에서 5시간 창을 찾지 못했습니다"
+  },
+  "execution.message.897": {
+    "source": "上游模型额度窗口不可用",
+    "en": "upstream quota window unavailable",
+    "zh-TW": "上游模型額度視窗無法使用",
+    "ru": "Окно квоты провайдера недоступно",
+    "vi": "Cửa sổ hạn mức của nhà cung cấp không khả dụng",
+    "ko": "상위 할당량 창을 사용할 수 없습니다"
+  },
+  "execution.message.898": {
+    "source": "模型额度桶存在歧义，无法确定对应的窗口",
+    "en": "ambiguous model quota bucket",
+    "zh-TW": "模型額度儲存區存在歧義，無法確定對應視窗",
+    "ru": "Неоднозначная группа квоты модели",
+    "vi": "Nhóm hạn mức mô hình không rõ ràng",
+    "ko": "모델 할당량 버킷이 모호합니다"
+  },
+  "execution.message.899": {
+    "source": "无法保存下一次滚动计划",
+    "en": "cannot persist next rolling trigger",
+    "zh-TW": "無法儲存下一次滾動排程",
+    "ru": "Не удалось сохранить следующий запуск",
+    "vi": "Không thể lưu lượt kích hoạt liên tục tiếp theo",
+    "ko": "다음 연속 실행을 저장하지 못했습니다"
+  },
+  "execution.message.900": {
+    "source": "连续调度检查点不可用",
+    "en": "continuous scheduler checkpoint unavailable",
+    "zh-TW": "連續排程檢查點無法使用",
+    "ru": "Контрольная точка непрерывного расписания недоступна",
+    "vi": "Điểm kiểm tra lịch chạy liên tục không khả dụng",
+    "ko": "연속 스케줄러 체크포인트를 사용할 수 없습니다"
+  },
+  "execution.message.901": {
+    "source": "下一次触发的检查点不可用",
+    "en": "next trigger checkpoint unavailable",
+    "zh-TW": "下一次觸發的檢查點無法使用",
+    "ru": "Контрольная точка следующего запуска недоступна",
+    "vi": "Điểm kiểm tra lượt kích hoạt tiếp theo không khả dụng",
+    "ko": "다음 실행 체크포인트를 사용할 수 없습니다"
+  },
+  "execution.message.902": {
+    "source": "下一次触发时间估算失败",
+    "en": "next trigger estimate unavailable",
+    "zh-TW": "下一次觸發時間估算失敗",
+    "ru": "Оценка времени следующего запуска недоступна",
+    "vi": "Không thể ước tính thời gian kích hoạt tiếp theo",
+    "ko": "다음 실행 시간 추정치를 사용할 수 없습니다"
+  },
+  "execution.message.903": {
+    "source": "账号已不在 CPA 的账号列表中",
+    "en": "Account is missing from CPA",
+    "zh-TW": "帳號已不在 CPA 的帳號清單中",
+    "ru": "Аккаунт отсутствует в CPA",
+    "vi": "Tài khoản không còn trong CPA",
+    "ko": "CPA에서 계정을 찾을 수 없습니다"
+  },
+  "execution.message.904": {
+    "source": "账号提供商与任务提供商不一致",
+    "en": "Account provider does not match task provider",
+    "zh-TW": "帳號提供商與任務提供商不一致",
+    "ru": "Провайдер аккаунта не соответствует провайдеру задачи",
+    "vi": "Nhà cung cấp tài khoản không khớp với nhà cung cấp của tác vụ",
+    "ko": "계정 공급자와 작업 공급자가 일치하지 않습니다"
+  },
+  "execution.message.905": {
+    "source": "账号已在 CPA 中禁用",
+    "en": "Account is disabled in CPA",
+    "zh-TW": "帳號已在 CPA 中停用",
+    "ru": "Аккаунт отключён в CPA",
+    "vi": "Tài khoản đã bị vô hiệu hóa trong CPA",
+    "ko": "CPA에서 계정이 비활성화되어 있습니다"
+  },
+  "execution.message.906": {
+    "source": "账号在 CPA 中不可用或已过期",
+    "en": "Account is unavailable or expired in CPA",
+    "zh-TW": "帳號在 CPA 中無法使用或已過期",
+    "ru": "Аккаунт недоступен или срок его действия истёк в CPA",
+    "vi": "Tài khoản không khả dụng hoặc đã hết hạn trong CPA",
+    "ko": "CPA 계정을 사용할 수 없거나 만료되었습니다"
   }
 }
