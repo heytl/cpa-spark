@@ -102,6 +102,7 @@ assert(display.textContent.includes('下次触发：'),'next trigger label is re
 assert(display.textContent.includes('2026-11-04 11:15'),'render time in task time zone, not bootstrap');
 assert(w.document.querySelector('.tasks-table td:nth-child(3) .target-label')?.getAttribute('title'),'account label must provide complete hover text');
 assert(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent.includes('连续窗口'),'daily label must be replaced by continuous strategy');
+assert(!/窗口时间估算|上游重置推算|首次启动计划/.test(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent||''),'rolling task subtitle should remain concise');
 firstTask.strategy=savedStrategy;firstTask.times=savedTimes;
 w.CPASparkRollingPlans={};w.eval('render()');
 

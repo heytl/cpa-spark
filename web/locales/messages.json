@@ -5156,5 +5156,9 @@
   "smart.fix.02": {
     "source": "执行后额度检查",
     "en": "Post-request quota check"
+  },
+  "smart.ui.short": {
+    "source": "连续窗口",
+    "en": "Continuous windows"
   }
 }
