@@ -5172,5 +5172,17 @@
   "smart.wait.03": {
     "source": "）后检查窗口",
     "en": ") before checking the quota window"
+  },
+  "smart.build.wait.1": {
+    "source": "{v17}本批次由 CPA 服务端执行。请求成功不代表额度窗口已开启或重置。",
+    "en": "{v17}This batch executes on the CPA server. A successful request does not confirm a quota reset."
+  },
+  "smart.build.wait.2": {
+    "source": "{v18} / {v19} 个账号已处理",
+    "en": "{v18} / {v19} accounts processed"
+  },
+  "smart.build.wait.3": {
+    "source": "等待至",
+    "en": "Wait until"
   }
 }
