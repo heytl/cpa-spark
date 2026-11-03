@@ -10,30 +10,20 @@ function sparkTimelineSummary(row,lanes,bounds){
  if(at!=null)return `<span class="st-summary-label">${current?'预计到期':'下次预热'}</span><strong class="st-summary-time mono">${time(at,bounds.zone)}<small>${esc(timelineDaySuffix(at,bounds.start,bounds.zone).trim())}</small></strong><span class="st-summary-note" data-i18n="message.20172bbd7f4e">计划估算</span>`;
  const label=active.every(l=>l.policy.kind==='weekly')?'按周刷新':active.some(l=>l.unanchored)?'起点未确认':active.some(l=>l.policy.kind==='unknown')?'套餐未确认':windows.length?'此时段无后续计划':'暂无预计窗口';return `<span class="st-summary-label" data-i18n="message.356d09ae3e53">窗口状态</span><strong class="st-summary-word">${label}</strong><span class="st-summary-note">${label==='按周刷新'?'仅展示预热时间':label==='此时段无后续计划'?'不代表真实额度已结束':'仅展示已知计划'}</span>`
 }
-// Split a window at LOCAL midnight, never at arbitrary viewport percentages.
-// The longer of the two pieces owns the label; a full 5h window always
-// retains its time and caption regardless of whether 24h or 48h is selected.
+// Clip a quota window only at the visible range boundaries, never at
+// midnight within the range. A 48h view can show the full 21:00 -> 02:00
+// window as one continuous bar; a 24h view sees only its on-screen portion.
 function sparkTimelinePieces(window,b){
- const start=window.start,end=window.end,zone=b.zone,p=parts(start,zone);
- const midnightBase=Date.UTC(p.year,p.month-1,p.day);
- const cuts=[];
- for(let n=1;n<=3;n++){
-  const day=new Date(midnightBase+n*86400000);
-  const at=toUTC(day.getUTCFullYear(),day.getUTCMonth()+1,day.getUTCDate(),0,0,zone);
-  if(at!=null&&at>start&&at<end)cuts.push(at);
-  if(at!=null&&at>=end)break;
- }
- const points=[start,...cuts,end],segments=[];
- for(let i=0;i<points.length-1;i++)segments.push({start:points[i],end:points[i+1]});
- let longest=0;
- for(let i=1;i<segments.length;i++)if(segments[i].end-segments[i].start>segments[longest].end-segments[longest].start)longest=i;
- return segments.map((part,i)=>({
-   start:Math.max(part.start,b.start),end:Math.min(part.end,b.end),
-   showLabel:segments.length===1||i===longest,
-   split:segments.length>1,
-   isLast:i===segments.length-1
- })).filter(part=>part.end>part.start);
+ const start=Math.max(window.start,b.start),end=Math.min(window.end,b.end);
+ if(!(end>start))return [];
+ const full=start===window.start&&end===window.end;
+ const visible=end-start,total=window.end-window.start;
+ // When the window is clipped across 24h pages, only the longer part owns
+ // the time label (the first part wins in the exact halfway case).
+ const showLabel=full||visible*2>total||(visible*2===total&&start===window.start);
+ return [{start,end,showLabel,split:!full,isLast:end===window.end}];
 }
+
 function sparkTimelineLane(row,lane,b,pct,now){
  const windows=lane.windows.flatMap(w=>{
   const key='window-'+row.key+'-'+lane.key+'-'+w.start;

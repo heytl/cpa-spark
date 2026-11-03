@@ -60,16 +60,37 @@ click('[data-action="menu"]');assert(w.document.querySelector('body > .row-menu'
 assert(w.document.querySelector('.spark-timeline'));assert.equal(w.document.querySelectorAll('.st-day-label,.st-lane-meta,.st-now-pill').length,0);assert(w.document.querySelector('.st-current-time time'));assert.equal(w.document.querySelectorAll('.st-guide').length,1);assert(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size>0);click('[data-action="timeline-hours"][data-id="48"]');assert.equal(w.document.querySelectorAll('.st-tick small').length,0);const midnightDates=[...w.document.querySelectorAll('.st-tick-date:not([aria-hidden])')];assert.equal(midnightDates.length,3);assert(midnightDates.every(el=>/^\d{4}-\d{2}-\d{2}$/.test(el.textContent)));assert.equal(new Set(midnightDates.map(el=>el.textContent)).size,3);assert.equal(w.document.querySelectorAll('.st-tick-time').length,9);assert.equal(w.document.querySelectorAll('.wt-trigger-time').length,0);click('[data-action="timeline-detail"]');assert(w.document.querySelector('#modalDialog').open);click('[data-action="close"][data-id="modalDialog"]');click('[data-action="timeline-hours"][data-id="24"]');
 checkTimelineDates();
 
-const localMidnight=Date.parse('2026-11-02T16:00:00Z'); // Shanghai 00:00 Nov 3
-const clipBounds={start:Date.parse('2026-11-02T00:00:00Z'),end:Date.parse('2026-11-04T00:00:00Z'),zone:'Asia/Shanghai'};
-const split=w.eval('sparkTimelinePieces')({start:localMidnight-3*3600000,end:localMidnight+2*3600000},clipBounds);
-assert.equal(split.length,2,'cross-midnight window should be two pieces');
-assert.equal(split[0].showLabel,true,'longer cross-day segment keeps full label');
-assert.equal(split[1].showLabel,false,'shorter cross-day segment omits label');
-assert.equal(split[0].end,localMidnight);
-const whole=w.eval('sparkTimelinePieces')({start:localMidnight+6*3600000,end:localMidnight+11*3600000},clipBounds);
+// Midnight is *not* a clipping boundary in 48-hour mode. It becomes a
+// boundary only when changing to a 24-hour page that ends/starts there.
+const localMidnight=Date.parse('2026-11-03T16:00:00Z'); // Shanghai Nov 4, 00:00
+const fiveHour={start:localMidnight-3*3600000,end:localMidnight+2*3600000};
+const beforeDay={start:localMidnight-24*3600000,end:localMidnight,zone:'Asia/Shanghai'};
+const afterDay={start:localMidnight,end:localMidnight+24*3600000,zone:'Asia/Shanghai'};
+const twoDays={start:beforeDay.start,end:afterDay.end,zone:'Asia/Shanghai'};
+const merged=w.eval('sparkTimelinePieces')(fiveHour,twoDays);
+assert.equal(merged.length,1,'48h should merge a window crossing midnight into one bar');
+assert.equal(merged[0].start,fiveHour.start);
+assert.equal(merged[0].end,fiveHour.end);
+assert(merged[0].showLabel && !merged[0].split,'a complete cross-day window keeps its label');
+const pct=ms=>(ms-twoDays.start)/(twoDays.end-twoDays.start)*100;
+const lane={key:'window-test',windows:[fiveHour],events:[],policy:{kind:'five-hour'},unanchored:false,paused:false,model:'gpt-6-luna'};
+const row={key:'window-test',label:'QA',color:'orange'};
+const html=w.eval('sparkTimelineLane')(row,lane,twoDays,pct,localMidnight);
+assert.equal((html.match(/class="st-window /g)||[]).length,1,'48h should create one timeline button, not two');
+assert(html.includes('21:00')&&html.includes('02:00')&&html.includes('5h 预计窗口'),'merged bar includes full time range and caption');
+const earlier=w.eval('sparkTimelinePieces')(fiveHour,beforeDay);
+const later=w.eval('sparkTimelinePieces')(fiveHour,afterDay);
+assert.equal(earlier.length,1);
+assert.equal(later.length,1);
+assert.equal(earlier[0].end,localMidnight,'24h before midnight clips right at viewport boundary');
+assert.equal(later[0].start,localMidnight,'24h after midnight clips left at viewport boundary');
+assert(earlier[0].showLabel,'longer visible 3h part keeps the label in 24h view');
+assert(!later[0].showLabel,'shorter visible 2h part has no duplicate label in 24h view');
+const outside=w.eval('sparkTimelinePieces')(fiveHour,{start:localMidnight+6*3600000,end:localMidnight+30*3600000,zone:'Asia/Shanghai'});
+assert.equal(outside.length,0,'no ghost bar when the quota window is outside the view');
+const whole=w.eval('sparkTimelinePieces')({start:localMidnight+6*3600000,end:localMidnight+11*3600000},afterDay);
 assert.equal(whole.length,1);
-assert.equal(whole[0].showLabel,true,'a complete five-hour window must always have labels');
+assert.equal(whole[0].showLabel,true,'an entirely visible five-hour window must always have labels');
 const firstTask=w.eval('timelineRows()')[0].tasks[0],savedStrategy=firstTask.strategy,savedTimes=[...firstTask.times];
 firstTask.strategy='rolling';firstTask.times=['00:30'];
 const nextDue=Date.parse('2026-11-04T03:15:00Z');
