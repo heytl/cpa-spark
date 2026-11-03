@@ -5160,5 +5160,17 @@
   "smart.ui.short": {
     "source": "连续窗口",
     "en": "Continuous windows"
+  },
+  "smart.wait.01": {
+    "source": "等待额度窗口重置",
+    "en": "Waiting for quota window reset"
+  },
+  "smart.wait.02": {
+    "source": "等待至 ",
+    "en": "Wait until "
+  },
+  "smart.wait.03": {
+    "source": "）后检查窗口",
+    "en": ") before checking the quota window"
   }
 }

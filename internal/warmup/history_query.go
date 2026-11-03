@@ -15,7 +15,8 @@ type HistoryQuery struct {
 }
 
 const historyTaskSQL = `SELECT r.id,r.task_id taskId,r.name,r.model,r.provider,r.mode,r.started,count(x.id) accountCount,
- CASE WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status') IN ('queued','running','waiting') THEN 1 ELSE 0 END)>0 THEN 'running'
+ CASE WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status') IN ('queued','running') THEN 1 ELSE 0 END)>0 THEN 'running'
+ WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status')='waiting' THEN 1 ELSE 0 END)>0 THEN 'waiting'
  WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status')='unknown' THEN 1 ELSE 0 END)>0 THEN 'unknown'
  WHEN sum(CASE WHEN o.active AND json_extract(x.body,'$.status')='failed' THEN 1 ELSE 0 END)>0 THEN 'failed'
  WHEN count(x.id)=0 OR sum(CASE WHEN NOT o.active OR json_extract(x.body,'$.status')='skipped' THEN 1 ELSE 0 END)=count(x.id) THEN 'skipped'

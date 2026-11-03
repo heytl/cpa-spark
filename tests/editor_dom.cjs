@@ -147,6 +147,16 @@ w.eval('renderRunDetail')(scrollFixture);scrollDialog.showModal();
 scrollDialog.querySelector('.drawer-content').scrollTop=219;
 w.eval('renderRunDetail')({...scrollFixture,finished:true,items:[{...scrollFixture.items[0],status:'success',message:'Completed',windowStatus:'unconfirmed'}]});
 assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run detail auto-refresh must preserve user scroll');
+
+const waitingRun={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',windowStatus:'waiting',windowResetAt:Date.now()+3600000,waitUntil:Date.now()+3605000,message:'Waiting for quota window to reset'}]};
+w.eval('renderRunDetail')(waitingRun);
+assert.equal(w.eval('runStatus')(waitingRun),'waiting','a waiting batch is not actively executing model requests');
+assert(scrollDialog.querySelector('.status-title').textContent.includes('等待额度窗口重置'),'waiting modal displays a waiting headline');
+assert.equal(scrollDialog.querySelector('.progressbar span').style.width,'0%','waiting account is not counted as completed');
+assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('等待至'),'pending window time is shown in the configured local timezone');
+assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('后检查窗口'),'waiting message should not show raw UTC protocol string');
+assert(!scrollDialog.querySelector('.run-item .subline').textContent.includes('Waiting for quota window'),'raw UTC provider message must not be displayed');
+
 const waitingWindow={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',waitUntil:Date.now()+2*60*60*1000,message:'Waiting for quota window'}]};
 const signature=w.eval('runDetailFingerprint'),delay=w.eval('runDetailPollDelay');
 assert.equal(signature(waitingWindow),signature({...waitingWindow,now:Date.now()+2500,serverNow:Date.now()+2500}),'changing server clock must not redraw waiting details');

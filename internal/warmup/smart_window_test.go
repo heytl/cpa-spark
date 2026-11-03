@@ -178,3 +178,85 @@ func TestQuotaHTTPResponseUsesOfficialPascalCaseWireFormat(t *testing.T) {
     }
     if old.StatusCode!=0 { t.Fatalf("regression assertion needs old snake_case to remain incompatible: %+v",old) }
 }
+
+func TestRollingWaitDoesNotDuplicateOrStayOnStaleDue(t *testing.T) {
+    start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+    firstReset:=start.Add(30*time.Minute)
+    secondReset:=start.Add(5*time.Hour+30*time.Minute)
+    engine,store,host,clock:=smartEngine(t,"codex",start,firstReset,secondReset)
+    cfg,err:=store.Config()
+    if err!=nil{t.Fatal(err)}
+    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Revision++
+    if err=engine.Save(cfg);err!=nil{t.Fatal(err)}
+    if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:start.UnixMilli(),Source:"upstream"});err!=nil{t.Fatal(err)}
+    engine.Tick()
+    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="waiting"})
+    xs,err:=store.Executions()
+    if err!=nil{t.Fatal(err)}
+    if xs[0].WaitUntil!=firstReset.Add(windowSafetyMargin).UnixMilli(){t.Fatalf("incorrect wait: %+v",xs[0])}
+    cursor,ok,err:=store.Rolling("smart","a")
+    if err!=nil||!ok||cursor.NextDue!=xs[0].WaitUntil{t.Fatalf("waiting cursor not moved: %+v %v %v",cursor,ok,err)}
+    for n:=1;n<10;n++{
+        clock.Store(start.Add(time.Duration(n)*time.Second).UnixMilli())
+        engine.Tick()
+    }
+    xs,err=store.Executions()
+    if err!=nil||len(xs)!=1{t.Fatalf("duplicate rolling batch while waiting: %d %v",len(xs),err)}
+    // Exactly as a real external request would do, the provider has already
+    // advanced to the NEXT five-hour window when the wait expires.
+    host.mu.Lock()
+    host.resetBefore=secondReset.UnixMilli()
+    host.mu.Unlock()
+    clock.Store(firstReset.Add(10*time.Second).UnixMilli())
+    engine.Tick()
+    waitFor(t,func()bool{items,_:=store.Executions();return len(items)==1&&items[0].Status=="skipped"})
+    cursor,ok,err=store.Rolling("smart","a")
+    if err!=nil||!ok||cursor.NextDue!=secondReset.Add(windowSafetyMargin).UnixMilli(){t.Fatalf("stale cursor after external advancement: %+v %v %v",cursor,ok,err)}
+    engine.Tick()
+    xs,err=store.Executions()
+    if err!=nil||len(xs)!=1{t.Fatalf("new run spawned from stale due: %d %v",len(xs),err)}
+    host.mu.Lock()
+    calls:=host.calls
+    host.mu.Unlock()
+    if calls!=0{t.Fatalf("duplicate token-consuming model request: %d",calls)}
+}
+func TestManualRollingDoesNotWaitFiveHours(t *testing.T) {
+    start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+    reset:=start.Add(5*time.Hour)
+    engine,store,host,_:=smartEngine(t,"codex",start,reset,reset)
+    cfg,err:=store.Config()
+    if err!=nil{t.Fatal(err)}
+    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Revision++
+    if err=engine.Save(cfg);err!=nil{t.Fatal(err)}
+    if _,err=engine.Run("smart","manual-long-wait-guard");err!=nil{t.Fatal(err)}
+    engine.Tick()
+    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="skipped"})
+    xs,err:=store.Executions()
+    if err!=nil{t.Fatal(err)}
+    if xs[0].WindowStatus!="existing"||xs[0].WaitUntil!=0{t.Fatalf("manual request left waiting for hours: %+v",xs[0])}
+    host.mu.Lock()
+    calls:=host.calls
+    host.mu.Unlock()
+    if calls!=0{t.Fatalf("manual action consumed tokens inside active window: %d",calls)}
+}
+func TestWaitingRunIsNotReportedAsRunningOrCompleted(t *testing.T) {
+    start:=time.Date(2026,11,3,7,30,0,0,time.UTC)
+    engine,store,_,_:=smartEngine(t,"codex",start,start.Add(time.Hour),start.Add(5*time.Hour))
+    cfg,err:=store.Config()
+    if err!=nil{t.Fatal(err)}
+    cfg.Tasks[0].Strategy="rolling"
+    cfg.Tasks[0].Revision++
+    if err=engine.Save(cfg);err!=nil{t.Fatal(err)}
+    if err=store.SaveRolling(RollingPlan{TaskID:"smart",AuthID:"a",NextDue:start.UnixMilli(),Source:"upstream"});err!=nil{t.Fatal(err)}
+    engine.Tick()
+    waitFor(t,func()bool{xs,_:=store.Executions();return len(xs)==1&&xs[0].Status=="waiting"})
+    history,err:=engine.History(HistoryQuery{Mode:"task",Page:1,PageSize:20})
+    if err!=nil{t.Fatal(err)}
+    rows,ok:=history["rows"].([]map[string]any)
+    if !ok||len(rows)!=1||rows[0]["status"]!="waiting"{t.Fatalf("waiting status incorrectly aggregated: %+v",history)}
+    detail,err:=engine.HistoryDetail(rows[0]["id"].(string))
+    if err!=nil{t.Fatal(err)}
+    if detail["finished"]!=false{t.Fatalf("waiting run falsely marked complete: %+v",detail)}
+}

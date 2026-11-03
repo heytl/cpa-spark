@@ -65,6 +65,24 @@ func (s *Store) DeleteRolling(taskID,authID string) error {
     _,err:=s.db.Exec("DELETE FROM rolling_plans WHERE id=?",rollingKey(taskID,authID))
     return err
 }
+// A persisted execution is authoritative while it is queued, waiting or
+// running. Do not create another rolling run for the same task/account when
+// the rolling cursor becomes due or changes during an in-flight wait.
+func (s *Store) HasPendingRollingExecution(taskID,authID string) (bool,error) {
+    var present int
+    err:=s.db.QueryRow(`SELECT EXISTS(
+        SELECT 1 FROM executions x
+        WHERE json_extract(x.body,'$.authId')=?
+          AND json_extract(x.body,'$.status') IN ('queued','waiting','running')
+          AND EXISTS(
+            SELECT 1 FROM json_each(x.body,'$.origins') o
+            WHERE json_extract(o.value,'$.taskId')=?
+              AND json_extract(o.value,'$.active')=1
+          )
+    )`,authID,taskID).Scan(&present)
+    return present!=0,err
+}
+
 // Due rolling triggers use a persistent per-task/account cursor, not local
 // ticker state. They survive plugin and CPA process restarts.
 func (e *Engine) enqueueRolling(c Config,now time.Time) error {
@@ -76,6 +94,9 @@ func (e *Engine) enqueueRolling(c Config,now time.Time) error {
             p,ok,err:=e.store.Rolling(t.ID,authID)
             if err!=nil {return err}
             if !ok || p.NextDue<=0 || now.UnixMilli()<p.NextDue {continue}
+            pending,err:=e.store.HasPendingRollingExecution(t.ID,authID)
+            if err!=nil {return err}
+            if pending {continue}
             isolated:=t
             isolated.GroupIDs=nil
             isolated.AccountIDs=[]string{authID}

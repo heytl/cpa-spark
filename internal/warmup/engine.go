@@ -398,13 +398,34 @@ func (e *Engine) execute(x Execution) {
         delayUntil:=time.UnixMilli(observation.ResetAt).Add(windowSafetyMargin)
         if delayUntil.After(now) {
             if x.WaitUntil>0 && observation.ResetAt>x.WaitUntil+60000 {
+                // At the previous due time the provider has already opened a
+                // later quota window. It may have been triggered by another
+                // client or task. This occurrence is covered: move the
+                // persisted rolling cursor forward instead of letting the
+                // stale cursor enqueue another five-hour-long waiting run.
                 x.Status="skipped";x.WindowStatus="existing"
                 x.Message="Quota window advanced externally; another request has already covered this cycle"
+                if err=e.saveNextRolling(x,observation);err!=nil {
+                    x.Message+="; cannot persist next rolling trigger"
+                }
                 return
             }
-            if normalizedStrategy(x.Task)=="fixed" && delayUntil.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000 {
+            if (x.Mode=="manual" || normalizedStrategy(x.Task)=="fixed") && delayUntil.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000 {
+                // "Run now" must not remain active for hours. A manual
+                // request uses the same short grace as fixed scheduling.
                 x.Status="skipped";x.WindowStatus="existing"
-                x.Message="Existing quota window continues past the configured smart delay limit"
+                x.Message="Existing quota window continues past the configured smart delay limit; no model request sent"
+                if err=e.saveNextRolling(x,observation);err!=nil {
+                    x.Message+="; cannot persist next rolling trigger"
+                }
+                return
+            }
+            // A waiting execution itself owns this cycle. Update the
+            // rolling cursor for displays and recovery, then keep that
+            // execution pending rather than making a second queued run.
+            if err=e.saveNextRolling(x,observation);err!=nil {
+                x.Status="unknown"
+                x.Message="Cannot persist rolling wait checkpoint; request not sent"
                 return
             }
             x.Status="waiting"
