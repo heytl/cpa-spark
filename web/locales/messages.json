@@ -5620,5 +5620,25 @@
     "ru": "Проверить окно квоты после {date} {time} ({zone})",
     "vi": "Kiểm tra cửa sổ hạn mức sau {date} {time} ({zone})",
     "ko": "{date} {time} ({zone}) 이후 할당량 창을 확인합니다"
+  },
+  "message.buildfix202611040": {
+    "source": "{v18}定时开关",
+    "en": "{v18}Schedule toggle",
+    "zh-TW": "{v18}排程開關"
+  },
+  "message.buildfix202611041": {
+    "source": "{v29}更多操作",
+    "en": "{v29}More actions",
+    "zh-TW": "{v29}更多操作"
+  },
+  "message.buildfix202611042": {
+    "source": "立即执行 {v23}",
+    "en": "Run now {v23}",
+    "zh-TW": "立即執行 {v23}"
+  },
+  "message.buildfix202611043": {
+    "source": "编辑 {v26}",
+    "en": "Edit {v26}",
+    "zh-TW": "編輯 {v26}"
   }
 }
