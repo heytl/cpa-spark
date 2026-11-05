@@ -226,11 +226,11 @@ assert.equal(scrollDialog.querySelector('.progressbar span').style.width,'0%','w
 assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('等待至'),'pending window time is shown in the configured local timezone');
 assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('后检查窗口'),'waiting message should not show raw UTC protocol string');
 assert(!scrollDialog.querySelector('.run-item .subline').textContent.includes('Waiting for quota window'),'raw UTC provider message must not be displayed');
-const waitingLanguageBefore=w.eval('hostPreferences.language');
-w.eval('hostPreferences.language="en"');
+const waitingLanguageBefore=w.__qaHostPrefs.language;
+w.localStorage.setItem('cli-proxy-language','en');w.eval('synchronizeHostPreferences')();
 w.eval('renderRunDetail')(waitingRun);
 assert(scrollDialog.querySelector('.run-item .subline').textContent.startsWith('Check the quota window after'),'waiting message uses current CPA English locale');
-w.eval('hostPreferences.language='+JSON.stringify(waitingLanguageBefore));
+w.localStorage.setItem('cli-proxy-language',waitingLanguageBefore);w.eval('synchronizeHostPreferences')();
 w.eval('renderRunDetail')(waitingRun);
 
 
