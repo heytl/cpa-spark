@@ -198,7 +198,8 @@ const localeFixture={...scrollFixture,finished:true,items:[
 ]};
 const languageBefore=w.__qaHostPrefs.language;
 const localizedReasons=(language)=>{
- w.__qaHostPrefs.language=language;
+ w.localStorage.setItem('cli-proxy-language',language);
+ w.eval('synchronizeHostPreferences')();
  w.eval('renderRunDetail')(localeFixture);
  return [...scrollDialog.querySelectorAll('.run-item .subline')].map(el=>el.textContent);
 };
