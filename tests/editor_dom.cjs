@@ -44,7 +44,7 @@ function checkTimelineDates(){
  }
 }
 (async()=>{try{
-w.eval(fs.readFileSync(root+'/design/readable-preview/preview-history.js','utf8')+'\n'+code);await wait();await wait();assert.equal(w.document.body.dataset.disconnected,'false');assert.equal(w.document.querySelector('.plugin-tools'),null);assert.equal(w.document.querySelector('#connectionBanner'),null);
+w.eval(fs.readFileSync(root+'/design/readable-preview/preview-history.js','utf8')+'\n'+code+'\nwindow.__qaHostPrefs=hostPreferences;');await wait();await wait();assert.equal(w.document.body.dataset.disconnected,'false');assert.equal(w.document.querySelector('.plugin-tools'),null);assert.equal(w.document.querySelector('#connectionBanner'),null);
 click('[data-action="new-task"]');let el=w.document.querySelector('#taskName');el.value='QA task';click('[data-action="target-mode"][data-id="accounts"]');click('[data-draft-select="accountIds"][value="qa-codex"]');click('[data-action="task-next"]');assert.equal(w.document.querySelector('#taskZone').value,'Asia/Shanghai');assert(w.document.querySelector('#taskZone').options.length>500);
 // The nonempty timeline assertion needs a schedule that also runs on Sundays.
 click('[data-action="days-preset"][data-id="daily"]');
@@ -196,9 +196,9 @@ const localeFixture={...scrollFixture,finished:true,items:[
  {...scrollFixture.items[0],id:'locale-3',status:'success',message:'Model replied successfully; actual quota reset remains unconfirmed',windowStatus:'unconfirmed',waitUntil:0},
  {...scrollFixture.items[0],id:'locale-4',status:'skipped',message:'Account is unavailable or expired in CPA',waitUntil:0}
 ]};
-const languageBefore=w.eval('hostPreferences.language');
+const languageBefore=w.__qaHostPrefs.language;
 const localizedReasons=(language)=>{
- w.eval('hostPreferences.language='+JSON.stringify(language));
+ w.__qaHostPrefs.language=language;
  w.eval('renderRunDetail')(localeFixture);
  return [...scrollDialog.querySelectorAll('.run-item .subline')].map(el=>el.textContent);
 };
@@ -214,7 +214,7 @@ assert(enReasons[1].includes('Existing quota window continues'),'English interfa
 const twReasons=localizedReasons('zh-TW');
 assert(twReasons[0].includes('帳號不存在'),'Traditional Chinese follows CPA language');
 assert(twReasons[1].includes('智慧等待時間'),'Traditional Chinese smart-window reason exists');
-w.eval('hostPreferences.language='+JSON.stringify(languageBefore));
+w.__qaHostPrefs.language=languageBefore;
 
 
 const waitingRun={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',windowStatus:'waiting',windowResetAt:Date.now()+3600000,waitUntil:Date.now()+3605000,message:'Waiting for quota window to reset'}]};
