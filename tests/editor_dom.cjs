@@ -214,7 +214,7 @@ assert(enReasons[1].includes('Existing quota window continues'),'English interfa
 const twReasons=localizedReasons('zh-TW');
 assert(twReasons[0].includes('帳號不存在'),'Traditional Chinese follows CPA language');
 assert(twReasons[1].includes('智慧等待時間'),'Traditional Chinese smart-window reason exists');
-w.__qaHostPrefs.language=languageBefore;
+w.localStorage.setItem('cli-proxy-language',languageBefore);w.eval('synchronizeHostPreferences')();
 
 
 const waitingRun={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',windowStatus:'waiting',windowResetAt:Date.now()+3600000,waitUntil:Date.now()+3605000,message:'Waiting for quota window to reset'}]};
