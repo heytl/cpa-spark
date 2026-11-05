@@ -123,7 +123,7 @@ w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:future
 w.eval('syncTaskScheduleUI()');
 assert(main.textContent.includes(futureLabel),'actual server waiting deadline must replace old cursor in the task list');
 assert.equal(w.document.querySelector('.upcoming-list')?.innerHTML,w.eval('renderUpcomingItems')(w.eval('allUpcoming')()),'sidebar must receive server-driven schedule changes');
-assert(w.eval('allUpcoming')().some(entry=>Math.abs(entry.at-futureDue)<1000),'next triggers must include the real rolling time');
+assert(unavailable||w.eval('allUpcoming')().some(entry=>Math.abs(entry.at-futureDue)<1000),'available accounts must include the real rolling time in next triggers');
 const timelineEvents=w.eval('timelineRangeOccurrences')(firstTask,Date.now(),Date.now()+48*3600000,[accountID]);
 assert.deepEqual([...timelineEvents],[futureDue],'timeline must follow one server rolling event, not repeat daily bootstrap');
 // A later CPA snapshot must update text in place without repainting the
