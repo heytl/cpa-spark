@@ -35,16 +35,16 @@ function checkTimelineDates(){
   ]){
    w.Date.now=()=>Date.parse(at);
    schedule.days=[1,2,3,4,5];w.eval('render()');
-   assert.equal(w.document.querySelectorAll('.st-window').length,weekdayWindows,'weekday windows at '+at);
+   assert.equal(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size,weekdayWindows,'weekday windows at '+at);
    schedule.days=dailyDays;w.eval('render()');
-   assert.equal(w.document.querySelectorAll('.st-window').length,5,'daily windows at '+at);
+   assert.equal(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size,5,'daily windows at '+at);
   }
  }finally{
   w.Date.now=realNow;schedule.days=dailyDays;w.eval('render()');
  }
 }
 (async()=>{try{
-w.eval(fs.readFileSync(root+'/design/readable-preview/preview-history.js','utf8')+'\n'+code);await wait();await wait();assert.equal(w.document.body.dataset.disconnected,'false');assert.equal(w.document.querySelector('.plugin-tools'),null);assert.equal(w.document.querySelector('#connectionBanner'),null);
+w.eval(fs.readFileSync(root+'/design/readable-preview/preview-history.js','utf8')+'\n'+code+'\nwindow.__qaHostPrefs=hostPreferences;');await wait();await wait();assert.equal(w.document.body.dataset.disconnected,'false');assert.equal(w.document.querySelector('.plugin-tools'),null);assert.equal(w.document.querySelector('#connectionBanner'),null);
 click('[data-action="new-task"]');let el=w.document.querySelector('#taskName');el.value='QA task';click('[data-action="target-mode"][data-id="accounts"]');click('[data-draft-select="accountIds"][value="qa-codex"]');click('[data-action="task-next"]');assert.equal(w.document.querySelector('#taskZone').value,'Asia/Shanghai');assert(w.document.querySelector('#taskZone').options.length>500);
 // The nonempty timeline assertion needs a schedule that also runs on Sundays.
 click('[data-action="days-preset"][data-id="daily"]');
@@ -57,11 +57,101 @@ await wait();await wait();click('[data-action="save-task"]');await wait();await 
 click('[data-action="edit-task"]');click('[data-action="task-next"]');click('[data-action="task-next"]');await wait();assert.equal(w.document.querySelector('#taskModel').value,'gpt-6-sol');assert.equal(w.document.querySelector('#taskEffort').value,'low');click('[data-action="close"][data-id="taskDialog"]');
 assert.deepEqual(config.tasks[0].days,[0,1,2,3,4,5,6]);
 click('[data-action="menu"]');assert(w.document.querySelector('body > .row-menu'));assert(w.document.querySelector('body > .row-menu [data-action="delete-task"]'));w.document.body.click();assert.equal(w.document.querySelector('body > .row-menu'),null);
-assert(w.document.querySelector('.spark-timeline'));assert.equal(w.document.querySelectorAll('.st-day-label,.st-lane-meta,.st-now-pill').length,0);assert(w.document.querySelector('.st-current-time time'));assert.equal(w.document.querySelectorAll('.st-guide').length,1);assert(w.document.querySelectorAll('.st-window').length>0);click('[data-action="timeline-hours"][data-id="48"]');assert.equal(w.document.querySelectorAll('.st-tick small').length,0);const midnightDates=[...w.document.querySelectorAll('.st-tick-date:not([aria-hidden])')];assert.equal(midnightDates.length,3);assert(midnightDates.every(el=>/^\d{4}-\d{2}-\d{2}$/.test(el.textContent)));assert.equal(new Set(midnightDates.map(el=>el.textContent)).size,3);assert.equal(w.document.querySelectorAll('.st-tick-time').length,9);assert.equal(w.document.querySelectorAll('.wt-trigger-time').length,0);click('[data-action="timeline-detail"]');assert(w.document.querySelector('#modalDialog').open);click('[data-action="close"][data-id="modalDialog"]');click('[data-action="timeline-hours"][data-id="24"]');
+assert(w.document.querySelector('.spark-timeline'));assert.equal(w.document.querySelectorAll('.st-day-label,.st-lane-meta,.st-now-pill').length,0);assert(w.document.querySelector('.st-current-time time'));assert.equal(w.document.querySelectorAll('.st-guide').length,1);assert(new Set([...w.document.querySelectorAll('.st-window')].map(el=>el.dataset.id)).size>0);click('[data-action="timeline-hours"][data-id="48"]');assert.equal(w.document.querySelectorAll('.st-tick small').length,0);const midnightDates=[...w.document.querySelectorAll('.st-tick-date:not([aria-hidden])')];assert.equal(midnightDates.length,3);assert(midnightDates.every(el=>/^\d{4}-\d{2}-\d{2}$/.test(el.textContent)));assert.equal(new Set(midnightDates.map(el=>el.textContent)).size,3);assert.equal(w.document.querySelectorAll('.st-tick-time').length,9);assert.equal(w.document.querySelectorAll('.wt-trigger-time').length,0);click('[data-action="timeline-detail"]');assert(w.document.querySelector('#modalDialog').open);click('[data-action="close"][data-id="modalDialog"]');click('[data-action="timeline-hours"][data-id="24"]');
 checkTimelineDates();
+
+// Midnight is *not* a clipping boundary in 48-hour mode. It becomes a
+// boundary only when changing to a 24-hour page that ends/starts there.
+const localMidnight=Date.parse('2026-11-03T16:00:00Z'); // Shanghai Nov 4, 00:00
+const fiveHour={start:localMidnight-3*3600000,end:localMidnight+2*3600000};
+const beforeDay={start:localMidnight-24*3600000,end:localMidnight,zone:'Asia/Shanghai'};
+const afterDay={start:localMidnight,end:localMidnight+24*3600000,zone:'Asia/Shanghai'};
+const twoDays={start:beforeDay.start,end:afterDay.end,zone:'Asia/Shanghai'};
+const merged=w.eval('sparkTimelinePieces')(fiveHour,twoDays);
+assert.equal(merged.length,1,'48h should merge a window crossing midnight into one bar');
+assert.equal(merged[0].start,fiveHour.start);
+assert.equal(merged[0].end,fiveHour.end);
+assert(merged[0].showLabel && !merged[0].split,'a complete cross-day window keeps its label');
+const pct=ms=>(ms-twoDays.start)/(twoDays.end-twoDays.start)*100;
+const lane={key:'window-test',windows:[fiveHour],events:[],policy:{kind:'five-hour'},unanchored:false,paused:false,model:'gpt-6-luna'};
+const row={key:'window-test',label:'QA',color:'orange'};
+const html=w.eval('sparkTimelineLane')(row,lane,twoDays,pct,localMidnight);
+assert.equal((html.match(/class="st-window /g)||[]).length,1,'48h should create one timeline button, not two');
+assert(html.includes('21:00')&&html.includes('02:00')&&html.includes('5h 预计窗口'),'merged bar includes full time range and caption');
+const earlier=w.eval('sparkTimelinePieces')(fiveHour,beforeDay);
+const later=w.eval('sparkTimelinePieces')(fiveHour,afterDay);
+assert.equal(earlier.length,1);
+assert.equal(later.length,1);
+assert.equal(earlier[0].end,localMidnight,'24h before midnight clips right at viewport boundary');
+assert.equal(later[0].start,localMidnight,'24h after midnight clips left at viewport boundary');
+assert(earlier[0].showLabel,'longer visible 3h part keeps the label in 24h view');
+assert(!later[0].showLabel,'shorter visible 2h part has no duplicate label in 24h view');
+const outside=w.eval('sparkTimelinePieces')(fiveHour,{start:localMidnight+6*3600000,end:localMidnight+30*3600000,zone:'Asia/Shanghai'});
+assert.equal(outside.length,0,'no ghost bar when the quota window is outside the view');
+const whole=w.eval('sparkTimelinePieces')({start:localMidnight+6*3600000,end:localMidnight+11*3600000},afterDay);
+assert.equal(whole.length,1);
+assert.equal(whole[0].showLabel,true,'an entirely visible five-hour window must always have labels');
+const firstTask=w.eval('timelineRows()')[0].tasks[0],savedStrategy=firstTask.strategy,savedTimes=[...firstTask.times];
+firstTask.strategy='rolling';firstTask.times=['00:30'];
+const nextDue=Date.now()+24*60*60*1000;
+w.CPASparkRollingPlans={[firstTask.id]:[{taskId:firstTask.id,authId:'qa-codex',nextDue,source:'upstream',status:'scheduled'}]};
+w.eval('render()');
+let display=w.document.querySelector('.tasks-table .schedule-rolling');
+assert(display,'rolling task should use next-trigger schedule formatting');
+assert(display.textContent.includes('下次触发：'),'next trigger label is required');
+assert(display.textContent.includes(w.eval('dateKey')(nextDue,firstTask.timezone)+' '+w.eval('time')(nextDue,firstTask.timezone)),'render live server time in task time zone, not bootstrap');
+assert(w.document.querySelector('.tasks-table td:nth-child(3) .target-label')?.getAttribute('title'),'account label must provide complete hover text');
+assert(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent.includes('连续窗口'),'daily label must be replaced by continuous strategy');
+assert(!/窗口时间估算|上游重置推算|首次启动计划/.test(w.document.querySelector('.tasks-table .schedule-rolling')?.nextElementSibling.textContent||''),'rolling task subtitle should remain concise');
+
+const main=w.document.querySelector('.tasks-table .schedule-rolling');
+const taskID=firstTask.id;
+const accountID='qa-codex';
+const futureDue=Date.now()+4*60*60*1000;
+const missedDue=Date.now()-3*60*60*1000;
+const futureLabel=w.eval('dateKey')(futureDue,firstTask.timezone)+' '+w.eval('time')(futureDue,firstTask.timezone);
+// A snapshot may contain a cursor that has already elapsed. Never display it
+// as a future appointment even if a browser input keeps focus.
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:missedDue,source:'upstream',status:'scheduled'}]};
+main.tabIndex=0;main.focus();
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'待调度','expired rolling cursor must not be labelled as the next trigger');
+assert(!main.textContent.includes('2026-11-03'),'expired clock time must disappear');
+assert.equal(w.document.activeElement,main,'live updates should not lose task table focus');
+// When the CPA server enters a waiting state, show its current waitUntil.
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:futureDue,status:'waiting',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert(main.textContent.includes(futureLabel),'actual server waiting deadline must replace old cursor in the task list');
+assert.equal(w.document.querySelector('.upcoming-list')?.innerHTML,w.eval('renderUpcomingItems')(w.eval('allUpcoming')()),'sidebar must receive server-driven schedule changes');
+assert(unavailable||w.eval('allUpcoming')().some(entry=>Math.abs(entry.at-futureDue)<1000),'available accounts must include the real rolling time in next triggers');
+const timelineEvents=w.eval('timelineRangeOccurrences')(firstTask,Date.now(),Date.now()+48*3600000,[accountID]);
+assert.deepEqual([...timelineEvents],[futureDue],'timeline must follow one server rolling event, not repeat daily bootstrap');
+// A later CPA snapshot must update text in place without repainting the
+// focused table, including both the main row and next-trigger summary.
+const movedDue=futureDue+2*60*60*1000;
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:movedDue,status:'scheduled',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert(main.textContent.includes(w.eval('dateKey')(movedDue,firstTask.timezone)),'changed server due replaces previous waiting deadline');
+assert.equal(w.document.activeElement,main,'focused row persists after server due time moves');
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:missedDue,status:'running',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'正在执行','a running task cannot claim a stale future trigger');
+w.CPASparkRollingPlans={[taskID]:[{taskId:taskID,authId:accountID,nextDue:0,status:'due',source:'upstream'}]};
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'待调度','due cursor shows scheduling state rather than a stale time');
+w.CPASparkSchedulerError='Persistent storage is unavailable';
+w.eval('syncTaskScheduleUI()');
+assert.equal(main.textContent,'调度已停止','a halted server must not pretend the overdue task is about to run');
+w.CPASparkSchedulerError='';
+main.blur();
+
+firstTask.strategy=savedStrategy;firstTask.times=savedTimes;
+w.CPASparkRollingPlans={};w.eval('render()');
+
 click('[data-action="new-task"]');w.document.querySelector('#taskName').value='Gemini QA';change('#taskProvider','antigravity');click('[data-action="target-mode"][data-id="accounts"]');click('[data-draft-select="accountIds"][value="qa-ag"]');click('[data-action="task-next"]');click('[data-action="task-next"]');await wait();await wait();assert.equal(w.document.querySelector('#taskModel').value,'gemini-3-flash');assert.equal(w.document.querySelector('#taskEffort').value,'budget:0');assert.equal(w.document.querySelector('[data-action="save-task"]').disabled,false);
 click('[data-action="close"][data-id="taskDialog"]');
 click('[data-action="nav"][data-id="settings"]');await wait();assert(w.document.querySelector('#settingZone').closest('.spark-select').classList.contains('spark-zone-select'));
+assert.deepEqual([...w.document.querySelectorAll('#settingLate option')].map(x=>Number(x.value)),[60,120,300,600,900,1800]);assert(w.document.querySelector('#settingLate option[value="600"]')?.textContent.includes('默认'));
 const trigger=w.document.querySelector('#settingZone').closest('.spark-select').querySelector('button');trigger.click();assert.equal(w.document.querySelector('.spark-select-search').placeholder,'搜索时区名称或 UTC 偏移…');w.document.body.click();
 change('#settingZone','UTC');click('[data-action="save-settings"]');await wait();await wait();assert.equal(config.settings.timezone,'UTC');assert(w.document.querySelector('.settings-save-feedback').textContent.includes('已保存'));assert(w.document.querySelector('#toastStack').textContent.includes('设置已保存'));
 failSave=true;click('[data-action="save-settings"]');await wait();await wait();assert(w.document.querySelector('.settings-save-feedback').textContent.includes('保存失败'));assert(w.document.querySelector('.feedback-toast.is-error[role="alert"]'));failSave=false;
@@ -73,9 +163,10 @@ w.eval('showAccount("qa-codex")');assert(w.document.querySelector('#accountDialo
 click('#accountDialog [data-action="run-detail"]');assert(w.document.querySelector('#detailDialog').open);assert(w.document.querySelector('#accountDialog').open);click('#detailDialog .drawer-footer [data-action="close"]');assert(!w.document.querySelector('#detailDialog').open);assert(w.document.querySelector('#accountDialog').open);assert.equal(w.document.querySelector('#accountDialog .drawer-content').scrollTop,85);
 click('#accountDialog [data-action="run-detail"]');w.document.querySelector('#detailDialog').close();assert(w.document.querySelector('#accountDialog').open);click('#accountDialog [data-action="close"]');
 click('[data-action="nav"][data-id="history"]');await wait();await wait();assert.equal(w.document.querySelector('#historyMode').value,'account');assert.equal(w.document.querySelectorAll('[data-history-row]').length,1);assert(w.document.querySelector('[data-delete-execution="nav-x"]'));
+assert(w.document.querySelector('[data-history-row] [data-action="run-detail"] svg[data-icon="eye"]'),'history action uses eye icon');
 qaRuns.forEach(r=>r.items.forEach(i=>{i.status='failed';i.executionStatus='failed'}));w.eval('applySnapshot')(snapshot());await wait();await wait();assert.equal(w.document.querySelector('[data-history-row] td:nth-child(4)').textContent.trim(),'失败');assert(w.document.querySelector('[data-clear-history="filtered"]').textContent.includes('删除筛选结果'));assert(w.document.querySelector('[data-clear-history="all"]').textContent.includes('删除全部'));
 change('#historyMode','task');await wait();await wait();assert.equal(w.document.querySelectorAll('[data-history-row]').length,2);
-click('[data-action="nav"][data-id="tasks"]');const scheduleText=config.tasks[0].times.join(' / ');assert.equal(w.document.querySelector('.schedule-main').textContent,scheduleText);assert.equal(w.document.querySelector('.schedule-main').title,scheduleText);assert(w.document.querySelector('.upcoming-title'));assert.equal(w.document.querySelector('.upcoming-title').tagName,'DIV');assert(!w.document.querySelector('.upcoming-title').hasAttribute('data-action'));click('.task-name[data-action="task-history"]');await wait();await wait();assert.equal(w.document.querySelector('#historyMode').value,'task');assert.equal(w.document.querySelectorAll('[data-history-row]').length,1);assert(!w.document.querySelector('#taskDialog').open);click('[data-history-clear-task]');await wait();await wait();assert.equal(w.document.querySelectorAll('[data-history-row]').length,2);
+click('[data-action="nav"][data-id="tasks"]');const scheduleText=config.tasks[0].times.join(' / ');assert.equal(w.document.querySelector('.schedule-main').textContent,scheduleText);assert.equal(w.document.querySelector('.schedule-main').title,scheduleText);if(!unavailable){assert(w.document.querySelector('.upcoming-title'));assert.equal(w.document.querySelector('.upcoming-title').tagName,'DIV');assert(!w.document.querySelector('.upcoming-title').hasAttribute('data-action'));}click('.task-name[data-action="task-history"]');await wait();await wait();assert.equal(w.document.querySelector('#historyMode').value,'task');assert.equal(w.document.querySelectorAll('[data-history-row]').length,1);assert(!w.document.querySelector('#taskDialog').open);click('[data-history-clear-task]');await wait();await wait();assert.equal(w.document.querySelectorAll('[data-history-row]').length,2);
 qaRuns=[{id:'one',name:'Match',started:Date.now(),finished:true,model:'m',mode:'manual',items:[]},{id:'two',name:'Other',started:Date.now(),finished:true,model:'m',mode:'manual',items:[]},{id:'active',name:'Active',started:Date.now(),finished:false,model:'m',mode:'manual',items:[]}];w.eval('applySnapshot')(snapshot());
 click('[data-action="nav"][data-id="history"]');await wait();await wait();assert.equal(w.document.querySelectorAll('[data-delete-run]').length,3);assert(w.document.querySelector('[data-delete-run="active"]').disabled);
 click('[data-delete-run="one"]');await wait();assert(w.document.querySelector('#modalDialog').textContent.includes('1 条'));click('[data-action="close"][data-id="modalDialog"]');assert.equal(qaRuns.length,3);
@@ -91,5 +182,91 @@ click('[data-history-row="page-x-40"] [data-action="run-detail"]');await wait();
 // Obsolete page responses must not replace a new display mode.
 holdHistory=true;click('[data-history-page="4"]');change('#historyMode','task');assert.equal(historyResolves.length,2);historyResolves.shift()();await wait();assert.equal(w.document.querySelectorAll('[data-history-row]').length,0);holdHistory=false;historyResolves.shift()();await wait();await wait();assert.equal(w.document.querySelector('#historyMode').value,'task');assert.equal(w.document.querySelector('[data-history-row]').dataset.historyRow,'page-run-000');
 change('#historyMode','account');await wait();await wait();assert(w.document.querySelector('[data-clear-history="filtered"]').textContent.includes('125'));click('[data-clear-history="filtered"]');await wait();assert(w.document.querySelector('#modalDialog').textContent.includes('所有匹配页'));assert(w.document.querySelector('#modalDialog').textContent.includes('125'));click('[data-action="modal-confirm"]');await wait();await wait();assert.equal(qaRuns.length,0);assert.equal(w.document.querySelectorAll('[data-history-row]').length,0);
+// Regression: refreshing an open execution detail must retain its scroll position.
+const scrollFixture={id:'scroll-run',name:'scroll test',mode:'manual',model:'gpt-6-luna',started:Date.now(),finished:false,items:[{id:'scroll-x',authId:'qa-codex',status:'running',message:'Checking quota',scheduled:Date.now(),waitUntil:Date.now()+30000,windowStatus:'waiting'}]};
+const scrollDialog=w.document.querySelector('#detailDialog');
+w.eval('renderRunDetail')(scrollFixture);scrollDialog.showModal();
+scrollDialog.querySelector('.drawer-content').scrollTop=219;
+w.eval('renderRunDetail')({...scrollFixture,finished:true,items:[{...scrollFixture.items[0],status:'success',message:'Completed',windowStatus:'unconfirmed'}]});
+assert.equal(scrollDialog.querySelector('.drawer-content').scrollTop,219,'run detail auto-refresh must preserve user scroll');
+
+const localeFixture={...scrollFixture,finished:true,items:[
+ {...scrollFixture.items[0],id:'locale-1',status:'skipped',message:'Account missing, unavailable, disabled or provider mismatch',windowBeforeError:'quota check: upstream HTTP 403',waitUntil:0},
+ {...scrollFixture.items[0],id:'locale-2',authId:'qa-ag',status:'skipped',message:'Existing quota window continues past the configured smart delay limit; no model request sent',waitUntil:0},
+ {...scrollFixture.items[0],id:'locale-3',status:'success',message:'Model replied successfully; actual quota reset remains unconfirmed',windowStatus:'unconfirmed',waitUntil:0},
+ {...scrollFixture.items[0],id:'locale-4',status:'skipped',message:'Account is unavailable or expired in CPA',waitUntil:0}
+]};
+const languageBefore=w.__qaHostPrefs.language;
+const localizedReasons=(language)=>{
+ w.localStorage.setItem('cli-proxy-language',language);
+ w.eval('synchronizeHostPreferences')();
+ w.eval('renderRunDetail')(localeFixture);
+ return [...scrollDialog.querySelectorAll('.run-item .subline')].map(el=>el.textContent);
+};
+const cnReasons=localizedReasons('zh-CN');
+assert(cnReasons[0].includes('账号不存在、不可用、已禁用或提供商不匹配'),'existing English audit reasons are translated to Chinese');
+assert(cnReasons[1].includes('超过允许的智能等待时间'),'old smart-window skip reasons are translated');
+assert(cnReasons[2].includes('实际额度重置尚未确认'),'quota uncertainty is preserved in translated success messages');
+assert(cnReasons[3].includes('账号在 CPA 中不可用或已过期'),'new specific account status is translated');
+assert(scrollDialog.querySelector('.smart-window-detail')?.textContent.includes('额度检查失败：上游返回 HTTP 403'),'quota check errors are translated in detail panels');
+const enReasons=localizedReasons('en');
+assert.equal(enReasons[0],'Account missing, unavailable, disabled or provider mismatch','English interface retains English stored reason');
+assert(enReasons[1].includes('Existing quota window continues'),'English interface retains the upstream reason');
+const twReasons=localizedReasons('zh-TW');
+assert(twReasons[0].includes('帳號不存在'),'Traditional Chinese follows CPA language');
+assert(twReasons[1].includes('智慧等待時間'),'Traditional Chinese smart-window reason exists');
+w.localStorage.setItem('cli-proxy-language',languageBefore);w.eval('synchronizeHostPreferences')();
+
+
+const waitingRun={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',windowStatus:'waiting',windowResetAt:Date.now()+3600000,waitUntil:Date.now()+3605000,message:'Waiting for quota window to reset'}]};
+w.eval('renderRunDetail')(waitingRun);
+assert.equal(w.eval('runStatus')(waitingRun),'waiting','a waiting batch is not actively executing model requests');
+assert(scrollDialog.querySelector('.status-title').textContent.includes('等待额度窗口重置'),'waiting modal displays a waiting headline');
+assert.equal(scrollDialog.querySelector('.progressbar span').style.width,'0%','waiting account is not counted as completed');
+assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('等待至'),'pending window time is shown in the configured local timezone');
+assert(scrollDialog.querySelector('.run-item .subline').textContent.includes('后检查窗口'),'waiting message should not show raw UTC protocol string');
+assert(!scrollDialog.querySelector('.run-item .subline').textContent.includes('Waiting for quota window'),'raw UTC provider message must not be displayed');
+const waitingLanguageBefore=w.__qaHostPrefs.language;
+w.localStorage.setItem('cli-proxy-language','en');w.eval('synchronizeHostPreferences')();
+w.eval('renderRunDetail')(waitingRun);
+assert(scrollDialog.querySelector('.run-item .subline').textContent.startsWith('Check the quota window after'),'waiting message uses current CPA English locale');
+w.localStorage.setItem('cli-proxy-language',waitingLanguageBefore);w.eval('synchronizeHostPreferences')();
+w.eval('renderRunDetail')(waitingRun);
+
+
+const waitingWindow={...scrollFixture,finished:false,items:[{...scrollFixture.items[0],status:'waiting',waitUntil:Date.now()+2*60*60*1000,message:'Waiting for quota window'}]};
+const signature=w.eval('runDetailFingerprint'),delay=w.eval('runDetailPollDelay');
+assert.equal(signature(waitingWindow),signature({...waitingWindow,now:Date.now()+2500,serverNow:Date.now()+2500}),'changing server clock must not redraw waiting details');
+assert.notEqual(signature(waitingWindow),signature({...waitingWindow,items:[{...waitingWindow.items[0],status:'running'}]}),'a genuine status change must redraw');
+assert.equal(delay(waitingWindow,Date.now()),30000,'hours-long quota wait polls infrequently');
+const almostDue={...waitingWindow,items:[{...waitingWindow.items[0],waitUntil:Date.now()+15000}]};
+assert.equal(delay(almostDue,Date.now()),2500,'quota wait close to reset restores fast polling');
+assert.equal(delay(scrollFixture,Date.now()),2500,'active requests continue fast polling');
+
+scrollDialog.close();
+const timelineCSS=fs.readFileSync(root+'/web/style.css','utf8');
+assert(timelineCSS.includes('.st-table.st-hours-48{--st-plot-min:1536px}'),'48h timeline keeps five-hour bars readable');
+assert(timelineCSS.includes('.st-table.st-hours-24{--st-plot-min:768px}'),'24h timeline keeps five-hour bars readable');
+assert(timelineCSS.includes('.st-window--no-label .st-window-time'),'only shorter cross-day fragments hide labels');
+assert(!timelineCSS.includes('.st-window{container-type:inline-size}'),'remove fragile container query hiding rules');
+assert(!timelineCSS.includes('.st-window .st-window-time,.st-window .st-window-caption,.st-window .st-window-end{display:none!important}'), 'CSS specificity regression must not return');
+assert(w.eval('sparkTimelineSummary').toString().includes('此时段无后续计划'), 'past planned windows are not misreported as no upstream window');
+assert(!w.eval('sparkTimelineLane').toString().includes("right-left<16"),'percentage-based label hiding must be removed');
+
+// Continuous mode shows an estimated five-hour sequence rather than five
+// identical daily times. Disabled tasks remain saved but are not dispatched.
+click('[data-action="nav"][data-id="tasks"]');
+click('[data-action="new-task"]');
+click('[data-action="target-mode"][data-id="accounts"]');
+click('[data-draft-select="accountIds"][value="qa-codex"]');
+click('[data-action="task-next"]');
+assert.equal(w.document.querySelector('#taskStrategy').value,'fixed');
+change('#taskStrategy','rolling');
+assert.equal(w.document.querySelector('#taskStrategy').value,'rolling');
+const projected=[...w.document.querySelectorAll('#taskDialog .preview-row .mono')].map(el=>el.textContent.trim());
+assert.equal(projected.length,5,'rolling task should display five estimated times');
+assert.equal(new Set(projected.map(t=>t.slice(0,5))).size,5,'rolling preview must not repeat the same clock time each day');
+assert(w.document.querySelector('#taskDialog .spark-rolling-preview-hint')?.textContent.includes('推算'),'rolling preview must label unverified estimates');
+click('[data-action="close"][data-id="taskDialog"]');
 assert(requests.some(url=>url.includes('/auth-files/models?name=qa-codex')));assert(requests.some(url=>url.includes('/model-definitions/codex')));assert.deepEqual(errors,[]);console.log(unavailable?'PASS: paused/unavailable targets still load catalogs and reasoning without executing requests':'PASS: complete page bootstrap, centered-dialog markup, time editing, 596 zones, catalog defaults, model switch, save/edit preservation, menu portal and Gemini zero-budget');
 }finally{w.dispatchEvent(new w.Event('pagehide'));await wait();d.window.close()}})().catch(e=>{console.error(e);process.exitCode=1});

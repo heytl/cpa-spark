@@ -128,6 +128,12 @@ func (e *Engine) enqueue(tasks []Task, c Config, at time.Time, mode, key string)
 		}
 		runIDs = append(runIDs, rid)
 		for _, id := range Targets(t, c.Groups) {
+            if mode == "scheduled" && normalizedStrategy(t) == "rolling" {
+                var current []byte
+                lookup := tx.QueryRow("SELECT body FROM rolling_plans WHERE id=?",rollingKey(t.ID,id)).Scan(&current)
+                if lookup == nil { continue }
+                if lookup != sql.ErrNoRows { return nil,lookup }
+            }
 			dedup := mode + ":" + key + ":" + id + ":" + fingerprint(t)
 			if mode == "manual" {
 				dedup = claim + ":" + id
@@ -196,7 +202,7 @@ func (e *Engine) Cancel(id string) error {
 	}
 	defer tx.Rollback()
 	for _, x := range xs {
-		if x.Status != "queued" {
+		if x.Status != "queued" && x.Status != "waiting" {
 			continue
 		}
 		valid := false
@@ -266,23 +272,28 @@ func (e *Engine) Tick() {
 		}
 		e.cursor = minute
 	}
+	if err=e.enqueueRolling(c,now);err!=nil {
+        e.lastError=err.Error()
+        return
+    }
 	xs, err := e.store.QueuedExecutions()
 	if err != nil {
 		e.lastError = err.Error()
 		return
 	}
 	for _, x := range xs {
-		if x.Status != "queued" {
-			continue
-		}
+		if x.Status != "queued" && x.Status != "waiting" { continue }
+        if x.Status == "waiting" && x.Mode != "manual" && x.WaitUntil > now.UnixMilli() { continue }
 		reason := ""
 		if c.Settings.Paused {
 			reason = "Global pause"
 		} else if c.Overrides[x.AuthID] {
 			reason = "Account paused"
-		} else if now.Sub(time.UnixMilli(x.Scheduled)) > time.Duration(c.Settings.Late)*time.Second {
+		} else if x.Mode == "scheduled" && x.WaitUntil==0 && now.Sub(time.UnixMilli(x.Scheduled)) > time.Duration(c.Settings.Late)*time.Second {
 			reason = "Queue deadline exceeded"
-		}
+		} else if x.Mode!="manual" && x.WaitUntil>0 && normalizedStrategy(x.Task)=="fixed" && now.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000+60000 {
+            reason = "Smart wait deadline exceeded"
+        }
 		if reason != "" {
 			x.Status = "skipped"
 			x.Message = reason
@@ -296,6 +307,7 @@ func (e *Engine) Tick() {
 		if len(e.active) >= c.Settings.Concurrency || e.active[x.AuthID] != "" || e.providerActive[x.Provider] >= 2 {
 			continue
 		}
+		if x.Mode=="manual" { x.WaitUntil=0 } // Upgrade old waiting manual runs to immediate dispatch.
 		x.Status = "running"
 		x.Started = now.UnixMilli()
 		x.Message = "Request submitted; waiting for result"
@@ -318,8 +330,13 @@ func (e *Engine) execute(x Execution) {
 		}
 		e.mu.Lock()
 		defer e.mu.Unlock()
-		x.Finished = e.now().UnixMilli()
-		x.Latency = x.Finished - x.Started
+		if x.Status == "waiting" {
+            x.Finished = 0
+            x.Latency = 0
+        } else {
+            x.Finished = e.now().UnixMilli()
+            x.Latency = x.Finished - x.Started
+        }
 		if err := e.store.Put(x); err != nil {
 			e.lastError = "Cannot persist execution result; automatic dispatch stopped"
 		}
@@ -339,16 +356,31 @@ func (e *Engine) execute(x Execution) {
 			break
 		}
 	}
-	if account == nil || account.Provider != x.Provider || account.Disabled || account.Unavailable || account.Status == "disabled" || account.Status == "error" || account.Status == "expired" {
+	if account == nil {
 		x.Status = "skipped"
-		x.Message = "Account missing, unavailable, disabled or provider mismatch"
+		x.Message = "Account is missing from CPA"
+		return
+	}
+	if account.Provider != x.Provider {
+		x.Status = "skipped"
+		x.Message = "Account provider does not match task provider"
+		return
+	}
+	if account.Disabled || account.Status == "disabled" {
+		x.Status = "skipped"
+		x.Message = "Account is disabled in CPA"
+		return
+	}
+	if account.Unavailable || account.Status == "error" || account.Status == "expired" {
+		x.Status = "skipped"
+		x.Message = "Account is unavailable or expired in CPA"
 		return
 	}
 	// Recheck local pause after the read-only host lookup, then mark the dispatch boundary.
 	e.mu.Lock()
 	c, err := e.store.Config()
 	stopped := e.stopped || err != nil || c.Settings.Paused || c.Overrides[x.AuthID]
-	if !stopped && x.Mode == "scheduled" {
+	if !stopped && (x.Mode == "scheduled" || x.Mode == "rolling") {
 		valid := false
 		for _, o := range x.Origins {
 			for _, t := range c.Tasks {
@@ -365,6 +397,93 @@ func (e *Engine) execute(x Execution) {
 		x.Message = "Paused before model dispatch"
 		return
 	}
+
+    // Inspect the provider's real quota before spending model tokens.
+    // A successful HTTP model reply is not evidence that a fresh window opened.
+    now := e.now()
+    ck, ckErr := e.store.Checkpoint(x.AuthID,x.Provider,x.Model)
+    if ckErr != nil {
+        x.Status="unknown"; x.Message="Window checkpoint storage unavailable; request not sent";return
+    }
+    observation,quotaErr:=e.observeWindow(*account,x.Model)
+    if quotaErr != nil {x.WindowBeforeError=quotaErr.Error()}
+    if quotaErr==nil {
+        x.WindowResetAt=observation.ResetAt
+        x.WindowCheckAt=observation.CheckedAt
+        x.WindowBucket=observation.Bucket
+        delayUntil:=time.UnixMilli(observation.ResetAt).Add(windowSafetyMargin)
+        // Manual "Run now" is an explicit user request: inspect quota but
+        // never wait for a reset or skip a healthy account just because the
+        // current quota window is still active. Automated runs retain the
+        // five-hour smart-avoidance policy.
+        if x.Mode!="manual" && delayUntil.After(now) {
+            if x.WaitUntil>0 && observation.ResetAt>x.WaitUntil+60000 {
+                // At the previous due time the provider has already opened a
+                // later quota window. It may have been triggered by another
+                // client or task. This occurrence is covered: move the
+                // persisted rolling cursor forward instead of letting the
+                // stale cursor enqueue another five-hour-long waiting run.
+                x.Status="skipped";x.WindowStatus="existing"
+                x.Message="Quota window advanced externally; another request has already covered this cycle"
+                if err=e.saveNextRolling(x,observation);err!=nil {
+                    x.Message+="; cannot persist next rolling trigger"
+                }
+                return
+            }
+            if normalizedStrategy(x.Task)=="fixed" && delayUntil.UnixMilli()>x.Scheduled+int64(c.Settings.Late)*1000 {
+                // "Run now" must not remain active for hours. A manual
+                // request uses the same short grace as fixed scheduling.
+                x.Status="skipped";x.WindowStatus="existing"
+                x.Message="Existing quota window continues past the configured smart delay limit; no model request sent"
+                if err=e.saveNextRolling(x,observation);err!=nil {
+                    x.Message+="; cannot persist next rolling trigger"
+                }
+                return
+            }
+            // A waiting execution itself owns this cycle. Update the
+            // rolling cursor for displays and recovery, then keep that
+            // execution pending rather than making a second queued run.
+            if err=e.saveNextRolling(x,observation);err!=nil {
+                x.Status="unknown"
+                x.Message="Cannot persist rolling wait checkpoint; request not sent"
+                return
+            }
+            x.Status="waiting"
+            x.WindowStatus="waiting"
+            x.WaitUntil=delayUntil.UnixMilli()
+            x.Message=fmt.Sprintf("Waiting for quota window to reset at %s",delayUntil.UTC().Format(time.RFC3339))
+            return
+        }
+    } else if x.Mode!="manual" && ck.LastResetAt>now.UnixMilli()+windowSafetyMargin.Milliseconds() {
+        x.Status="skipped";x.WindowStatus="existing"
+        x.WindowResetAt=ck.LastResetAt
+        x.Message="Prior confirmed quota window remains active; upstream verification unavailable"
+        // The checkpoint is a real observed reset. Use it to advance the
+        // rolling cursor rather than leaving an already-claimed due time.
+        if err=e.saveNextRolling(x,WindowObservation{ResetAt:ck.LastResetAt,Source:"checkpoint"});err!=nil{
+            x.Message+="; next trigger checkpoint unavailable"
+        }
+        return
+    }
+    if x.Mode!="manual" && ck.LastAttempt>0 && now.UnixMilli()-ck.LastAttempt<2*60*1000 {
+        x.Status="skipped";x.WindowStatus="existing"
+        x.Message="Recent account warmup already dispatched; avoiding duplicate model request"
+        // Only Codex has an explicit five-hour fallback in this plugin.
+        // This is estimated from a real dispatch timestamp, not verified
+        // quota data, and remains labelled as an estimate in state.
+        if normalizedStrategy(x.Task)=="rolling" && x.Provider=="codex"{
+            estimate:=ck.LastAttempt+int64(5*time.Hour/time.Millisecond)
+            if err=e.saveNextRolling(x,WindowObservation{ResetAt:estimate,Source:"estimated"});err!=nil {
+                x.Message+="; next trigger estimate unavailable"
+            }
+        }
+        return
+    }
+    ck.LastAttempt=now.UnixMilli()
+    if err=e.store.SaveCheckpoint(x.AuthID,x.Provider,x.Model,ck);err!=nil {
+        x.Status="unknown";x.Message="Cannot save pre-dispatch guard; request not sent";return
+    }
+    x.Dispatched=e.now().UnixMilli()
 	request := buildModelRequest(x)
 	var response ModelResponse
 	err = e.host.Call("host.model.execute", request, &response)
@@ -409,8 +528,29 @@ func (e *Engine) execute(x Execution) {
 		return
 	}
 	x.Status = "success"
+    x.WindowStatus = "unconfirmed"
 	x.Message = "Model replied successfully; actual quota reset remains unconfirmed"
 	x.Tokens = body.Usage.TotalTokens
+    after,afterErr:=e.observeWindow(*account,x.Model)
+    if afterErr != nil {x.WindowAfterError=afterErr.Error()}
+    if afterErr==nil {
+        x.NextWindowAt=after.ResetAt
+        x.WindowCheckAt=after.CheckedAt
+        x.WindowBucket=after.Bucket
+        if observation.ResetAt>0 && after.ResetAt>observation.ResetAt+60000 && after.ResetAt>e.now().UnixMilli() {
+            x.WindowStatus="confirmed"
+            x.Message="Model replied and the five-hour quota window advanced; new window confirmed"
+        }
+        ck.LastResetAt=after.ResetAt
+        ck.LastConfirmed=after.CheckedAt
+        if e.store.SaveCheckpoint(x.AuthID,x.Provider,x.Model,ck)!=nil {
+            x.WindowStatus="unconfirmed"
+            x.Message="Model replied; quota checkpoint could not be persisted"
+        }
+    }
+    if e.saveNextRolling(x,after)!=nil {
+        x.Message+="; continuous scheduler checkpoint unavailable"
+    }
 }
 
 // CPA's official model suffix carries native thinking budgets and Gemini levels.
@@ -441,7 +581,7 @@ func (e *Engine) Snapshot() (map[string]any, error) {
 	}
 	// Summaries never carry batch items. Full details and account timelines have
 	// separate on-demand endpoints, so history volume does not inflate polling.
-	rows, err := e.store.db.Query(`WITH latest AS (SELECT (SELECT id FROM runs WHERE task_id=json_extract(t.value,'$.id') ORDER BY started DESC,id DESC LIMIT 1) id FROM json_each((SELECT body FROM config WHERE id=1),'$.tasks') t), selected_runs AS (SELECT * FROM runs WHERE id IN(SELECT id FROM latest) OR id IN(SELECT o.run_id FROM executions x JOIN history_origins o ON o.execution_id=x.id WHERE o.active AND json_extract(x.body,'$.status') IN ('queued','running'))), h AS (` + strings.Replace(historyTaskSQL, "FROM runs r LEFT JOIN", "FROM selected_runs r LEFT JOIN", 1) + `) SELECT id,taskId,name,model,provider,mode,started,status,accountCount FROM h ORDER BY started DESC,id DESC`)
+	rows, err := e.store.db.Query(`WITH latest AS (SELECT (SELECT id FROM runs WHERE task_id=json_extract(t.value,'$.id') ORDER BY started DESC,id DESC LIMIT 1) id FROM json_each((SELECT body FROM config WHERE id=1),'$.tasks') t), selected_runs AS (SELECT * FROM runs WHERE id IN(SELECT id FROM latest) OR id IN(SELECT o.run_id FROM executions x JOIN history_origins o ON o.execution_id=x.id WHERE o.active AND json_extract(x.body,'$.status') IN ('queued','running','waiting'))), h AS (` + strings.Replace(historyTaskSQL, "FROM runs r LEFT JOIN", "FROM selected_runs r LEFT JOIN", 1) + `) SELECT id,taskId,name,model,provider,mode,started,status,accountCount FROM h ORDER BY started DESC,id DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -454,7 +594,7 @@ func (e *Engine) Snapshot() (map[string]any, error) {
 			rows.Close()
 			return nil, err
 		}
-		runs = append(runs, map[string]any{"id": id, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": started, "status": status, "finished": status != "running", "accountCount": count, "items": []map[string]any{}, "summary": true})
+		runs = append(runs, map[string]any{"id": id, "taskId": tid, "name": name, "model": model, "provider": provider, "mode": mode, "started": started, "status": status, "finished": status != "running" && status != "waiting", "accountCount": count, "items": []map[string]any{}, "summary": true})
 	}
 	err = rows.Err()
 	rows.Close()
@@ -472,5 +612,9 @@ func (e *Engine) Snapshot() (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"config": c, "runs": runs, "todayStats": map[string]int{"attempted": attempted, "success": success}, "now": e.now().UnixMilli(), "lastError": e.lastError, "version": Version, "active": len(e.active)}, nil
+	rollingPlans, err := e.store.RollingSummaries(c,e.now())
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{"config": c, "runs": runs, "rollingPlans": rollingPlans, "todayStats": map[string]int{"attempted": attempted, "success": success}, "now": e.now().UnixMilli(), "lastError": e.lastError, "version": Version, "active": len(e.active)}, nil
 }

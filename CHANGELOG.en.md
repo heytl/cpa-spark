@@ -2,6 +2,14 @@
 
 [简体中文](CHANGELOG.md) | **English**
 
+## 0.2.0 — 2026-11-09
+
+- Introduce account-specific rolling quota-window scheduling: after the initial trigger, schedule independently using the next allowed upstream quota window and keep server-side cursors and the next-trigger UI synchronized.
+- Check upstream quota before automatic warmups and support smart waiting and rechecks; manual run-now requests no longer skip eligible accounts solely because a quota window remains active.
+- Fix 24/48-hour cross-midnight timeline visualization and stale or indefinitely running schedule states, showing the current server-side next trigger.
+- Localize execution results, skip reasons and waiting deadlines to the current CPA language; stabilize execution detail updates and preserve scroll position.
+- Fix CPA session integration and i18n coverage, extend UI regression checks, and verify native ARM64 ABI builds.
+
 ## 0.1.8 — 2026-10-24
 
 - Add server-side history pagination with 20/50/100 rows (50 by default), retain the existing date picker and delete filtered records across all pages. Query home summaries, execution details and account timelines independently.

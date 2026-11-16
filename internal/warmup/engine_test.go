@@ -311,3 +311,11 @@ func TestExpiredAccountIsSkippedWithoutModelRequest(t *testing.T) {
 		t.Fatal("expired account invoked")
 	}
 }
+
+func TestDefaultLateToleranceIsTenMinutes(t *testing.T) {
+	config:=DefaultConfig()
+	if config.Settings.Late!=600 || config.Settings.LatePolicyVersion!=1 {t.Fatalf("incorrect late default: %+v",config.Settings)}
+	for _,v:=range []int{60,120,300,600,900,1800}{config.Settings.Late=v;if err:=Validate(&config);err!=nil{t.Fatalf("valid late %d: %v",v,err)}}
+	config.Settings.Late=1801
+	if err:=Validate(&config);err==nil {t.Fatal("late beyond maximum unexpectedly allowed")}
+}

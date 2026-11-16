@@ -41,7 +41,7 @@ def render(repository):
 
 每个动态库均在匹配 OS/CPU 的 runner 上构建，并通过假 CPA Host C ABI 加载测试；这不替代真实 CPA 和账号验收。
 
-自定义商店源：`{url}/releases/latest/download/registry.json`。当前版本尚未上架官方插件商店。
+自定义商店源：`{url}/releases/latest/download/registry.json`。已收录于 CPA 官方插件商店。
 
 ## English
 
@@ -51,7 +51,7 @@ Installation: download the ZIP matching the CPA server's OS/CPU, extract it and 
 
 Each library is built and loaded against a fake CPA Host on its matching OS/CPU. These checks do not replace validation with a real CPA instance and account.
 
-Custom store source: `{url}/releases/latest/download/registry.json`. This plugin is not yet listed in the official store.
+Custom store source: `{url}/releases/latest/download/registry.json`. This plugin is listed in the official store.
 
 ## 下载 / Downloads
 

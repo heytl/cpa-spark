@@ -79,7 +79,7 @@ with tempfile.TemporaryDirectory() as directory:
   assert notices['StatusCode']==200 and notices['Headers']['Content-Type']==['text/plain; charset=utf-8']
   notice_text=base64.b64decode(notices['Body']).decode()
   assert 'Router-For.ME' in notice_text and 'Lucide' in notice_text and 'MIT License' in notice_text
-  script_text=base64.b64decode(script['Body']).decode();assert 'CPAPluginSession.savedConnection' in script_text and 'liveManagementKey' not in script_text
+  script_text=base64.b64decode(script['Body']).decode();assert ('CPAPluginSession.activeConnection' in script_text or 'CPAPluginSession.savedConnection' in script_text) and 'liveManagementKey' not in script_text
   config=endpoint('GET','state')['config'];assert not config['tasks'];accounts=endpoint('GET','accounts')['accounts'];assert accounts[0]['id']=='abi-account'
   config['tasks']=[{'id':'abi-task','name':'ABI task','provider':'codex','accountIds':['abi-account'],'groupIds':[],'excludes':[],'days':[1,2,3,4,5],'times':['06:00'],'timezone':'Asia/Shanghai','model':'abi-model','effort':'low','enabled':False,'revision':1}]
   saved=endpoint('POST','config',config);assert saved['config']['revision']==1

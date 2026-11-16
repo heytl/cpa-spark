@@ -12,7 +12,7 @@
 
 CPA Spark 是 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 的原生插件，支持为单个账号或自定义分组安排独立预热任务。调度在服务端运行，关闭浏览器后仍继续执行。
 
-当前开发版本为 **0.1.8**，尚未上架 CPA 官方插件商店。请求成功不等于额度窗口已开启；窗口可视化为计划估算，实际额度重置以上游为准。
+当前稳定版本为 **0.2.0**，已收录于 CPA 官方插件商店。请求成功不等于额度窗口已开启；窗口可视化为计划估算，实际额度重置以上游为准。
 
 ## 功能
 
@@ -22,7 +22,7 @@ CPA Spark 是 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 的原
 - 支持内置 IANA 时区及搜索，默认 `Asia/Shanghai`。
 - 同时刻、同账号、同请求配置合并执行；同账号串行，全局并发 1–8，每提供商最多 2 个。
 - SQLite 保存配置、执行结果与幂等凭据；禁用、过期或不可用账号在执行时跳过。
-- 账号与分组可立即预热一次，不新增定时任务。
+- 账号与分组可立即预热一次，不新增定时任务。手动“立即执行”不受自动任务的额度窗口智能避让或允许迟到时间限制：可用账号即使仍处于上一个窗口，也会尝试发送一次模型请求；全局暂停、账号禁用/不可用与并发限制仍生效。模型请求成功不代表已开启新额度窗口。
 - 窗口可视化支持 24/48 小时；账号详情显示过去 24 小时执行记录和未来 24 小时计划。
 - 执行记录支持单条删除、按筛选清除和全部清除；执行中的记录保留。
 - 页面跟随 CPA 的语言与主题；自定义名称和描述保留原文，缺译回退整句英文。
@@ -40,13 +40,13 @@ CPA Spark 是 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 的原
 
 ## 安装到 Docker Compose 部署的 CPA
 
-在 CPA 插件管理页导入**匹配服务器平台的动态库**并启用。ARM64 Linux 使用 `cpa-spark-v0.1.8.so`，不要导入源码 ZIP。
+在 CPA 插件管理页导入**匹配服务器平台的动态库**并启用。ARM64 Linux 使用 `cpa-spark.so`，不要导入源码 ZIP。
 
 若手动复制文件，在 CPA Compose 项目目录执行：
 
 ```bash
 mkdir -p plugins/linux/arm64
-cp /你的下载目录/cpa-spark-v0.1.8.so plugins/linux/arm64/cpa-spark.so
+cp /你的下载目录/cpa-spark.so plugins/linux/arm64/cpa-spark.so
 ```
 
 确认 Compose 已将插件目录挂载到容器，并在 CPA 配置中启用：

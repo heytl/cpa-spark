@@ -12,7 +12,7 @@
 
 CPA Spark is a native [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) plugin for independent account and group warmup schedules. Scheduling runs on the server and continues after the browser closes.
 
-The current development version is **0.1.8**. The plugin is not yet listed in the official CPA store. A successful request does not prove that a quota window has started; window visualization is an estimate based on schedules, while actual resets are controlled by the upstream service.
+The current development version is **0.2.0**. The plugin is not yet listed in the official CPA store. A successful request does not prove that a quota window has started; window visualization is an estimate based on schedules, while actual resets are controlled by the upstream service.
 
 ## Features
 
@@ -22,7 +22,7 @@ The current development version is **0.1.8**. The plugin is not yet listed in th
 - Search bundled IANA timezones; default to `Asia/Shanghai`.
 - Merge identical account/request configurations at the same scheduled instant. Serialize each account, with global concurrency of 1–8 and a maximum of 2 per provider.
 - Persist configuration, execution results and idempotency claims in SQLite. Skip disabled, expired or unavailable accounts at execution.
-- Run one-off account/group warmup without creating a scheduled task.
+- Run one-off account/group warmup without creating a scheduled task. Explicit **Run now** bypasses the automated quota-window waiting and lateness policy: eligible accounts receive one model request even inside an existing window. Global pause, unavailable/disabled accounts and concurrency limits still apply. A successful model response does not confirm a new quota window.
 - Visualize 24/48-hour planned windows; account details show the past 24 hours of executions and the next 24 hours of plans.
 - Delete individual records, filtered history or all history while retaining active executions.
 - Follow CPA's language and theme. Preserve user-defined names/descriptions; missing translations fall back to complete English messages.
@@ -40,13 +40,13 @@ Running the plugin requires neither Python/Node nor an external CDN. Frontend as
 
 ## Install in Docker Compose CPA
 
-Import and enable the **library matching the CPA server's platform** in CPA's plugin manager. For ARM64 Linux, use `cpa-spark-v0.1.8.so`, not the source ZIP.
+Import and enable the **library matching the CPA server's platform** in CPA's plugin manager. For ARM64 Linux, use `cpa-spark-v0.2.0.so`, not the source ZIP.
 
 To copy it manually, run the following in your CPA Compose project directory:
 
 ```bash
 mkdir -p plugins/linux/arm64
-cp /your/download/directory/cpa-spark-v0.1.8.so plugins/linux/arm64/cpa-spark.so
+cp /your/download/directory/cpa-spark-v0.2.0.so plugins/linux/arm64/cpa-spark.so
 ```
 
 Ensure Compose mounts the plugin directory into the container, then enable it in CPA configuration:
@@ -104,16 +104,16 @@ CI checks, builds and loads the plugin on five native platforms, producing downl
 
 | Type | Example |
 | --- | --- |
-| Development package | `cpa-spark_0.1.8-dev.a976b6b_linux_arm64.zip` |
-| Stable package | `cpa-spark_0.1.8_linux_arm64.zip` |
-| Actions package bundle | `cpa-spark_0.1.8-dev.a976b6b_packages.zip` |
+| Development package | `cpa-spark_0.2.0-dev.a976b6b_linux_arm64.zip` |
+| Stable package | `cpa-spark_0.2.0_linux_arm64.zip` |
+| Actions package bundle | `cpa-spark_0.2.0-dev.a976b6b_packages.zip` |
 
 Development filenames identify the source commit; the plugin UI retains the source version without an automatic version bump. The outer Actions ZIP contains five platform ZIPs and `checksums.txt`. Extract the platform ZIP before importing its library. Native diagnostic artifacts also include the version and ABI verification receipt.
 
 To release:
 
 1. Set the stable version in `internal/warmup/types.go` and add matching entries to both `CHANGELOG.md` and `CHANGELOG.en.md`. Commit the changes.
-2. Create and push a matching Tag, such as `v0.1.8`. The workflow creates a **Release draft** by default.
+2. Create and push a matching Tag, such as `v0.2.0`. The workflow creates a **Release draft** by default.
 3. To publish through Actions, open **Actions → Release → Run workflow**, enter an existing Tag and select `publish`. The default `draft` mode leaves it unpublished. An existing draft can be verified again and published; an already published Release is rejected.
 4. The `publish` mode publishes the draft as the latest stable release only after all five native builds, tests, packaging and exact Release asset download/load checks succeed. Published assets are then verified again. Draft mode runs the draft download checks too.
 

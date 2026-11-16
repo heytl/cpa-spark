@@ -18,20 +18,20 @@ async function requestHistory(force=false){
  finally{if(generation===historyGeneration){historyPendingKey='';if(view==='history')render()}}})();return historyPromise;
 }
 function historyRows(){return !historyError&&historyKey===JSON.stringify(historyQuery())?historyData.rows.map(row=>({...row,account:account(row.authId)})):[]}
-function historyEnded(row){return !['queued','running'].includes(row.status)}
+function historyEnded(row){return !['queued','running','waiting'].includes(row.status)}
 function resetHistoryPage(){historyPage=1;historyKey='';historyError='';render()}
 renderHistory=function(){
  const byAccount=filters.historyMode!=='task',rows=historyRows(),ready=historyKey===JSON.stringify(historyQuery())&&!historyError;
  const count=ready?historyData.deletable:0,all=ready?historyData.allDeletable:0;
  if(!ready&&!historyError)void requestHistory();
- const statuses=byAccount?['success','failed','skipped','unknown','running','queued']:['success','failed','partial','skipped','unknown','running'];
- const toolbar=`<div class="toolbar history-toolbar"><select class="field" id="historyMode" data-history-mode aria-label="${esc(t('history.mode'))}"><option value="account" ${byAccount?'selected':''}>${t('history.byAccount')}</option><option value="task" ${!byAccount?'selected':''}>${t('history.byTask')}</option></select><div class="search">${icon('search')}<input class="field" type="search" id="historySearch" data-filter="historyQuery" aria-label="${esc(t('history.search'))}" placeholder="${esc(t('history.search'))}" value="${esc(filters.historyQuery)}"></div><input class="field" type="date" data-filter="historyDate" aria-label="${esc(t('history.date'))}" value="${esc(filters.historyDate)}"><select class="field" data-filter="historyStatus" aria-label="${esc(t('history.status'))}"><option value="all">${t('history.allStatus')}</option>${statuses.map(s=>`<option value="${s}" ${s===filters.historyStatus?'selected':''}>${t('history.status.'+s)}</option>`).join('')}</select></div>`;
+ const statuses=byAccount?['success','failed','skipped','unknown','running','queued','waiting']:['success','failed','partial','skipped','unknown','running','waiting'];
+ const toolbar=`<div class="toolbar history-toolbar"><select class="field" id="historyMode" data-history-mode aria-label="${esc(t('history.mode'))}"><option value="account" ${byAccount?'selected':''}>${t('history.byAccount')}</option><option value="task" ${!byAccount?'selected':''}>${t('history.byTask')}</option></select><div class="search">${icon('search')}<input class="field" type="search" id="historySearch" data-filter="historyQuery" aria-label="${esc(t('history.search'))}" placeholder="${esc(t('history.search'))}" value="${esc(filters.historyQuery)}"></div><input class="field" type="date" data-filter="historyDate" aria-label="${esc(t('history.date'))}" value="${esc(filters.historyDate)}"><select class="field" data-filter="historyStatus" aria-label="${esc(t('history.status'))}"><option value="all">${t('history.allStatus')}</option>${statuses.map(s=>`<option value="${s}" ${s===filters.historyStatus?'selected':''}>${s==='waiting'?'等待窗口重置':t('history.status.'+s)}</option>`).join('')}</select></div>`;
  const taskFilter=filters.historyTask?`<div class="history-task-filter"><span>${t('history.taskFilter')} <strong translate="no">${esc(task(filters.historyTask)?.name||filters.historyTask)}</strong></span><button class="btn compact" data-history-clear-task>${t('history.clearTask')}</button></div>`:'';
  const body=rows.map(row=>{
   const status=row.status,id=esc(row.id),name=byAccount?row.account?.name||row.authId:row.name;
   const title=byAccount?`<span translate="no">${esc(name)}</span><div class="task-meta" translate="no">${esc(row.account?.email||row.authId)}</div>`:`<button class="name-link" data-action="run-detail" data-id="${id}" translate="no">${esc(name)}</button><div class="task-meta mono" translate="no">${id}</div>`;
   const sources=byAccount?row.runs.map(r=>r.name).filter((v,i,a)=>a.indexOf(v)===i).join(' / '):t('history.accounts',{count:row.accountCount||0});
-  return `<tr data-history-row="${id}"><td>${title}</td><td><span class="mono">${previewTimestamp(row.started)}</span><div class="task-meta mono" translate="no">${esc(row.model)}</div></td><td ${byAccount?'translate="no"':''}>${esc(sources)}</td><td>${statusBadge(status,byAccount?t('history.status.'+status):null)}</td><td><button class="iconbtn" data-action="run-detail" data-id="${esc(byAccount?row.runId:row.id)}" aria-label="${esc(t('history.details'))}">${icon('chevron')}</button><button class="iconbtn history-delete" ${byAccount?'data-delete-execution':'data-delete-run'}="${id}" ${!historyEnded(row)?'disabled':''} aria-label="${esc(t('history.delete'))}">${icon('trash')}</button></td></tr>`;
+  return `<tr data-history-row="${id}"><td>${title}</td><td><span class="mono">${previewTimestamp(row.started)}</span><div class="task-meta mono" translate="no">${esc(row.model)}</div></td><td ${byAccount?'translate="no"':''}>${esc(sources)}</td><td>${statusBadge(status,byAccount?t('history.status.'+status):null)}</td><td><button class="iconbtn" data-action="run-detail" data-id="${esc(byAccount?row.runId:row.id)}" aria-label="${esc(t('history.details'))}" title="${esc(t('history.details'))}">${icon('eye')}</button><button class="iconbtn history-delete" ${byAccount?'data-delete-execution':'data-delete-run'}="${id}" ${!historyEnded(row)?'disabled':''} aria-label="${esc(t('history.delete'))}">${icon('trash')}</button></td></tr>`;
  }).join('');
  return heading(t('history.title'),'',`<button class="btn" data-clear-history="filtered" ${!count?'disabled':''}>${icon('trash')}${t('history.clearFiltered')} <span class="badge">${count}</span></button><button class="btn danger" data-clear-history="all" ${!all?'disabled':''}>${t('history.clearAll')}</button><button class="btn" data-history-export>${icon('download')}${t('history.export')}</button>`)+taskFilter+`<section class="panel history-panel">${toolbar}<div class="table-scroll"><table class="history-table"><thead><tr><th>${t(byAccount?'history.account':'history.task')}</th><th>${t('history.time')}</th><th>${t(byAccount?'history.sources':'history.results')}</th><th>${t('history.status')}</th><th>${t('history.actions')}</th></tr></thead><tbody>${body}</tbody></table></div>${historyError?`<div class="history-load-error" role="alert">${esc(t('history.loadFailed',{error:historyError}))}<button class="btn compact" data-history-retry>${t('history.retry')}</button></div>`:!ready?empty(t('history.loading'),''):!rows.length?empty(t('history.empty'),''):''}<div class="table-bottom history-pagination"><span>${t(byAccount?'history.accountCount':'history.taskCount',{count:ready?historyData.total:0})}</span><div class="history-pager"><label for="historyPageSize">${t('history.perPage')}</label><select class="field" id="historyPageSize" data-history-size>${[20,50,100].map(n=>`<option value="${n}" ${n===historyPageSize?'selected':''}>${n}</option>`).join('')}</select><button class="btn compact" data-history-page="${historyPage-1}" ${!ready||historyPage<=1?'disabled':''}>${t('history.previous')}</button><span>${t('history.pageOf',{page:ready?historyPage:1,pages:ready?historyData.pages:1})}</span><button class="btn compact" data-history-page="${historyPage+1}" ${!ready||historyPage>=historyData.pages?'disabled':''}>${t('history.next')}</button></div></div></section>`;
 };
@@ -65,8 +65,23 @@ document.addEventListener('click',async event=>{
   modal(title,`<p>${t('history.confirmDelete',{count:result.count})}</p><p class="history-delete-scope">${esc(summary)}</p><p class="small muted">${t('history.keepActive')}</p>`,title,async()=>{await previewRemoveRuns(scope);historyKey='';await requestHistory(true)},true);
  }catch(error){toast('无法读取删除范围：'+error.message,'alert')}
 },true);
+// A waiting task may remain unchanged for hours. Compare the render-relevant
+// data before rebuilding an open dialog; a fresh fetch is not a UI change.
+let lastDetailedRunID='',lastDetailedRunFinished=false,lastDetailedRunData=null,lastDetailedRunSignature='',lastDetailPollAt=0;
+function runDetailFingerprint(run){
+ if(!run)return '';
+ const {now,serverNow,fetchedAt,refreshedAt,...persistent}=run;
+ return JSON.stringify(persistent);
+}
 const historyRunDetailBase=renderRunDetail;
-renderRunDetail=function(run){historyRunDetailBase(run);if($('#accountDialog').open){$('#detailDialog .drawer-footer .flex').insertAdjacentHTML('afterbegin',`<button class="btn" data-action="close" data-id="detailDialog">${t('history.backToAccount')}</button>`)}};
+renderRunDetail=function(run){
+ lastDetailedRunID=run?.id||'';
+ lastDetailedRunFinished=!!run?.finished;
+ lastDetailedRunData=run;
+ lastDetailedRunSignature=runDetailFingerprint(run);
+ historyRunDetailBase(run);
+ if($('#accountDialog').open){$('#detailDialog .drawer-footer .flex').insertAdjacentHTML('afterbegin',`<button class="btn" data-action="close" data-id="detailDialog">${t('history.backToAccount')}</button>`)}
+};
 
 async function exportHistory(){
  const query={...historyQuery(),page:1,pageSize:100};const pending=toast(t('history.exporting'),'loader'),records=new Map();
@@ -75,6 +90,7 @@ async function exportHistory(){
 }
 const pagedShowRunBase=showRun;
 showRun=async function(id){
+ lastDetailPollAt=0;
  const local=state.runs.find(r=>r.id===id);if(local&&!local.summary){pagedShowRunBase(id);return}
  const generation=++runDetailGeneration;
  try{const run=await api('history-detail',{id});if(generation!==runDetailGeneration||!connected)return;detailType='run';detailId=id;renderRunDetail(run);if(!$('#detailDialog').open)showDialog('detailDialog')}
@@ -91,11 +107,27 @@ const pagedSnapshotBase=applySnapshot;
 applySnapshot=function(...args){pagedSnapshotBase(...args);if(view==='history'&&historyPage===1)void requestHistory(true)};
 const pagedDisconnectBase=disconnectLive;
 disconnectLive=function(...args){historyGeneration++;runDetailGeneration++;accountTimelineGeneration++;historyPage=1;historyKey='';historyPendingKey='';historyError='';historyData={rows:[],total:0,deletable:0,allDeletable:0,page:1,pages:1};accountTimelineRuns=null;pagedDisconnectBase(...args)};
-$('#detailDialog').addEventListener('close',()=>runDetailGeneration++);
+$('#detailDialog').addEventListener('close',()=>{runDetailGeneration++;lastDetailPollAt=0;lastDetailedRunData=null});
 $('#accountDialog').addEventListener('close',()=>{accountTimelineGeneration++;accountTimelineRuns=null});
+// Far from a known reset, one read every 30 seconds is sufficient. Start
+// polling every 2.5 seconds in the final 30 seconds or during active work.
+function runDetailPollDelay(run,now=Date.now()){
+ const items=run?.items||[];
+ const allWaiting=items.length>0&&items.every(item=>item.status==='waiting');
+ const earliestDue=allWaiting?Math.min(...items.map(item=>Number(item.waitUntil)||Infinity)):Infinity;
+ return allWaiting&&earliestDue>now+30000?30000:2500;
+}
 let historyRefreshBusy=false;
 setInterval(async()=>{
- if(!connected||historyRefreshBusy)return;historyRefreshBusy=true;
- try{if($('#detailDialog').open&&detailType==='run'){const id=detailId,generation=runDetailGeneration;const run=await api('history-detail',{id});if(connected&&generation===runDetailGeneration&&$('#detailDialog').open&&detailId===id)renderRunDetail(run)}}catch(error){}finally{historyRefreshBusy=false}
+ if(!connected||historyRefreshBusy||!$('#detailDialog').open||detailType!=='run')return;
+ if(lastDetailedRunID===detailId&&lastDetailedRunFinished)return;
+ const now=Date.now(),interval=runDetailPollDelay(lastDetailedRunData,now);
+ if(now-lastDetailPollAt<interval)return;
+ lastDetailPollAt=now;historyRefreshBusy=true;
+ try{
+  const id=detailId,generation=runDetailGeneration;
+  const run=await api('history-detail',{id});
+  if(connected&&generation===runDetailGeneration&&$('#detailDialog').open&&detailId===id&&runDetailFingerprint(run)!==lastDetailedRunSignature)renderRunDetail(run);
+ }catch(error){}finally{historyRefreshBusy=false}
 },2500);
 render();

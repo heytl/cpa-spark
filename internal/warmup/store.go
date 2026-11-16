@@ -67,6 +67,8 @@ func Open(dir string) (*Store, error) {
  CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY, task_id TEXT NOT NULL, name TEXT NOT NULL, model TEXT NOT NULL, provider TEXT NOT NULL, mode TEXT NOT NULL, started INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS execution_keys(dedup TEXT PRIMARY KEY);
  CREATE TABLE IF NOT EXISTS claims(key TEXT PRIMARY KEY, run_id TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS window_checkpoints(id TEXT PRIMARY KEY, body BLOB NOT NULL);
+ CREATE TABLE IF NOT EXISTS rolling_plans(id TEXT PRIMARY KEY, body BLOB NOT NULL);
  PRAGMA user_version=1;`)
 	if e != nil {
 		db.Close()
@@ -88,6 +90,20 @@ func Open(dir string) (*Store, error) {
 	if e != nil {
 		s.Close()
 		return nil, e
+	}
+	// v0.1.8 used 120 seconds as the default, while smart window
+	// avoidance uses a ten-minute default. Upgrade only that legacy
+	// default once; preserve customized 1- and 5-minute selections.
+	if config.Settings.LatePolicyVersion == 0 {
+		if config.Settings.Late == 120 {
+			config.Settings.Late = 600
+		}
+		config.Settings.LatePolicyVersion = 1
+		config.Revision++
+		if _, e = db.Exec("UPDATE config SET body=? WHERE id=1", marshal(config)); e != nil {
+			s.Close()
+			return nil, e
+		}
 	}
 	if e = Validate(&config); e != nil {
 		s.Close()
@@ -160,8 +176,25 @@ func (s *Store) Save(c Config) error {
 	if _, e = tx.Exec("UPDATE config SET body=? WHERE id=1", marshal(c)); e != nil {
 		return e
 	}
+	// A rolling cursor belongs to one version of an enabled task. Disabling,
+	// editing, deleting or switching its strategy must not resurrect a stale
+	// quota plan on a later re-enable.
+	for _, prior := range old.Tasks {
+		stale := true
+		for _, current := range c.Tasks {
+			if current.ID == prior.ID {
+				stale = !current.Enabled || normalizedStrategy(current) != "rolling" || current.Revision != prior.Revision
+				break
+			}
+		}
+		if stale {
+			if _, e = tx.Exec("DELETE FROM rolling_plans WHERE instr(id,char(0))>0 AND substr(id,1,instr(id,char(0))-1)=?", prior.ID); e != nil {
+				return e
+			}
+		}
+	}
 	// Paused/deleted scheduled sources are withdrawn; manual runs are explicit independent actions.
-	rows, e := tx.Query("SELECT body FROM executions WHERE json_extract(body,'$.status')='queued'")
+	rows, e := tx.Query("SELECT body FROM executions WHERE json_extract(body,'$.status') IN ('queued','waiting')")
 	if e != nil {
 		return e
 	}
@@ -185,7 +218,7 @@ func (s *Store) Save(c Config) error {
 		return e
 	}
 	for _, x := range xs {
-		if x.Status != "queued" {
+		if x.Status != "queued" && x.Status != "waiting" {
 			continue
 		}
 		reason := ""
@@ -193,7 +226,7 @@ func (s *Store) Save(c Config) error {
 			reason = "Global pause"
 		} else if c.Overrides[x.AuthID] {
 			reason = "Account paused"
-		} else if x.Mode == "scheduled" {
+		} else if x.Mode == "scheduled" || x.Mode == "rolling" {
 			valid := false
 			for i := range x.Origins {
 				if !x.Origins[i].Active {
@@ -230,7 +263,7 @@ func (s *Store) Executions() ([]Execution, error) {
 	return s.executionQuery("SELECT body FROM executions ORDER BY rowid")
 }
 func (s *Store) QueuedExecutions() ([]Execution, error) {
-	return s.executionQuery("SELECT body FROM executions WHERE json_extract(body,'$.status')='queued' ORDER BY rowid")
+	return s.executionQuery("SELECT body FROM executions WHERE json_extract(body,'$.status') IN ('queued','waiting') ORDER BY rowid")
 }
 func (s *Store) executionQuery(query string) ([]Execution, error) {
 	rows, e := s.db.Query(query)
